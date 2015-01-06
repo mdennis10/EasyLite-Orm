@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -19,8 +18,6 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.easylite.Dao;
-import com.easylite.EasyLite;
 import com.easylite.exception.NotEntityException;
 import com.easylite.model.Note;
 
@@ -31,7 +28,7 @@ public class DaoImplTest {
 	private EasyLite dbLite;
 	private SQLiteDatabase db;
 
-	@Before public void setUp (){
+	public DaoImplTest() {
 		Activity activity = Robolectric.buildActivity(Activity.class).create().get();
 		
 		this.dbLite = EasyLite.getInstance();
@@ -41,7 +38,6 @@ public class DaoImplTest {
 		
 		dbLite.initialize(activity, FakeDbAttributes.dbName, FakeDbAttributes.version,entityClasses);
 		db = dbLite.getDao(Note.class).getSqLiteDatabase();
-		dbLite.openHelper.onCreate(db);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -142,8 +138,7 @@ public class DaoImplTest {
 		Assert.assertTrue(rows > 0);
 	}
 	@After public void tearDown (){
-		db.execSQL("DROP TABLE IF EXISTS Note");
-		db.execSQL("DROP TABLE IF EXISTS Car");
+		db.execSQL("DELETE FROM Note");
 		this.dbLite = null;
 	}
 }
