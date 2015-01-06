@@ -78,13 +78,14 @@ public class TableTest {
 		Assert.assertEquals(columns, table.columns);
 	}
 	
-	@Test public void createTableMethodAllColumnsCreatedTest (){
+	@Test public void createTableMethodAllTableColumnsCreatedTest (){
 		table.createTable(db, Note.class);
 		Assert.assertTrue(table.createTbSql.toString().isEmpty());
 	}
 	
 	@Test public void createTbSqlIsClearedAfterCreateTableMethodExecution (){
-		
+		table.createTable(db, Note.class);
+		Assert.assertTrue(table.createTbSql.toString().isEmpty());
 	}
 	
 	@Test(expected = NoPrimaryKeyFoundException.class) 
