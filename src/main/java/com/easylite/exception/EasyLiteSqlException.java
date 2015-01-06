@@ -3,7 +3,7 @@ package com.easylite.exception;
 import android.database.SQLException;
 
 /**
- * Constructs a DbLiteSqlException with 
+ * Constructs a EasyLiteSqlException with 
  * the specified detail message.
  * @author Mario Dennis
  *
