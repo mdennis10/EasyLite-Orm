@@ -10,15 +10,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.easylite.SqliteTypeResolver;
-import com.easylite.Table;
 import com.easylite.annotation.Entity;
 import com.easylite.annotation.Id;
 import com.easylite.exception.EasyLiteSqlException;
@@ -27,74 +24,71 @@ import com.easylite.exception.NotEntityException;
 import com.easylite.model.Car;
 import com.easylite.model.NoIdEntity;
 import com.easylite.model.Note;
+import com.easylite.model.TableDoesNotExist;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TableTest {
-	private Table table;
+
 	private SQLiteDatabase db;
 
 	@Before public void setUp (){
-		this.table = new Table();
 		this.db = SQLiteDatabase.openOrCreateDatabase(new File(FakeDbAttributes.dbName),null);
 	}
 	
 	@Test(expected = NotEntityException.class)
-	public void createTableMethodThrowNotEntityExceptionTest (){ 
-		table.createTable(Mockito.mock(SQLiteDatabase.class), String.class);
+	public void tableThrowNotEntityExceptionTest (){ 
+		new Table(db,String.class);
 	}
 	
-	@Test(expected = EasyLiteSqlException.class)
-	public void createTableMethodThrowSqlExceptionTest (){
-		this.table.createTbSql  = new StringBuffer("CREATE TABLE IF EXIST");
-		table.createTable(db, Note.class);
+	
+	@Test public void tableNameIsExtractedFromEntityAnnotationTest (){
+		Table table = new Table(db,Note.class);
+		Assert.assertEquals(Note.class.getAnnotation(Entity.class).name(), table.getTableName());
 	}
 	
-	@Test public void createTableMethodTableNameIsExtractedFromEntityAnnotationTest (){
-		table.createTable(db, Note.class);
-		Assert.assertEquals(Note.class.getAnnotation(Entity.class).name(), table.name);
-	}
-	
-	@Test public void createTableMethodTableNameIsEntityNamebyDefaultTest (){
-		table.createTable(db, Car.class);
-		Assert.assertEquals(Car.class.getSimpleName(), table.name);
+	@Test public void tableNameIsEntityNamebyDefaultTest (){
+		Table table = new Table(db,Car.class);
+		Assert.assertEquals(Car.class.getSimpleName(), table.getTableName());
 	}
 
+	@Test public void keysExtractedFromEntity (){
+		Table table = new Table(db,Note.class);
+		Map<String, String> keys = table.getTableKeys();
+		Assert.assertEquals("id", keys.get(Table.KEY_NAME));
+		Assert.assertEquals("INTEGER", keys.get(Table.KEY_TYPE));
+	}
+	
 	@Test public void createTableMethodMapsEntityFieldNameAndSqliteDataType (){
-		table.createTable(db, Note.class);
+		Table table = new Table(db,Note.class);
+		table.createTable();
 		Map<String, String> columns = new HashMap<String, String>();
 		for (Field field : Note.class.getFields()){
 			String name = field.getName();
 			String type = SqliteTypeResolver.resolver(field.getType().getName());
 			if (field.getAnnotation(Id.class) == null)
 				columns.put(name, type);
-			else{
-				table.primaryKeyName = name;
-				table.primaryKeyType = type;
-			}
 		}
-		Assert.assertEquals("id", table.primaryKeyName);
-		Assert.assertEquals("INTEGER", table.primaryKeyType);
-		Assert.assertEquals(columns, table.columns);
+		Assert.assertEquals(columns, table.getColumns());
 	}
 	
 	@Test public void createTableMethodAllTableColumnsCreatedTest (){
-		table.createTable(db, Note.class);
-		Assert.assertTrue(table.createTbSql.toString().isEmpty());
+		Table table = new Table(db,Note.class);
+		table.createTable();
+		Assert.assertFalse("No Table Columns Available",table.getColumns().isEmpty());
 	}
 	
-	@Test public void createTbSqlIsClearedAfterCreateTableMethodExecution (){
-		table.createTable(db, Note.class);
-		Assert.assertTrue(table.createTbSql.toString().isEmpty());
-	}
 	
 	@Test(expected = NoPrimaryKeyFoundException.class) 
 	public void createTableMethodThrowNoPrimaryKeyFoundExceptionTest (){
-		table.createTable(db, NoIdEntity.class);
+		Table table = new Table(db,NoIdEntity.class);
+		table.createTable();
 	}
 	
 	@Test public void createTableTest (){
-		table.createTable(db, Note.class);
+		Table table = new Table(db,Note.class);
+		table.createTable();
+	
 		String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
 		Cursor cursor = db.rawQuery(sql, new String[]{table.name});
 		Assert.assertTrue(cursor.moveToFirst());
@@ -102,29 +96,23 @@ public class TableTest {
 	
 	@Test(expected = NotEntityException.class)
 	public void dropTableMethodThrowNotEntityExceptionTest (){
-		table.dropTable(db, String.class);
+		Table table = new Table(db,String.class);
+		table.dropTable();
 	}
 	
 	@Test(expected = EasyLiteSqlException.class)
 	public void dropTableMethodThrowSqlExceptionTest (){
-		table.DROP_TABLE_IF_EXIST = "DROP TABLE IF EXIST";
-		table.dropTable(db, Note.class);
+		Table table = new Table(db,TableDoesNotExist.class);
+		table.dropTable();
 	}
 	
-	@Test public void dropMethodTableNameIsExtractedFromEntityAnnotationTest (){
-		table.dropTable(db, Note.class);
-		Assert.assertEquals(Note.class.getAnnotation(Entity.class).name(), table.name);
-	}
-	
-	@Test public void dropMethodTableNameIsEntityNamebyDefaultTest (){
-		table.dropTable(db, Car.class);
-		Assert.assertEquals(Car.class.getSimpleName(), table.name);
-	}
 	
 	@Test public void dropMethodTest (){
-		table.dropTable(db, Note.class);
+		Table table = new Table(db,Note.class);
+		table.dropTable();
+		
 		String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
-		Cursor cursor = db.rawQuery(sql, new String[]{table.name});
+		Cursor cursor = db.rawQuery(sql, new String[]{table.getTableName()});
 		Assert.assertFalse(cursor.moveToFirst());
 	}
 	
@@ -161,10 +149,8 @@ public class TableTest {
 	}
 	
 	@After public void tearDown (){
-		if (table.name != null)
-			db.execSQL("DROP TABLE IF EXISTS " + table.name);
-		
-		this.table = null;
+		db.execSQL("DROP TABLE IF EXISTS Note");
+		db.execSQL("DROP TABLE IF EXISTS Car");
 		this.db.close();
 		this.db    = null;
 	}

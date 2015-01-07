@@ -14,15 +14,26 @@ import com.easylite.exception.NoPrimaryKeyFoundException;
 import com.easylite.exception.NotEntityException;
 
 public final class Table {
-	protected StringBuffer createTbSql = new StringBuffer();
-	protected String DROP_TABLE_IF_EXIST = "DROP TABLE IF EXISTS %s";
 	
-	public String name,primaryKeyType,primaryKeyName;
+	protected final String name;
+	protected static final String KEY_NAME = "primary_key";
+	protected static final String KEY_TYPE = "primary_key_type";
+	private final Map<String, String> keys;
 	public Map<String, String> columns = new HashMap<String, String>();
+	private final SQLiteDatabase db;
+	private final Class<?> clazz;
 	
 	
-	protected Table() {}
+	protected Table(SQLiteDatabase db, Class<?> clazz) {
+		this.db = db;
+		this.clazz = clazz;
+		this.name = getEntityName(clazz);
+		this.keys = getTableKeys (clazz);
+		this.columns = getColumns(clazz);
+	}
 	
+
+
 	/**
 	 * Create a database table 
 	 * @author Mario Dennis
@@ -32,41 +43,14 @@ public final class Table {
 	 * @exception NoPrimaryKeyFoundException
 	 * @exception NotEntityException
 	 */
-	protected final <T> void createTable (SQLiteDatabase db,Class<T> clazz) throws EasyLiteSqlException{
-		this.name = Table.getEntityName(clazz);
-		
-		for (Field field : clazz.getFields()){
-			String name = field.getName();
-			String type = SqliteTypeResolver.resolver(field.getType().getName());
-			if (field.getAnnotation(Id.class) == null)
-				columns.put(name, type);
-			else{
-				this.primaryKeyName = name;
-				this.primaryKeyType = type;
-			}
-		}
-		prepareCreateStatment();
+	protected synchronized final <T> void createTable () throws EasyLiteSqlException{
+		String sql = prepareCreateStatment(keys.get(KEY_NAME),keys.get(KEY_TYPE));
 		try {
-			db.execSQL(createTbSql.toString());
+			db.execSQL(sql);
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
-		}finally{
-			//Discard previous sql statement
-			createTbSql = null;
-			createTbSql = new StringBuffer();
 		}
 	}
-	
-	private void prepareCreateStatment (){	
-		if (primaryKeyName == null || primaryKeyType == null)
-			throw new NoPrimaryKeyFoundException();
-		
-		createTbSql.append(String.format("CREATE TABLE %s (%s %s PRIMARY KEY", name,primaryKeyName,primaryKeyType));
-		for (String key : columns.keySet())
-			createTbSql.append(String.format(", %s %s", key,columns.get(key)/*Sqlite Data Type*/));
-		createTbSql.append(")");
-	}
-
 	
 	
 	/**
@@ -76,15 +60,27 @@ public final class Table {
 	 * @param clazz
 	 * @exception EasyLiteSqlException
 	 */
-	protected final <T> void dropTable (SQLiteDatabase db, Class<T> clazz) throws EasyLiteSqlException{
-		this.name = Table.getEntityName(clazz);
+	protected synchronized final <T> void dropTable () throws EasyLiteSqlException{
 		try {
-			db.execSQL(String.format(DROP_TABLE_IF_EXIST, this.name));
+			db.execSQL(String.format("DROP TABLE IF EXISTS %s", this.name));
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		}
 	}
 	
+	
+	private String prepareCreateStatment (String primaryKeyName,String primaryKeyType){	
+		if (primaryKeyName == null || primaryKeyType == null)
+			throw new NoPrimaryKeyFoundException();
+		
+		StringBuffer sql = new StringBuffer();
+		sql.append(String.format("CREATE TABLE %s (%s %s PRIMARY KEY", name,primaryKeyName,primaryKeyType));
+		for (String key : columns.keySet())
+			sql.append(String.format(", %s %s", key,columns.get(key)));
+		sql.append(")");
+		return sql.toString();
+	}
+
 	
 	/**
 	 * Get name of Entity which is used has table name.
@@ -99,6 +95,54 @@ public final class Table {
 			throw new NotEntityException();
 		
 		return (!entity.name().isEmpty()) ? entity.name() : clazz.getSimpleName();
+	}
+	
+	/**
+	 * Get keys of entity class
+	 * @author Mario Dennis
+	 * @param clazz
+	 * @return map of keys, which is empty when none is found 
+	 */
+	public Map<String, String> getTableKeys(Class<?> clazz) {
+		Map<String, String> keys = new HashMap<String, String>();
+		Field[] fields = clazz.getFields();
+		for(Field field : fields)
+			if (field.getAnnotation(Id.class) != null){
+				keys.put(KEY_NAME, field.getName());
+				keys.put(KEY_TYPE, SqliteTypeResolver.resolver(field.getType().getName()));
+			}
+		return keys;
+	}
+	
+	
+	/**
+	 * Get keys for current table context
+	 * @author Mario Dennis
+	 * @return keys
+	 */
+	public Map<String, String> getTableKeys() {
+		return keys;
+	}
+	
+	private Map<String, String> getColumns (Class<?> clazz){
+		Map<String, String> columns = new HashMap<String, String>();
+		for (Field field : clazz.getFields()){
+			String name = field.getName();
+			String type = SqliteTypeResolver.resolver(field.getType().getName());
+			if (field.getAnnotation(Id.class) == null)
+				columns.put(name, type);
+		}
+		return columns;
+	}
+	
+	
+	/**
+	 * Get table columns
+	 * @author Mario Dennis
+	 * @return columns
+	 */
+	public Map<String, String> getColumns() {
+		return columns;
 	}
 	
 	
@@ -134,4 +178,13 @@ public final class Table {
 		
 		throw new NoPrimaryKeyFoundException();
 	}
+
+	/**
+	 * Get name table
+	 * @return tableName
+	 */
+	public String getTableName() {
+		return name;
+	}
+
 }

@@ -4,7 +4,7 @@
 
   <groupId>com.easyliteorm</groupId>
   <artifactId>easyliteorm</artifactId>
-  <version>0.0.1-beta</version>
+  <version>0.0.1-alpha</version>
   <packaging>jar</packaging>
 
   <name>easyliteorm</name>
