@@ -56,6 +56,11 @@ public class SqliteTypeResolverTest {
 		Assert.assertEquals(SqliteTypeResolver.REAL, actual);
 	}
 	
+	@Test public void resolveLong(){
+		String actual = SqliteTypeResolver.resolver(Long.class.getName());
+		Assert.assertEquals(SqliteTypeResolver.INTEGER, actual);
+	}
+	
 	@Test public void resolvePrimitives (){
 		String actual = SqliteTypeResolver.resolver("int");
 		Assert.assertEquals(SqliteTypeResolver.INTEGER, actual);
@@ -71,5 +76,8 @@ public class SqliteTypeResolverTest {
 		
 		actual = SqliteTypeResolver.resolver("float");
 		Assert.assertEquals(SqliteTypeResolver.REAL, actual);
+		
+		actual = SqliteTypeResolver.resolver("long");
+		Assert.assertEquals(SqliteTypeResolver.INTEGER, actual);
 	}
 }

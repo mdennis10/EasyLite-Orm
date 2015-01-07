@@ -26,33 +26,19 @@ public final class SqliteTypeResolver {
 	 * @return Sqlite data-type 
 	 */
 	public static String resolver(String primitiveTypeName) {
-		if (primitiveTypeName.equals(String.class.getName()))
+		if (primitiveTypeName.equals(String.class.getName()) || primitiveTypeName.equals("char") ||
+			primitiveTypeName.equals(Character.class.getName()))
 			return TEXT;
-		if (primitiveTypeName.equals("int"))
+		
+		if (primitiveTypeName.equals("int") || primitiveTypeName.equals(Integer.class.getName())||
+			primitiveTypeName.equals(Long.class.getName()) || primitiveTypeName.equals("boolean") ||
+			primitiveTypeName.equals(Boolean.class.getName()) || primitiveTypeName.equals(Date.class.getName()) ||
+			primitiveTypeName.equals(BigInteger.class.getName()) || primitiveTypeName.equals("long"))
 			return INTEGER;
-		if (primitiveTypeName.equals(Integer.class.getName()))
-			return INTEGER;
-		if (primitiveTypeName.equals("double"))
-			return REAL;
-		if (primitiveTypeName.equals(Double.class.getName()))
-			return REAL;
-		if (primitiveTypeName.equals("float"))
-			return REAL;
-		if (primitiveTypeName.equals(Float.class.getName()))
-			return REAL;
-		if (primitiveTypeName.equals("boolean"))
-			return INTEGER;
-		if (primitiveTypeName.equals("char"))
-			return TEXT;
-		if (primitiveTypeName.equals(Character.class.getName()))
-			return TEXT;
-		if (primitiveTypeName.equals(Boolean.class.getName()))
-			return INTEGER;
-		if (primitiveTypeName.equals(Date.class.getName()))
-			return INTEGER;
-		if (primitiveTypeName.equals(BigInteger.class.getName()))
-			return INTEGER;
-		if (primitiveTypeName.equals(BigDecimal.class.getName()))
+
+		if (primitiveTypeName.equals("double") || primitiveTypeName.equals(Double.class.getName()) ||
+			primitiveTypeName.equals("float") || primitiveTypeName.equals(Float.class.getName()) ||
+			primitiveTypeName.equals(BigDecimal.class.getName()))
 			return REAL;
 		
 		return NONE;

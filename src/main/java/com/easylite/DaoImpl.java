@@ -158,6 +158,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		else if (type.equals("double") || type.equals(Double.class.getName()))
 			field.setDouble(entity, cursor.getDouble(cursor.getColumnIndex(field.getName())));
 		
+		else if (type.equals("long") || type.equals(Long.class.getName()))
+			field.setLong(entity, cursor.getLong(cursor.getColumnIndex(field.getName())));
+		
 		else if (type.equals("boolean") || type.equals(Boolean.class.getName()))
 			field.setBoolean(entity, (cursor.getInt(cursor.getColumnIndex(field.getName())) == 1) ? true: false);
 		
@@ -182,6 +185,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	private void putContentValue (ContentValues values,Field field,E entity) throws IllegalArgumentException, IllegalAccessException{
 		String name = field.getName();
 		String type = field.getType().getName();
+		
 		if (type.equals("int") || type.equals(Integer.class.getName()))
 			values.put(name, field.getInt(entity));
 		
@@ -190,6 +194,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		
 		else if (type.equals("double") || type.equals(Double.class.getName()))
 			values.put(name, field.getDouble(entity));
+		
+		else if (type.equals("long") || type.equals(Long.class.getName()))
+			values.put(name, field.getLong(entity));
 		
 		else if (type.equals("boolean") || type.equals(Boolean.class.getName()))
 			values.put(name, field.getBoolean(entity));
@@ -201,7 +208,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			values.put(name,field.getFloat(entity));
 		
 		else if (type.equals(Date.class.getName()))
-			values.put(name,(String) field.get(entity));
+			values.put(name,(String) field.get(entity));	
 	}
 
 }

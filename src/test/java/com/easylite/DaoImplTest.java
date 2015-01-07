@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.easylite.exception.NotEntityException;
+import com.easylite.model.Car;
 import com.easylite.model.Note;
 
 @RunWith(RobolectricTestRunner.class)
@@ -35,7 +36,7 @@ public class DaoImplTest {
 		
 		Set<Class<?>> entityClasses = new HashSet<Class<?>>();
 		entityClasses.add(Note.class);
-		
+		entityClasses.add(Car.class);
 		dbLite.initialize(activity, FakeDbAttributes.dbName, FakeDbAttributes.version,entityClasses);
 		db = dbLite.getDao(Note.class).getSqLiteDatabase();
 	}
