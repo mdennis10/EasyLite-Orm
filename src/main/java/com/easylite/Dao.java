@@ -26,7 +26,7 @@ public interface Dao<K,E> {
 	
 	
 	/**
-	 * Dispatch a batch insert to database. [NOTE]
+	 * Dispatch batch insert to database. [NOTE]
 	 * Because this method is transactional if any
 	 * insert operation fail all fails.
 	 * @author Mario Dennis

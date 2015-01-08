@@ -210,6 +210,21 @@ public class DaoImplTest {
 		int rows = dao.delete(note);
 		Assert.assertTrue(rows > 0);
 	}
+	
+	@Test public void isExistMethodTest (){
+		ContentValues values = new ContentValues();
+		values.put("id", 1);
+		values.put("body", "text");
+		
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+		
+		Note note = new Note ();
+		note.id = 1;
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		Assert.assertTrue("Note instance not found",dao.isExist(note));
+	}
+	
 	@After public void tearDown (){
 		db.execSQL("DELETE FROM Note");
 		this.dbLite = null;

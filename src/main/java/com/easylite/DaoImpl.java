@@ -166,9 +166,22 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	public boolean isExist(E entity) throws EasyLiteSqlException {
 		Field[] fields = type.getDeclaredFields();
-		return false;
+		String key = "";
+		try {
+			for (Field field : fields)
+				if (field.getAnnotation(Id.class) != null)
+					key = parsePrimaryKey(tableKeys.get(Table.PRIMARY_KEY_TYPE), (K) field.get(entity));
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		String sql = String.format("SELECT * FROM %s WHERE %s=?", tableName,tableKeys.get(Table.PRIMARY_KEY_NAME));
+		Cursor cursor = db.rawQuery(sql, new String[]{key});
+		return cursor.moveToFirst();
 	}
 
 	
