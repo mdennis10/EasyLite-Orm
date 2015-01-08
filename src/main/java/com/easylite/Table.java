@@ -16,11 +16,12 @@ import com.easylite.exception.NotEntityException;
 public final class Table {
 	
 	protected final String name;
-	protected static final String KEY_NAME = "primary_key";
-	protected static final String KEY_TYPE = "primary_key_type";
+	protected static final String PRIMARY_KEY_NAME = "primary_key";
+	protected static final String PRIMARY_KEY_TYPE = "primary_key_type";
 	private final Map<String, String> keys;
 	public Map<String, String> columns = new HashMap<String, String>();
 	private final SQLiteDatabase db;
+	@SuppressWarnings("unused")
 	private final Class<?> clazz;
 	
 	
@@ -44,7 +45,7 @@ public final class Table {
 	 * @exception NotEntityException
 	 */
 	protected synchronized final <T> void createTable () throws EasyLiteSqlException{
-		String sql = prepareCreateStatment(keys.get(KEY_NAME),keys.get(KEY_TYPE));
+		String sql = prepareCreateStatment(keys.get(PRIMARY_KEY_NAME),keys.get(PRIMARY_KEY_TYPE));
 		try {
 			db.execSQL(sql);
 		} catch (SQLException e) {
@@ -103,13 +104,14 @@ public final class Table {
 	 * @param clazz
 	 * @return map of keys, which is empty when none is found 
 	 */
-	public Map<String, String> getTableKeys(Class<?> clazz) {
+	public static Map<String, String> getTableKeys(Class<?> clazz) {
 		Map<String, String> keys = new HashMap<String, String>();
 		Field[] fields = clazz.getFields();
 		for(Field field : fields)
 			if (field.getAnnotation(Id.class) != null){
-				keys.put(KEY_NAME, field.getName());
-				keys.put(KEY_TYPE, SqliteTypeResolver.resolver(field.getType().getName()));
+				keys.put(PRIMARY_KEY_NAME, field.getName());
+				keys.put(PRIMARY_KEY_TYPE, SqliteTypeResolver.resolver(field.getType().getName()));
+				break;
 			}
 		return keys;
 	}
@@ -146,38 +148,6 @@ public final class Table {
 	}
 	
 	
-	/**
-	 * Get name of table's primary key
-	 * @author Mario Dennis
-	 * @param clazz
-	 * @exception NoPrimaryKeyFoundException
-	 * @return primary key name
-	 */
-	protected static String getPrimaryKeyName (Class<?> clazz){
-		Field[] fields = clazz.getFields();
-		for(Field field : fields)
-			if (field.getAnnotation(Id.class) != null)
-				return field.getName();
-		
-		throw new NoPrimaryKeyFoundException();
-	}
-	
-	
-	/**
-	 * Get name of primary key data-type
-	 * @author Mario Dennis
-	 * @param clazz
-	 * @exception NoPrimaryKeyFoundException
-	 * @return data-type name
-	 */
-	protected static String getPrimaryKeyTypeName (Class<?> clazz){
-		Field[] fields = clazz.getFields();
-		for(Field field : fields)
-			if (field.getAnnotation(Id.class) != null)
-				return field.getType().getName();
-		
-		throw new NoPrimaryKeyFoundException();
-	}
 
 	/**
 	 * Get name table

@@ -26,6 +26,17 @@ public interface Dao<K,E> {
 	
 	
 	/**
+	 * Dispatch a batch insert to database. [NOTE]
+	 * Because this method is transactional if any
+	 * insert operation fail all fails
+	 * @author Mario Dennis
+	 * @param entities
+	 * @return true when batch transactions succeeds, otherwise false
+	 */
+	public boolean batchCreate (List<E> entities);
+	
+	
+	/**
 	 * Delete record from database
 	 * @author Mario Dennis
 	 * @param entity
@@ -42,7 +53,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException
 	 * @return
 	 */
-	public int update (E entity) throws EasyLiteSqlException;
+	public int update (E entity,String whereClause,String[] whereArgs) throws EasyLiteSqlException;
 	
 	
 	/**

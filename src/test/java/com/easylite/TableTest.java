@@ -18,13 +18,11 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.easylite.annotation.Entity;
 import com.easylite.annotation.Id;
-import com.easylite.exception.EasyLiteSqlException;
 import com.easylite.exception.NoPrimaryKeyFoundException;
 import com.easylite.exception.NotEntityException;
 import com.easylite.model.Car;
 import com.easylite.model.NoIdEntity;
 import com.easylite.model.Note;
-import com.easylite.model.TableDoesNotExist;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -55,8 +53,8 @@ public class TableTest {
 	@Test public void keysExtractedFromEntity (){
 		Table table = new Table(db,Note.class);
 		Map<String, String> keys = table.getTableKeys();
-		Assert.assertEquals("id", keys.get(Table.KEY_NAME));
-		Assert.assertEquals("INTEGER", keys.get(Table.KEY_TYPE));
+		Assert.assertEquals("id", keys.get(Table.PRIMARY_KEY_NAME));
+		Assert.assertEquals("INTEGER", keys.get(Table.PRIMARY_KEY_TYPE));
 	}
 	
 	@Test public void createTableMethodMapsEntityFieldNameAndSqliteDataType (){
@@ -100,12 +98,6 @@ public class TableTest {
 		table.dropTable();
 	}
 	
-	@Test(expected = EasyLiteSqlException.class)
-	public void dropTableMethodThrowSqlExceptionTest (){
-		Table table = new Table(db,TableDoesNotExist.class);
-		table.dropTable();
-	}
-	
 	
 	@Test public void dropMethodTest (){
 		Table table = new Table(db,Note.class);
@@ -128,24 +120,6 @@ public class TableTest {
 	@Test (expected = NotEntityException.class)
 	public void getEntityNameThrowNotEntityExceptionTest (){
 		Table.getEntityName(String.class);
-	}
-	
-	@Test (expected = NoPrimaryKeyFoundException.class)
-	public void getPrimaryKeyNameMethodThrowNoPrimaryKeyFoundExceptionTest(){
-		Table.getPrimaryKeyName(String.class);
-	}
-	
-	@Test public void getPrimaryKeyNameTest (){
-		Assert.assertEquals("id", Table.getPrimaryKeyName(Note.class));
-	}
-	
-	@Test (expected = NoPrimaryKeyFoundException.class)
-	public void getPrimaryKeyTypeNameMethodThrowNoPrimaryKeyFoundExceptionTest(){
-		Table.getPrimaryKeyTypeName(String.class);
-	}
-	
-	@Test public void getPrimaryKeyTypeNameTest (){
-		Assert.assertEquals("int", Table.getPrimaryKeyTypeName(Note.class));
 	}
 	
 	@After public void tearDown (){

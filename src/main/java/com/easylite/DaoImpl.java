@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.easylite.annotation.Id;
@@ -15,75 +17,123 @@ import com.easylite.exception.EasyLiteSqlException;
 public final class DaoImpl<K,E> implements Dao<K, E>{
 	private final SQLiteDatabase db;
 	private final Class<E> type;
+	private final String tableName;
+	Map<String, String> tableKeys; 
 	
 	public DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type){
 		this.db = openHelper.getWritableDatabase();
 		this.type = type;
+		this.tableKeys = Table.getTableKeys(type);
+		this.tableName = Table.getEntityName(type);
 	}
+	
 	
 	public long create(E entity) throws EasyLiteSqlException {
 		if (entity == null)
 			throw new NullPointerException("Null Entity Supplied");
-		
-		String name = Table.getEntityName(entity.getClass());
-		
-		ContentValues values = new ContentValues();
-		Field[] fields = entity.getClass().getDeclaredFields();
-		for (Field field : fields) {
-			try {
+		try {
+			ContentValues values = new ContentValues();
+			Field[] fields = type.getDeclaredFields();
+			for (Field field : fields) 
 				putContentValue(values, field, entity);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
+			
+			return this.db.insert(tableName, null, values);
+		} catch (SQLException e) {
+			throw new EasyLiteSqlException(e);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
-		return this.db.insert(name, null, values);
+		return -1;
 	}
+	
+	
+	public boolean batchCreate(List<E> entities) {
+		boolean success = false;
+		try {
+			if (entities != null && !entities.isEmpty()){
+				db.beginTransaction();
+				for (E entity : entities)
+					if (create(entity) != -1)
+						success = true;
+					else{
+						success = false;
+						break;
+					}
+				db.setTransactionSuccessful();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}finally{
+			db.endTransaction();
+		}
+		return success;
+	}
+	
 	
 	public int delete(E entity) throws EasyLiteSqlException {
 		if (entity == null)
 			throw new NullPointerException("null Entity Supplied");
-		String tableName = Table.getEntityName(type);
-		Field[] fields = type.getFields();
-		for (Field field : fields){
-			if(field.getAnnotation(Id.class) != null){
-				try {
-					String primaryKeyType = Table.getPrimaryKeyName(type);
+		
+		try {
+			Field[] fields = type.getFields();
+			for (Field field : fields){
+				if(field.getAnnotation(Id.class) != null){		
 					@SuppressWarnings("unchecked")
 					K key = (K) field.get(entity);
-					return db.delete(tableName, primaryKeyType + "=?", new String[]{parsePrimaryKey(primaryKeyType, key)});
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+					String[] args = {parsePrimaryKey(tableKeys.get(Table.PRIMARY_KEY_TYPE), key)};
+					return db.delete(tableName, tableKeys.get(Table.PRIMARY_KEY_NAME) + "=?", args);
 				}
 			}
+		} catch (SQLException e) {
+			throw new EasyLiteSqlException(e);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
 		return 0;
 	}
 
-	public int update(E entity) throws EasyLiteSqlException{
-		return db.update(type.getSimpleName(), null, null, null);
+	
+	public int update(E entity,String whereClause,String[] whereArgs) throws EasyLiteSqlException{
+		if (entity == null)
+			throw new NullPointerException("null Entity Supplied");
+		
+		try{
+			ContentValues values = new ContentValues();
+			Field[] fields = type.getDeclaredFields();
+			for (Field field : fields) 
+				putContentValue(values, field, entity);
+			
+			return db.update(tableName, values, whereClause, whereArgs);
+		} catch (SQLException e){
+			throw new EasyLiteSqlException(e);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
-	public E findById(K key) throws EasyLiteSqlException {
-		String primaryKeyName = Table.getPrimaryKeyName(type);
-		String primaryKeyType = Table.getPrimaryKeyTypeName(type);
-		String table = Table.getEntityName(type);
+	
+	public E findById(K key) throws EasyLiteSqlException {		
+		String sql = String.format("SELECT * FROM %s WHERE %s=?", tableName,tableKeys.get(Table.PRIMARY_KEY_NAME));
+		String[] args ={parsePrimaryKey(tableKeys.get(Table.PRIMARY_KEY_TYPE), key)};
 		
-		String sql = String.format("SELECT * FROM %s WHERE %s=?", table,primaryKeyName);
-		String args = parsePrimaryKey(primaryKeyType, key);
-		
-		Cursor cursor = db.rawQuery(sql, new String[]{args});
-		cursor.moveToFirst();
 		try {
+			Cursor cursor = db.rawQuery(sql, args);
+			cursor.moveToFirst();
 			E entity = type.newInstance();
 			Field[] fields = type.getFields();
 			for (Field field : fields)
 				this.setEntityFields(cursor, field, entity);
 			
 			return entity;
+		} catch (SQLException e){
+			throw new EasyLiteSqlException(e);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -92,33 +142,40 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return null;
 	}
 
+	
 	public List<E> findAll() throws EasyLiteSqlException {
-		String table = Table.getEntityName(type);
 		List<E> results = new ArrayList<E> ();
-		Cursor cursor = db.query(table, null, null, null, null, null, null);
-		while (cursor.moveToNext()) {
-			try {
+		try {
+			Cursor cursor = db.query(tableName, null, null, null, null, null, null);
+			while (cursor.moveToNext()) {
 				E entity = type.newInstance();
 				Field[] fields = type.getFields();
 				for (Field field : fields)
 					setEntityFields(cursor, field, entity);
 				results.add(entity);
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
 			}
+		} catch(SQLException e){
+			throw new EasyLiteSqlException(e);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
 		}
 		return results;
 	}
+	
 	
 	public boolean isExist(E entity) throws EasyLiteSqlException {
 		return false;
 	}
 
+	
 	public SQLiteDatabase getSqLiteDatabase() {
 		return db;
 	}
+	
 
 	/**
 	 * Parse primary key to String
@@ -132,11 +189,14 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			return Integer.toString((Integer) key);
 		else if (primaryKeyType.equals("double") || primaryKeyType.equals(Double.class.getName()))
 			return Double.toString((Double) key);
+		else if (primaryKeyType.equals("long") || primaryKeyType.equals(Long.class.getName()))
+			return Long.toString((Long) key);
 		else if (primaryKeyType.equals("float") || primaryKeyType.equals(Float.class.getName()))
 			return Float.toString((Float) key);
 		else
 			return key.toString();
 	}
+	
 	
 	/**
 	 * Sets entity fields reflectively.
@@ -173,6 +233,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			field.setFloat(entity, cursor.getFloat(cursor.getColumnIndex(field.getName())));
 	}
 	
+	
 	/**
 	 * Add field value to contentValue
 	 * @author Mario Dennis
@@ -189,8 +250,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		if (type.equals("int") || type.equals(Integer.class.getName()))
 			values.put(name, field.getInt(entity));
 		
-		else if (type.equals(String.class.getName()))
+		else if (type.equals(String.class.getName()) && field.get(entity) != null){
 			values.put(name, (String) field.get(entity));
+		}
 		
 		else if (type.equals("double") || type.equals(Double.class.getName()))
 			values.put(name, field.getDouble(entity));
@@ -207,8 +269,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		else if (type.equals("float") || type.equals(Float.class.getName()))
 			values.put(name,field.getFloat(entity));
 		
-		else if (type.equals(Date.class.getName()))
+		else if (type.equals(Date.class.getName()) && field.get(entity) != null)
 			values.put(name,(String) field.get(entity));	
 	}
-
 }

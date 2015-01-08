@@ -1,6 +1,7 @@
 package com.easylite;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.robolectric.annotation.Config;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.easylite.exception.NotEntityException;
@@ -62,6 +64,57 @@ public class DaoImplTest {
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
 		long id = dao.create(note);
 		Assert.assertTrue(id > 0);
+	}
+	
+	@Test public void batchCreateMethodTest (){
+		List<Note> notes = new ArrayList<Note>();
+		Note note = new Note();
+		note.id = 1;
+		notes.add(note);
+		
+		Note note2 = new Note();
+		note2.id = 2;
+		notes.add(note2);
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		boolean result = dao.batchCreate(notes);
+		
+		Cursor cursor = db.query("Note", null, null, null, null, null, null);
+		while (cursor.moveToNext()){
+			Note actual = new Note();
+			actual.id = cursor.getInt(cursor.getColumnIndex("id"));
+			Assert.assertEquals(actual.id, notes.get(cursor.getPosition()).id);
+		}
+		Assert.assertTrue(result);
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void updateMethodThrowNullPointException (){
+		dbLite.getDao(Note.class).update(null,null,null);
+	}
+	
+	@Test public void updateMethodTest (){
+		ContentValues values = new ContentValues();
+		values.put("id", 1);
+		values.put("author","john doe");
+		
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue("Insertion failed", id > 0);
+		
+		Note note = new Note();
+		note.id = 1;
+		note.author = "new author";
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		dao.update(note,"id=?",new String[] {Integer.toString(note.id)});
+		
+		Cursor cursor = db.rawQuery("SELECT * FROM Note WHERE id=?", new String []{Long.toString(id)});
+		if (cursor.moveToFirst()){
+			Note actual = new Note ();
+			actual.id = cursor.getInt(cursor.getColumnIndex("id"));
+			actual.author = cursor.getString(cursor.getColumnIndex("author"));
+			Assert.assertEquals(note.author, actual.author);
+		}
 	}
 	
 	@Test public void findAllMethodInstancesAddedToListTest (){
