@@ -106,7 +106,7 @@ public final class Table {
 	 */
 	public static Map<String, String> getTableKeys(Class<?> clazz) {
 		Map<String, String> keys = new HashMap<String, String>();
-		Field[] fields = clazz.getFields();
+		Field[] fields = clazz.getDeclaredFields();
 		for(Field field : fields)
 			if (field.getAnnotation(Id.class) != null){
 				keys.put(PRIMARY_KEY_NAME, field.getName());
@@ -128,7 +128,7 @@ public final class Table {
 	
 	private Map<String, String> getColumns (Class<?> clazz){
 		Map<String, String> columns = new HashMap<String, String>();
-		for (Field field : clazz.getFields()){
+		for (Field field : clazz.getDeclaredFields()){
 			String name = field.getName();
 			String type = SqliteTypeResolver.resolver(field.getType().getName());
 			if (field.getAnnotation(Id.class) == null)

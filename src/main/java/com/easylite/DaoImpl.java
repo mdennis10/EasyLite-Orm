@@ -50,17 +50,16 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	
 	
 	public boolean batchCreate(List<E> entities) {
-		boolean success = false;
+		boolean success = true;
 		try {
 			if (entities != null && !entities.isEmpty()){
 				db.beginTransaction();
-				for (E entity : entities)
-					if (create(entity) != -1)
-						success = true;
-					else{
+				for (E entity : entities){
+					if (create(entity) == -1){
 						success = false;
 						break;
 					}
+				}
 				db.setTransactionSuccessful();
 			}
 		} catch (SQLException e) {
@@ -77,7 +76,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			throw new NullPointerException("null Entity Supplied");
 		
 		try {
-			Field[] fields = type.getFields();
+			Field[] fields = type.getDeclaredFields();
 			for (Field field : fields){
 				if(field.getAnnotation(Id.class) != null){		
 					@SuppressWarnings("unchecked")
@@ -127,7 +126,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			Cursor cursor = db.rawQuery(sql, args);
 			cursor.moveToFirst();
 			E entity = type.newInstance();
-			Field[] fields = type.getFields();
+			Field[] fields = type.getDeclaredFields();
 			for (Field field : fields)
 				this.setEntityFields(cursor, field, entity);
 			
@@ -149,7 +148,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			Cursor cursor = db.query(tableName, null, null, null, null, null, null);
 			while (cursor.moveToNext()) {
 				E entity = type.newInstance();
-				Field[] fields = type.getFields();
+				Field[] fields = type.getDeclaredFields();
 				for (Field field : fields)
 					setEntityFields(cursor, field, entity);
 				results.add(entity);
@@ -168,6 +167,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	
 	
 	public boolean isExist(E entity) throws EasyLiteSqlException {
+		Field[] fields = type.getDeclaredFields();
 		return false;
 	}
 
