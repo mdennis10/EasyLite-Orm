@@ -117,6 +117,24 @@ public class DaoImplTest {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
+	@Test public void updateMethodContentValueExtractsDate (){
+		Note note = new Note();
+		note.id = 1;
+		note.date = new Date(2013, 11, 2);
+		
+		ContentValues values = new ContentValues();
+		values.put("id", 1);
+		values.put("date", new Date().getTime());
+		long id = db.insert("Note", null, values);
+		
+		Assert.assertEquals(1, id);
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		int rowAffected = dao.update(note, "id=?", new String[] {Integer.toString(note.id)});
+		Assert.assertTrue("No rows affected, so Date not updated",rowAffected > 0);
+	}
+	
 	@Test public void findAllMethodInstancesAddedToListTest (){
 		ContentValues values = new ContentValues();
 		values.put("id", 1);
@@ -130,6 +148,7 @@ public class DaoImplTest {
 		Assert.assertTrue(notes.size() > 0);
 	}
 	
+
 	
 	@Test public void findAllMethodFieldsPopulatedWithDataTest (){
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);

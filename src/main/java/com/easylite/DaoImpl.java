@@ -269,7 +269,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		else if (type.equals("float") || type.equals(Float.class.getName()))
 			values.put(name,field.getFloat(entity));
 		
-		else if (type.equals(Date.class.getName()) && field.get(entity) != null)
-			values.put(name,(String) field.get(entity));	
+		else if (type.equals(Date.class.getName()) && field.get(entity) != null){
+			Date date = (Date) field.get(entity);
+			values.put(name,date.getTime());	
+		}
 	}
 }
