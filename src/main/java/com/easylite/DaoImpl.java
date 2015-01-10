@@ -27,7 +27,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		this.tableName = Table.getEntityName(type);
 	}
 	
-	
+	@Override
 	public long create(E entity) throws EasyLiteSqlException {
 		if (entity == null)
 			throw new NullPointerException("Null Entity Supplied");
@@ -48,7 +48,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return -1;
 	}
 	
-	
+	@Override
 	public boolean batchCreate(List<E> entities) throws EasyLiteSqlException {
 		boolean success = true;
 		try {
@@ -75,7 +75,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return success;
 	}
 	
-	
+	@Override
 	public int batchCreateWhereNotExist(List<E> entities) throws EasyLiteSqlException{
 		int numInserted = 0;
 		try {
@@ -108,6 +108,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 
+	@Override
 	public int delete(E entity) throws EasyLiteSqlException {
 		if (entity == null)
 			throw new NullPointerException("null Entity Supplied");
@@ -133,6 +134,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 	
+	@Override
 	public int update(E entity,String whereClause,String[] whereArgs) throws EasyLiteSqlException{
 		if (entity == null)
 			throw new NullPointerException("null Entity Supplied");
@@ -154,7 +156,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return 0;
 	}
 
-	
+	@Override
 	public E findById(K key) throws EasyLiteSqlException {		
 		String sql = String.format("SELECT * FROM %s WHERE %s=?", tableName,tableKeys.get(Table.PRIMARY_KEY_NAME));
 		String[] args ={parsePrimaryKey(tableKeys.get(Table.PRIMARY_KEY_TYPE), key)};
@@ -178,7 +180,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return null;
 	}
 
-	
+	@Override
 	public List<E> findAll() throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E> ();
 		try {
@@ -202,6 +204,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return results;
 	}
 	
+	@Override
 	public List<E> findAll(String whereClause, String[] whereArgs) throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E>();
 		try {
@@ -225,6 +228,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 
 	
 	@SuppressWarnings("unchecked")
+	@Override
 	public boolean isExist(E entity) throws EasyLiteSqlException {
 		Field[] fields = type.getDeclaredFields();
 		String key = "";
@@ -243,6 +247,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 	
+	@Override
 	public SQLiteDatabase getSqLiteDatabase() {
 		return db;
 	}
