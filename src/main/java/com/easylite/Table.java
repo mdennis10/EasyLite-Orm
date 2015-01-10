@@ -8,6 +8,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.easylite.annotation.Entity;
+import com.easylite.annotation.GenerationType;
 import com.easylite.annotation.Id;
 import com.easylite.exception.EasyLiteSqlException;
 import com.easylite.exception.NoPrimaryKeyFoundException;
@@ -21,7 +22,6 @@ public final class Table {
 	private final Map<String, String> keys;
 	public Map<String, String> columns = new HashMap<String, String>();
 	private final SQLiteDatabase db;
-	@SuppressWarnings("unused")
 	private final Class<?> clazz;
 	
 	
@@ -75,13 +75,29 @@ public final class Table {
 			throw new NoPrimaryKeyFoundException();
 		
 		StringBuffer sql = new StringBuffer();
-		sql.append(String.format("CREATE TABLE %s (%s %s PRIMARY KEY", name,primaryKeyName,primaryKeyType));
+		sql.append(String.format("CREATE TABLE %s (%s %s PRIMARY KEY ", name,primaryKeyName,primaryKeyType));
+		if (getGenerationType() == GenerationType.AUTO)
+			sql.append("AUTOINCREMENT");
 		for (String key : columns.keySet())
 			sql.append(String.format(", %s %s", key,columns.get(key)));
 		sql.append(")");
 		return sql.toString();
 	}
 
+	public GenerationType getGenerationType (){
+		Id id = null;
+		GenerationType generationType = null;
+		try {
+			id = clazz.getField(keys.get(PRIMARY_KEY_NAME)).getAnnotation(Id.class);
+			if (id != null)
+				return id.generationType();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+		return generationType;
+	}
 	
 	/**
 	 * Get name of Entity which is used has table name.
