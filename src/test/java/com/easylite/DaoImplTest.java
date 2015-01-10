@@ -15,6 +15,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import android.R.integer;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -106,30 +107,31 @@ public class DaoImplTest {
 		Assert.assertFalse("Batch Create Did Not Fail",cursor.moveToFirst());
 	}
 	
-	@Test public void batchCreateOverloadedMethodShouldCommitTest (){
+	
+	@Test public void CreateWhereNotExist (){
 		List<Note> notes = new ArrayList<Note>();
 		Note note = new Note();
 		note.id = 1;
+		note.author = "john doe";
 		notes.add(note);
 		
+	
 		Note note2 = new Note();
-		note2.id = 2;
+		note2.id = 1;
+		note2.author = "jane doe";
 		notes.add(note2);
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		dao.batchCreate(notes, false);
-		Cursor cursor = db.query("Note", null, null, null, null, null, null);
-		while (cursor.moveToNext()){
-			Note actual = new Note();
-			actual.id = cursor.getInt(cursor.getColumnIndex("id"));
-			Assert.assertEquals(actual.id, notes.get(cursor.getPosition()).id);
-		}
+		int numInserted = dao.batchCreateWhereNotExist(notes);
+		Assert.assertEquals(1, numInserted);
 		
-		db.execSQL("DELETE FROM Note");
-		dao.batchCreate(notes, true);
-		cursor = db.query("Note", null, null, null, null, null, null);
-		Assert.assertTrue(cursor.moveToNext());
+		Cursor cursor = db.query("Note", null, null, null, null, null, null);
+		numInserted = 0;
+		while (cursor.moveToNext())
+			++numInserted;
+		Assert.assertEquals(1, numInserted);
 	}
+	
 	
 	@Test(expected = NullPointerException.class)
 	public void updateMethodThrowNullPointException (){

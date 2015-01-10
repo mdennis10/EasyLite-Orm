@@ -36,12 +36,12 @@ public interface Dao<K,E> {
 	public boolean batchCreate (List<E> entities) throws EasyLiteSqlException;
 	
 	
+	
 	/**
-	 * Dispatch batch inserts to database.
-	 * @param entities
-	 * @param shouldCommit - indicate whether or not inserts should still be committed when a operation fails.
+	 * @author Mario Dennis
+	 * @return number of elements inserted successfully 
 	 */
-	public void batchCreate (List<E> entities, boolean shouldCommit) throws EasyLiteSqlException;
+	public int batchCreateWhereNotExist (List<E> entities);
 	
 	
 	/**

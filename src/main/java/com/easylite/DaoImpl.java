@@ -75,22 +75,39 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return success;
 	}
 	
-	public void batchCreate(List<E> entities, boolean shouldCommit) {
+	
+	public int batchCreateWhereNotExist(List<E> entities) throws EasyLiteSqlException{
+		int numInserted = 0;
 		try {
 			if (entities != null && !entities.isEmpty()){
+				StringBuilder sql = new StringBuilder();
 				db.beginTransaction();
-				for (E entity : entities)
-					create(entity);
-				db.setTransactionSuccessful(); 
+				for (E entity : entities){
+					createInsertQuery (sql,entity);
+					createInsertWhereClauseForPrimaryKey(sql,entity);
+					db.execSQL(sql.toString());
+					++numInserted;
+				}
+				db.setTransactionSuccessful();
 			}
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		}finally{
 			db.endTransaction();
 		}
+		return numInserted;
 	}
 	
-	
+	private void createInsertWhereClauseForPrimaryKey(StringBuilder sql,E entity) {
+		
+	}
+
+
+	private void createInsertQuery(StringBuilder sql, E entity) {
+		
+	}
+
+
 	public int delete(E entity) throws EasyLiteSqlException {
 		if (entity == null)
 			throw new NullPointerException("null Entity Supplied");
@@ -185,6 +202,27 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return results;
 	}
 	
+	public List<E> findAll(String whereClause, String[] whereArgs) throws EasyLiteSqlException {
+		List<E> results = new ArrayList<E>();
+		try {
+			Cursor cursor = db.rawQuery(String.format("SELECT * FROM %s WHERE %s", tableName,whereClause), whereArgs);
+			while (cursor.moveToNext()) {
+				E entity = type.newInstance();
+				Field[] fields = type.getDeclaredFields();
+				for (Field field : fields)
+					setEntityFields(cursor, field, entity);
+				results.add(entity);	
+			}
+		} catch (SQLException e) {
+			new EasyLiteSqlException(e);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+
 	
 	@SuppressWarnings("unchecked")
 	public boolean isExist(E entity) throws EasyLiteSqlException {
@@ -306,28 +344,6 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			Date date = (Date) field.get(entity);
 			values.put(name,date.getTime());	
 		}
-	}
-
-
-	public List<E> findAll(String whereClause, String[] whereArgs) throws EasyLiteSqlException {
-		List<E> results = new ArrayList<E>();
-		try {
-			Cursor cursor = db.rawQuery(String.format("SELECT * FROM %s WHERE %s", tableName,whereClause), whereArgs);
-			while (cursor.moveToNext()) {
-				E entity = type.newInstance();
-				Field[] fields = type.getDeclaredFields();
-				for (Field field : fields)
-					setEntityFields(cursor, field, entity);
-				results.add(entity);	
-			}
-		} catch (SQLException e) {
-			new EasyLiteSqlException(e);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return results;
 	}
 
 }
