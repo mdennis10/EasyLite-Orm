@@ -15,7 +15,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import android.R.integer;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
