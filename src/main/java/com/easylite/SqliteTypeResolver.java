@@ -18,30 +18,39 @@ public final class SqliteTypeResolver {
 	public static final String REAL = "REAL";
 	public static final String NONE = "NONE";
 	protected SqliteTypeResolver (){}
-
+	
 	/**
 	 * Resolve data-type to sqlite equivalent
 	 * @author Mario Dennis
 	 * @param primitiveTypeName
 	 * @return Sqlite data-type 
 	 */
-	public static String resolver(String primitiveTypeName) {
-		if (primitiveTypeName.equals(String.class.getName()) || primitiveTypeName.equals("char") ||
-			primitiveTypeName.equals(Character.class.getName()))
+	public static String resolver (Class<?> clazz){
+		if (clazz.isAssignableFrom(String.class) ||
+		    clazz.isAssignableFrom(char.class) ||
+		    clazz.isAssignableFrom(Character.class))
 			return TEXT;
 		
-		if (primitiveTypeName.equals("int") || primitiveTypeName.equals(Integer.class.getName())||
-			primitiveTypeName.equals(Long.class.getName()) || primitiveTypeName.equals("boolean") ||
-			primitiveTypeName.equals(Boolean.class.getName()) || primitiveTypeName.equals(Date.class.getName()) ||
-			primitiveTypeName.equals(BigInteger.class.getName()) || primitiveTypeName.equals("long"))
+		if (clazz.isAssignableFrom(int.class) ||
+			clazz.isAssignableFrom(Integer.class) ||
+			clazz.isAssignableFrom(boolean.class) ||
+			clazz.isAssignableFrom(Boolean.class) ||
+			clazz.isAssignableFrom(long.class) ||
+			clazz.isAssignableFrom(Long.class) ||
+			clazz.isAssignableFrom(Date.class) ||
+			clazz.isAssignableFrom(BigInteger.class)||
+			clazz.isAssignableFrom(byte.class) ||
+			clazz.isAssignableFrom(Byte.class) ||
+			clazz.isAssignableFrom(short.class)||
+			clazz.isAssignableFrom(Short.class))
 			return INTEGER;
-
-		if (primitiveTypeName.equals("double") || primitiveTypeName.equals(Double.class.getName()) ||
-			primitiveTypeName.equals("float") || primitiveTypeName.equals(Float.class.getName()) ||
-			primitiveTypeName.equals(BigDecimal.class.getName()))
-			return REAL;
 		
+		if (clazz.isAssignableFrom(double.class) ||
+			clazz.isAssignableFrom(Double.class) ||
+			clazz.isAssignableFrom(float.class) ||
+			clazz.isAssignableFrom(Float.class) ||
+			clazz.isAssignableFrom(BigDecimal.class))
+			return REAL;
 		return NONE;
 	}
-
 }
