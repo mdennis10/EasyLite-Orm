@@ -88,6 +88,49 @@ public class DaoImplTest {
 		Assert.assertTrue(result);
 	}
 	
+	@Test public void batchCreateFailsWhenAnyInsertOperationFail (){
+		List<Note> notes = new ArrayList<Note>();
+		
+		Note note = new Note();
+		note.id = 1;
+		notes.add(note);
+		
+		Note note2 = new Note();
+		note2.id = 1;
+		notes.add(note2);//both elements have same primary key,therefore should fail
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		boolean isSuccessful = dao.batchCreate(notes);
+		Cursor cursor = db.rawQuery("SELECT * FROM Note WHERE id=?", new String[]{"1"});
+		Assert.assertFalse("Batch Create Did Not Fail",isSuccessful);
+		Assert.assertFalse("Batch Create Did Not Fail",cursor.moveToFirst());
+	}
+	
+	@Test public void batchCreateOverloadedMethodShouldCommitTest (){
+		List<Note> notes = new ArrayList<Note>();
+		Note note = new Note();
+		note.id = 1;
+		notes.add(note);
+		
+		Note note2 = new Note();
+		note2.id = 2;
+		notes.add(note2);
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		dao.batchCreate(notes, false);
+		Cursor cursor = db.query("Note", null, null, null, null, null, null);
+		while (cursor.moveToNext()){
+			Note actual = new Note();
+			actual.id = cursor.getInt(cursor.getColumnIndex("id"));
+			Assert.assertEquals(actual.id, notes.get(cursor.getPosition()).id);
+		}
+		
+		db.execSQL("DELETE FROM Note");
+		dao.batchCreate(notes, true);
+		cursor = db.query("Note", null, null, null, null, null, null);
+		Assert.assertTrue(cursor.moveToNext());
+	}
+	
 	@Test(expected = NullPointerException.class)
 	public void updateMethodThrowNullPointException (){
 		dbLite.getDao(Note.class).update(null,null,null);
@@ -223,6 +266,20 @@ public class DaoImplTest {
 		note.id = 1;
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
 		Assert.assertTrue("Note instance not found",dao.isExist(note));
+	}
+	
+	@Test public void findAllWithWhereClauseTest (){
+		ContentValues values = new ContentValues();
+		values.put("id", 1);
+		values.put("body", "text");
+		
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		List<Note> notes = dao.findAll("id=?", new String[]{"1"});
+		Assert.assertTrue("Empty List<Note> Returned",!notes.isEmpty());
+		Assert.assertEquals(1, notes.get(0).id);
 	}
 	
 	@After public void tearDown (){

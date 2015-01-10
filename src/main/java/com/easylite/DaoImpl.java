@@ -49,7 +49,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 	
-	public boolean batchCreate(List<E> entities) {
+	public boolean batchCreate(List<E> entities) throws EasyLiteSqlException {
 		boolean success = true;
 		try {
 			if (entities != null && !entities.isEmpty()){
@@ -60,14 +60,34 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 						break;
 					}
 				}
-				db.setTransactionSuccessful();
+				/*
+				 * Commit insert operations
+				 * only when all was successful
+				 */
+				if (success) 
+					db.setTransactionSuccessful(); 
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new EasyLiteSqlException(e);
 		}finally{
 			db.endTransaction();
 		}
 		return success;
+	}
+	
+	public void batchCreate(List<E> entities, boolean shouldCommit) {
+		try {
+			if (entities != null && !entities.isEmpty()){
+				db.beginTransaction();
+				for (E entity : entities)
+					create(entity);
+				db.setTransactionSuccessful(); 
+			}
+		} catch (SQLException e) {
+			throw new EasyLiteSqlException(e);
+		}finally{
+			db.endTransaction();
+		}
 	}
 	
 	
@@ -287,4 +307,27 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			values.put(name,date.getTime());	
 		}
 	}
+
+
+	public List<E> findAll(String whereClause, String[] whereArgs) throws EasyLiteSqlException {
+		List<E> results = new ArrayList<E>();
+		try {
+			Cursor cursor = db.rawQuery(String.format("SELECT * FROM %s WHERE %s", tableName,whereClause), whereArgs);
+			while (cursor.moveToNext()) {
+				E entity = type.newInstance();
+				Field[] fields = type.getDeclaredFields();
+				for (Field field : fields)
+					setEntityFields(cursor, field, entity);
+				results.add(entity);	
+			}
+		} catch (SQLException e) {
+			new EasyLiteSqlException(e);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return results;
+	}
+
 }

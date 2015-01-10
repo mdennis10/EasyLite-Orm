@@ -33,7 +33,15 @@ public interface Dao<K,E> {
 	 * @param entities
 	 * @return true when batch transactions succeeds, otherwise false
 	 */
-	public boolean batchCreate (List<E> entities);
+	public boolean batchCreate (List<E> entities) throws EasyLiteSqlException;
+	
+	
+	/**
+	 * Dispatch batch inserts to database.
+	 * @param entities
+	 * @param shouldCommit - indicate whether or not inserts should still be committed when a operation fails.
+	 */
+	public void batchCreate (List<E> entities, boolean shouldCommit) throws EasyLiteSqlException;
 	
 	
 	/**
@@ -83,6 +91,18 @@ public interface Dao<K,E> {
 	 * @return
 	 */
 	public List<E> findAll () throws EasyLiteSqlException;
+	
+	
+	/**
+	 * Find all records
+	 * @author Mario Dennis
+	 * @param whereClause
+	 * @param whereArgs
+	 * @return
+	 * @throws EasyLiteSqlException
+	 */
+	public List<E> findAll (String whereClause,String[] whereArgs) throws EasyLiteSqlException; 
+	
 	
 	/**
 	 * Get instance of SQLiteDatabase.
