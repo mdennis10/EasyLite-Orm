@@ -18,13 +18,13 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		for (Class<?> clazz : entityClasses)
-			new Table(db, clazz).createTable();
+			Table.createTable(db, clazz);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		for(Class<?> clazz : entityClasses)
-			new Table(db, clazz).dropTable();
+			Table.dropTable(db, clazz);
 	}
 
 }
