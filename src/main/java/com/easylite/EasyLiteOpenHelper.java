@@ -11,7 +11,8 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	public Set<Class<?>> entityClasses;
 
 	protected EasyLiteOpenHelper(Context context, String dbName,int version, Set<Class<?>> entityClasses) {
-		super(context,dbName,null,version);
+		super(context,ManifestUtil.getDatabaseName(context),null,
+			  ManifestUtil.getDatabaseVersion(context));
 		this.entityClasses = entityClasses;
 	}
 
