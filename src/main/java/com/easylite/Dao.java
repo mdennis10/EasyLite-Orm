@@ -15,6 +15,10 @@ import com.easylite.exception.EasyLiteSqlException;
  */
 public interface Dao<K,E> {
 
+	public boolean deleteAll ();
+	
+	public void deleteAll(String whereClause, String... whereArgs);
+	public int count ();
 	/**
 	 * Create new instance of record
 	 * @author Mario Dennis

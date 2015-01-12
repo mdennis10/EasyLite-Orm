@@ -20,7 +20,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.easylite.exception.NotEntityException;
 import com.easylite.model.Car;
 import com.easylite.model.Note;
 
@@ -49,11 +48,6 @@ public class DaoImplTest {
 		noteDao.create(null);
 	}
 	
-	@Test(expected = NotEntityException.class)
-	public void createMethodThrowNotEntityExceptionTest (){
-		Dao<Integer, String> strDao = dbLite.getDao(String.class);
-		strDao.create("entity");
-	}
 	
 	@Test public void createMethodTest (){
 		Note note = new Note();
@@ -107,7 +101,7 @@ public class DaoImplTest {
 	}
 	
 	
-	@Test public void CreateWhereNotExist (){
+	@Test public void batchCreateWhereNotExistTest (){
 		List<Note> notes = new ArrayList<Note>();
 		Note note = new Note();
 		note.id = 1;
