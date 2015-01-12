@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,7 +21,6 @@ import com.easylite.model.NoIdEntity;
 import com.easylite.model.Note;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class TableTest {
 
 	private SQLiteDatabase db;

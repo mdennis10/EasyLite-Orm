@@ -3,9 +3,7 @@ package com.easylite;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -13,18 +11,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.easylite.model.Car;
 import com.easylite.model.Note;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class DaoImplTest {
 	
 	private EasyLite dbLite;
@@ -33,12 +28,7 @@ public class DaoImplTest {
 	public DaoImplTest() {
 		Activity activity = Robolectric.buildActivity(Activity.class).create().get();
 		
-		this.dbLite = EasyLite.getInstance();
-		
-		Set<Class<?>> entityClasses = new HashSet<Class<?>>();
-		entityClasses.add(Note.class);
-		entityClasses.add(Car.class);
-		dbLite.initialize(activity, FakeDbAttributes.dbName, FakeDbAttributes.version,entityClasses);
+		this.dbLite = EasyLite.getInstance(activity);
 		db = dbLite.getDao(Note.class).getSqLiteDatabase();
 	}
 

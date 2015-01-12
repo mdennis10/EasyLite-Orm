@@ -37,7 +37,6 @@ public class ManifestUtil {
 	
 	private static String getMetaDataString(Context context, String name) {
 		String value = null;
-		
 		PackageManager pm = context.getPackageManager();
 		try {
 		    ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(),
@@ -52,7 +51,6 @@ public class ManifestUtil {
 	
 	 private static Integer getMetaDataInteger(Context context, String name) {
 		Integer value = null;
-		
 		PackageManager pm = context.getPackageManager();
 		try {
 		    ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(),

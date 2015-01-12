@@ -6,6 +6,7 @@ import java.util.Map;
 
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.easylite.annotation.GenerationType;
 import com.easylite.annotation.Id;
@@ -30,11 +31,15 @@ public final class Table {
 	 * @exception NotTableException
 	 */
 	protected static synchronized final void createTable (SQLiteDatabase db, Class<?> clazz) throws EasyLiteSqlException{
-		String sql = prepareCreateStatment(clazz);
 		try {
+			String sql = prepareCreateStatment(clazz);
 			db.execSQL(sql);
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
+		} catch (NoPrimaryKeyFoundException e){
+			Log.e("EasyLite", e.getMessage());
+		} catch (NotTableException e) {
+			Log.e("EasyLite", e.getMessage());
 		}
 	}
 	

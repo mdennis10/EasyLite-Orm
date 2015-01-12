@@ -32,7 +32,7 @@ public class ManifestUtilTest {
 	
 	@Test public void getModelPackageNameTest(){
 		String actual = ManifestUtil.getModelPackageName(context);
-		Assert.assertEquals("com.app.model", actual);
+		Assert.assertEquals("com.easylite.model", actual);
 	}
 	
 	@After public void tearDown (){

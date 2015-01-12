@@ -1,8 +1,8 @@
 package com.easylite;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -11,36 +11,32 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.easylite.EasyLiteOpenHelper;
 import com.easylite.model.Car;
 import com.easylite.model.Note;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class EasyLiteOpenHelperTest {
 	private SQLiteDatabase db;
-	private Set<Class<?>> entityClasses;
-	private Activity activity;
-	
+	private Activity context;
+	List<Class<?>> entityClasses;
 	@Before public void setUp (){
-		this.db = SQLiteDatabase.openOrCreateDatabase(new File(FakeDbAttributes.dbName),null);
-		this.activity = Robolectric.buildActivity(Activity.class).create().get();
+		this.context = Robolectric.buildActivity(Activity.class).create().get();
+		this.db = SQLiteDatabase.openOrCreateDatabase(new File(ManifestUtil.getDatabaseName(context)),null);
 		
-		this.entityClasses = new HashSet<Class<?>>();
+		entityClasses = new ArrayList<Class<?>>();
 		entityClasses.add(Note.class);
 		entityClasses.add(Car.class);
 	}
 	
 	
 	@Test public void onCreateTest (){
-		EasyLiteOpenHelper openHelper = new EasyLiteOpenHelper(activity, FakeDbAttributes.dbName,
-														   FakeDbAttributes.version,entityClasses);
+		EasyLiteOpenHelper openHelper = new EasyLiteOpenHelper(context, ManifestUtil.getDatabaseName(context),
+														       ManifestUtil.getDatabaseVersion(context));
 		openHelper.onCreate(db);
 		for (Class<?> clazz : entityClasses){
 			String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
@@ -50,9 +46,10 @@ public class EasyLiteOpenHelperTest {
 	}
 	
 	@Test public void onUpgradeTest (){
-		EasyLiteOpenHelper openHelper = new EasyLiteOpenHelper(activity, FakeDbAttributes.dbName,
-				   										   FakeDbAttributes.version,entityClasses);
-		openHelper.onUpgrade(db, FakeDbAttributes.version, FakeDbAttributes.version + 1);
+		EasyLiteOpenHelper openHelper = new EasyLiteOpenHelper(context, ManifestUtil.getDatabaseName(context),
+			       											   ManifestUtil.getDatabaseVersion(context));
+		int version = ManifestUtil.getDatabaseVersion(context);
+		openHelper.onUpgrade(db, version, version + 1);
 		for (Class<?> clazz : entityClasses){
 			String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
 			Cursor cursor = db.rawQuery(sql, new String[]{clazz.getSimpleName()});
