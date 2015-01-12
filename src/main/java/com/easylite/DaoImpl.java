@@ -154,7 +154,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 
 	
 	@Override
-	public int update(E entity,String whereClause,String[] whereArgs) throws EasyLiteSqlException{
+	public int update(E entity,String whereClause,String... whereArgs) throws EasyLiteSqlException{
 		if (entity == null)
 			throw new NullPointerException("null Entity Supplied");
 		

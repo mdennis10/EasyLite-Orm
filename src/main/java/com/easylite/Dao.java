@@ -15,10 +15,15 @@ import com.easylite.exception.EasyLiteSqlException;
  */
 public interface Dao<K,E> {
 
-	public boolean deleteAll ();
-	
-	public void deleteAll(String whereClause, String... whereArgs);
+	/**
+	 * Count number of records that exist
+	 * in table
+	 * @author Mario Dennis
+	 * @return amount of records that exist
+	 */
 	public int count ();
+	
+	
 	/**
 	 * Create new instance of record
 	 * @author Mario Dennis
@@ -49,13 +54,29 @@ public interface Dao<K,E> {
 	
 	
 	/**
-	 * Delete record from database
+	 * Delete a record from database
 	 * @author Mario Dennis
-	 * @param entity
+	 * @param entity to delete
 	 * @exception EasyLiteSqlException
 	 * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and get a count pass "1" as the whereClause.
 	 */
 	public int delete (E entity) throws EasyLiteSqlException;
+	
+	/**
+	 * Delete all records from database
+	 * @author Mario Dennis
+	 * @return true when operation is successful, otherwise returns false
+	 */
+    public boolean deleteAll ();
+	
+    
+    /**
+     * Delete records where condition is true
+     * @author Mario Dennis
+     * @param whereClause
+     * @param whereArgs
+     */
+	public void deleteAll(String whereClause, String... whereArgs);
 	
 	
 	/**
@@ -65,7 +86,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException
 	 * @return the number of rows affected
 	 */
-	public int update (E entity,String whereClause,String[] whereArgs) throws EasyLiteSqlException;
+	public int update (E entity,String whereClause,String... whereArgs) throws EasyLiteSqlException;
 	
 	
 	/**
