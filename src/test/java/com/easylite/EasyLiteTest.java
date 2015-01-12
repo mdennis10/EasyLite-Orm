@@ -27,16 +27,11 @@ public class EasyLiteTest {
 	}
 	
 	@Test public void sameInstanceIsReturnedTest (){
-		EasyLite ormDroid  = EasyLite.getInstance (context);
-		EasyLite ormDroid2 = EasyLite.getInstance (context);
+		EasyLite easyLite1  = EasyLite.getInstance (context);
+		EasyLite easyLite2 = EasyLite.getInstance (context);
 		
-		Assert.assertTrue(ormDroid.equals(ormDroid2));
-		Assert.assertEquals(ormDroid.hashCode(), ormDroid2.hashCode());
-	}
-	
-	@Test public void initializePropertiesAreRetreivableTest (){		
-		Assert.assertEquals(ManifestUtil.getDatabaseName(context), easyLite.dbName);
-		Assert.assertEquals(ManifestUtil.getDatabaseVersion(context), easyLite.version);
+		Assert.assertTrue(easyLite1.equals(easyLite2));
+		Assert.assertEquals(easyLite1.hashCode(), easyLite2.hashCode());
 	}
 	
 	@Test public void instanceOfDaoIsReturnTest (){

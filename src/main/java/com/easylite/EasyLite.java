@@ -4,15 +4,10 @@ import android.content.Context;
 
 public final class EasyLite {
 	private static EasyLite INSTANCE;
-	
-	protected final int version;
-	protected final String dbName; 
 	protected final EasyLiteOpenHelper openHelper;
 	
 	private EasyLite(Context context) {
-		this.dbName  = ManifestUtil.getDatabaseName(context);
-		this.version = ManifestUtil.getDatabaseVersion(context);
-		this.openHelper = new EasyLiteOpenHelper(context, this.dbName, this.version);
+		this.openHelper = new EasyLiteOpenHelper(context,ManifestUtil.getDatabaseName(context),ManifestUtil.getDatabaseVersion(context));
 	}
 	
 	

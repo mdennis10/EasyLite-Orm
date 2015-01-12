@@ -59,7 +59,12 @@ public final class Table {
 		}
 	}
 	
-	
+	/**
+	 * Prepare SQL statement to create table
+	 * @author Mario Dennis
+	 * @param clazz
+	 * @return sql statement
+	 */
 	private static String prepareCreateStatment (Class<?> clazz){	
 		String tableName = getTableName(clazz);
 		Map<String, String> keys = getTableKeys(clazz);
@@ -86,6 +91,14 @@ public final class Table {
 		return sql.append(")").toString();
 	}
 
+	
+	/**
+	 * Get GenerationStrategy utilized by entity class
+	 * @author Mario Dennis
+	 * @param clazz
+	 * @param primaryKey
+	 * @return GenerationType
+	 */
 	protected final static GenerationType getGenerationStrategy (Class<?> clazz,String primaryKey){
 		try {
 			Field field = clazz.getField(primaryKey);
@@ -100,6 +113,13 @@ public final class Table {
 	}
 	
 
+	/**
+	 * Get table name of domain entity
+	 * @author Mario Dennis
+	 * @param clazz
+	 * @throws NotTableException
+	 * @return tableName
+	 */
 	protected final static String getTableName (Class<?> clazz){
 		com.easylite.annotation.Table annotation = clazz.getAnnotation(com.easylite.annotation.Table.class);
 		if (annotation == null)
@@ -108,6 +128,13 @@ public final class Table {
 	}
 	
 
+	/**
+	 * Get information about table keys of entity class
+	 * @author Mario Dennis
+	 * @throws NoPrimaryKeyFoundException
+	 * @param clazz
+	 * @return keys
+	 */
 	protected final static Map<String, String> getTableKeys(Class<?> clazz) {
 		Map<String, String> keys = new HashMap<String, String>();
 		Field[] fields = clazz.getDeclaredFields();
@@ -121,6 +148,12 @@ public final class Table {
 	}
 	
 	
+	/**
+	 * Get table columns
+	 * @author Mario Dennis
+	 * @param clazz
+	 * @return List of all table columns
+	 */
 	protected final static Map<String, String> getTableColumns (Class<?> clazz){
 		Map<String, String> columns = new HashMap<String, String>();
 		for (Field field : clazz.getDeclaredFields()) {

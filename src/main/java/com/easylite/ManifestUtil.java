@@ -12,6 +12,11 @@ public class ManifestUtil {
 	public final static String METADATA_MODEL_PACKAGE_NAME = "MODEL_PACKAGE_NAME";
 	private static final String DEFAULT_DATABASE = "easylite.db";
 	
+	/**
+	 * Get database version 
+	 * @param context
+	 * @return  1 when none is defined within manifest
+	 */
 	public static int getDatabaseVersion (Context context){
 		Integer version = getMetaDataInteger(context, METADATA_VERSION);
 		if (version == null || version == 0)
@@ -20,6 +25,12 @@ public class ManifestUtil {
 	}
 	
 	
+	/**
+	 * Get database name
+	 * @author Mario Dennis
+	 * @param context
+	 * @retur default database name when none is defined
+	 */
 	public static String getDatabaseName (Context context){
 		String databaseName = getMetaDataString(context, METADATA_DATABASE);
 		if (databaseName == null)
@@ -28,6 +39,12 @@ public class ManifestUtil {
 			return databaseName;
 	}
 	
+	/**
+	 * Get package name of domain entity classes
+	 * @author Mario Dennis
+	 * @param context
+	 * @return empty when not defined in manifest
+	 */
 	public static String getModelPackageName (Context context){
 		String packageName = getMetaDataString(context, METADATA_MODEL_PACKAGE_NAME);
 		if (packageName == null)
@@ -35,6 +52,9 @@ public class ManifestUtil {
 		return packageName;
 	}
 	
+	/*
+	 * Get MetaData from Manifest file
+	 */
 	private static String getMetaDataString(Context context, String name) {
 		String value = null;
 		PackageManager pm = context.getPackageManager();
@@ -43,13 +63,16 @@ public class ManifestUtil {
 		            								    PackageManager.GET_META_DATA);
 		    value = ai.metaData.getString(name);
 		} catch (Exception e) {
-		    Log.d("easylite", "Couldn't find config value: " + name);
+		    Log.d("EasyLite", "Couldn't find config value: " + name);
 		}
 		
 		return value;
     }
 	
-	 private static Integer getMetaDataInteger(Context context, String name) {
+	/*
+	 * Get MetaData from Manifest File
+	 */
+	private static Integer getMetaDataInteger(Context context, String name) {
 		Integer value = null;
 		PackageManager pm = context.getPackageManager();
 		try {
@@ -57,7 +80,7 @@ public class ManifestUtil {
 		            								   PackageManager.GET_META_DATA);
 		    value = ai.metaData.getInt(name);
 		} catch (Exception e) {
-		    Log.d("easylite", "Couldn't find config value: " + name);
+		    Log.d("EasyLite", "Couldn't find config value: " + name);
 		}
 		return value;
 	}

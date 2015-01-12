@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.easylite.annotation.Id;
 import com.easylite.exception.EasyLiteSqlException;
@@ -41,9 +42,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		}
 		return -1;
 	}
@@ -144,9 +145,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		}
 		return 0;
 	}
@@ -167,9 +168,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		} catch (SQLException e){
 			throw new EasyLiteSqlException(e);
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		}
 		return 0;
 	}
@@ -196,9 +197,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		} catch (SQLException e){
 			throw new EasyLiteSqlException(e);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		}
 		return null;
 	}
@@ -218,11 +219,11 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		} catch(SQLException e){
 			throw new EasyLiteSqlException(e);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		}
 		return results;
 	}
@@ -247,9 +248,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		} catch (SQLException e) {
 			new EasyLiteSqlException(e);
 		} catch (InstantiationException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		}
 		return results;
 	}
@@ -367,7 +368,5 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			values.put(name,date.getTime());	
 		}
 	}
-
-
 
 }
