@@ -17,27 +17,30 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
-	private final Context context;
+	private Set<Class<?>> entityClasses;
 	protected EasyLiteOpenHelper(Context context, String dbName,int version) {
 		super(context,dbName,null,version);
-		this.context = context;
+		this.entityClasses = getDomainClasses(context);
 	}
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		Set<Class<?>> entityClasses = getDomainClasses(context);
 		for (Class<?> clazz : entityClasses)
 			Table.createTable(db, clazz);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		Set<Class<?>> entityClasses = getDomainClasses(context);
 		for(Class<?> clazz : entityClasses)
 			Table.dropTable(db, clazz);
 	}
 
-	
+	/**
+	 * Get Domain Entity Classes
+	 * @author Mario
+	 * @param context
+	 * @return Set<Class<?>>
+	 */
 	public static Set<Class<?>> getDomainClasses(Context context) {
         Set<Class<?>> domainClasses = new HashSet<Class<?>>();
         try {
@@ -56,6 +59,13 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
         return domainClasses;
     }
 	
+	/**
+	 * Get Domain class
+	 * @author Mario Dennis
+	 * @param className
+	 * @param context
+	 * @return Class<?>
+	 */
 	 private static Class<?> getDomainClass(String className, Context context) {
 		Class<?> discoveredClass = null;
 		try {
@@ -68,7 +78,15 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 		return null;
 	}
 	 
-	 private static List<String> getAllClasses(Context context) throws PackageManager.NameNotFoundException, IOException {
+	/**
+	 * Get All classes 
+	 * @author Mario Dennis
+	 * @param context
+	 * @return
+	 * @throws PackageManager.NameNotFoundException
+	 * @throws IOException
+	 */
+	private static List<String> getAllClasses(Context context) throws PackageManager.NameNotFoundException, IOException {
 		String path = getSourcePath(context);
 		List<String> classNames = new ArrayList<String>();
 		try {
