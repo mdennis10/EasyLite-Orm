@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import com.easylite.annotation.Id;
@@ -61,11 +62,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 						break;
 					}
 				}
-				/*
-				 * Commit insert operations
-				 * only when all was successful
-				 */
-				if (success) 
+				if (success) //commits when all transactions successful
 					db.setTransactionSuccessful(); 
 			}
 		} catch (SQLException e) {
@@ -77,55 +74,99 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 	@Override
-	public int batchCreateWhereNotExist(List<E> entities) throws EasyLiteSqlException{
+	public int batchCreateOverridable(List<E> entities) throws EasyLiteSqlException{
 		int numInserted = 0;
 		try {
 			if (entities != null && !entities.isEmpty()){
 				StringBuilder sql = new StringBuilder();
+				String pKeyName = tableKeys.get(Table.P_KEY_NAME);
+				sql.append("INSERT OR REPLACE INTO ")
+				   .append(tableName)
+				   .append(" (")
+				   .append(pKeyName);
+				
+				Map<String, String> columns = Table.getTableColumns(type);
+				for (String column : columns.keySet())
+					sql.append(",")
+					   .append(column);
+				
+				sql.append(") VALUES (?");
+				int size = columns.size();
+				for (int x = 0; x < size;x++)
+					sql.append(",?");
+				
+				sql.append(")");
 				db.beginTransaction();
 				for (E entity : entities){
-					createInsertQuery (sql,entity);
-					createInsertWhereClauseForPrimaryKey(sql,entity);
-					
-					db.execSQL(sql.toString());
+					SQLiteStatement statement = db.compileStatement(sql.toString());
+					String[] args = bindArgs (statement,entity,columns);
+					statement.bindAllArgsAsStrings(args);
+					statement.executeInsert();
 					++numInserted;
 				}
 				db.setTransactionSuccessful();
 			}
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
+		} catch (IllegalArgumentException e) {
+			Log.e("EasyLite", e.getMessage());
+		} catch (IllegalAccessException e) {
+			Log.e("EasyLite", e.getMessage());
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
 		}finally{
 			db.endTransaction();
 		}
 		return numInserted;
 	}
 	
-	private void createInsertWhereClauseForPrimaryKey(StringBuilder sql,E entity) {
-		
+
+	private String[] bindArgs(SQLiteStatement statement, E entity,Map<String, String> columns) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+		Object pKeyRaw = getFieldValue(type.getDeclaredField(tableKeys.get(Table.P_KEY_NAME)), entity);
+		String pKey = ConverterUtil.toString(pKeyRaw.getClass(), pKeyRaw);
+		String[] args = new String[columns.size() + 1];
+		int position = 0;
+		args[position] = pKey;
+		for (String column : columns.keySet()){
+			Field field = type.getDeclaredField(column);
+			String val = ConverterUtil.toString(field.getType(), field.get(entity));
+			args[++position] = val;
+		}
+		return args;
 	}
 
-
-	private void createInsertQuery(StringBuilder sql, E entity) {
-		
+	public Object getFieldValue (Field field, E entity) throws IllegalArgumentException, IllegalAccessException{
+		Class<?> type = field.getType();
+		if (type.equals(Date.class)){
+			Date date = (Date) field.get(entity);
+			return (date != null) ?  Long.toString(date.getTime()) : null;
+		}
+		if (type.isAssignableFrom(boolean.class) || type.equals(Boolean.class)){
+			return (field.getBoolean(entity)) ? 1 : 0;
+		}
+		return field.get(entity);
+	}
+	
+	@Override
+	public int deleteAll() throws EasyLiteSqlException{
+		try {
+			return db.delete(tableName, null, new String[]{});
+		} catch (SQLException e) {
+			throw new EasyLiteSqlException(e);
+		}
 	}
 
 	@Override
-	public boolean deleteAll() {
-		// TODO Auto-generated method stub
-		return false;
+	public int deleteAll(String whereClause, String... whereArgs) throws EasyLiteSqlException{
+		try {
+			return db.delete(tableName, whereClause, whereArgs);
+		} catch (SQLException e) {
+			throw new EasyLiteSqlException(e);
+		}
 	}
 
-	@Override
-	public void deleteAll(String whereClause, String... whereArgs) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public int count() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 	
 	
 	@Override
@@ -258,24 +299,27 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	
 	@Override
 	public boolean isExist(E entity) throws EasyLiteSqlException {
-		Field[] fields = type.getDeclaredFields();
-		String key = "";
+		String pKeyName = tableKeys.get(Table.P_KEY_NAME);
+		String pkey = "";
 		try {
-			for (Field field : fields)
-				if (field.getAnnotation(Id.class) != null)
-					key = ConverterUtil.toString(type, field.get(entity));
+			Field field = type.getDeclaredField(pKeyName);
+			pkey = ConverterUtil.toString(type, field.get(entity));
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
+		} catch (NoSuchFieldException e) {
+			Log.e("EasyLite", e.getMessage());
+		} catch (SecurityException e) {
+			Log.e("EasyLite", e.getMessage());
 		}
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM ")
 		   .append(tableName)
 		   .append(" WHERE ")
-		   .append(tableKeys.get(Table.P_KEY_NAME))
+		   .append(pKeyName)
 		   .append("=?");
-		Cursor cursor = db.rawQuery(sql.toString(), new String[]{key});
+		Cursor cursor = db.rawQuery(sql.toString(), new String[]{pkey});
 		return cursor.moveToFirst();
 	}
 

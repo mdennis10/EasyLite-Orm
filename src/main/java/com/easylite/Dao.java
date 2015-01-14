@@ -13,16 +13,7 @@ import com.easylite.exception.EasyLiteSqlException;
  * @param <K> primary key 
  * @param <E> database entity
  */
-public interface Dao<K,E> {
-
-	/**
-	 * Count number of records that exist
-	 * in table
-	 * @author Mario Dennis
-	 * @return amount of records that exist
-	 */
-	public int count ();
-	
+public interface Dao<K,E> {	
 	
 	/**
 	 * Create new instance of record
@@ -47,10 +38,12 @@ public interface Dao<K,E> {
 	
 	
 	/**
+	 * Dispatch batch insert where rows are overwritten 
+	 * where already exist.
 	 * @author Mario Dennis
 	 * @return number of elements inserted successfully 
 	 */
-	public int batchCreateWhereNotExist (List<E> entities);
+	public int batchCreateOverridable (List<E> entities);
 	
 	
 	/**
@@ -62,12 +55,13 @@ public interface Dao<K,E> {
 	 */
 	public int delete (E entity) throws EasyLiteSqlException;
 	
+	
 	/**
 	 * Delete all records from database
 	 * @author Mario Dennis
-	 * @return true when operation is successful, otherwise returns false
+	 * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and get a count pass "1" as the whereClause.
 	 */
-    public boolean deleteAll ();
+    public int deleteAll ();
 	
     
     /**
@@ -75,8 +69,9 @@ public interface Dao<K,E> {
      * @author Mario Dennis
      * @param whereClause
      * @param whereArgs
+     * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and get a count pass "1" as the whereClause.
      */
-	public void deleteAll(String whereClause, String... whereArgs);
+	public int deleteAll(String whereClause, String... whereArgs);
 	
 	
 	/**

@@ -98,27 +98,57 @@ public class DaoImplTest {
 		note.author = "john doe";
 		notes.add(note);
 		
-	
 		Note note2 = new Note();
-		note2.id = 1;
+		note2.id = 2;
 		note2.author = "jane doe";
 		notes.add(note2);
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		int numInserted = dao.batchCreateWhereNotExist(notes);
-		Assert.assertEquals(1, numInserted);
+		int numInserted = dao.batchCreateOverridable(notes);
+		Assert.assertEquals(2, numInserted);
 		
 		Cursor cursor = db.query("Note", null, null, null, null, null, null);
 		numInserted = 0;
 		while (cursor.moveToNext())
 			++numInserted;
-		Assert.assertEquals(1, numInserted);
+		Assert.assertEquals(2, numInserted);
+	}
+	
+	@Test public void deleteAll (){
+		ContentValues values = new ContentValues();
+		values.put("id", 4);
+		values.put("body", "text");
+		values.put("author", "john doe");
+		values.put("date", new Date().toString());
+		values.put("sent", true);
+		
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue("Insertion failed", id > 0);
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		int rowsAffected = dao.deleteAll();
+		Assert.assertEquals(1, rowsAffected);
 	}
 	
 	
+	@Test public void deleteAllWhereArgsTest (){
+		ContentValues values = new ContentValues();
+		values.put("id", 4);
+		values.put("body", "text");
+		values.put("author", "john doe");
+		values.put("date", new Date().toString());
+		values.put("sent", true);
+		
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue("Insertion failed", id > 0);
+		
+		int rowsAffected = dbLite.getDao(Note.class).deleteAll("id=?", new String[]{"4"});
+		Assert.assertEquals(1, rowsAffected);
+	}
+	
 	@Test(expected = NullPointerException.class)
 	public void updateMethodThrowNullPointException (){
-		dbLite.getDao(Note.class).update(null,null,null);
+		dbLite.getDao(Note.class).update(null,null,new String[]{});
 	}
 	
 	@Test public void updateMethodTest (){
