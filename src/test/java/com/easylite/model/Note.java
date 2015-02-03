@@ -2,10 +2,10 @@ package com.easylite.model;
 
 import java.util.Date;
 
-import com.easylite.annotation.Table;
+import com.easylite.annotation.Entity;
 import com.easylite.annotation.Id;
 
-@Table(name = "Note")
+@Entity(name = "Note")
 public class Note {
 	@Id
 	public int id;

@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import com.easylite.annotation.OrderByType;
 import com.easylite.exception.EasyLiteSqlException;
 
 /**
@@ -18,8 +19,8 @@ public interface Dao<K,E> {
 	/**
 	 * Create new instance of record
 	 * @author Mario Dennis
-	 * @param entity
-	 * @exception EasyLiteSqlException
+	 * @param entity instance to save.
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the row ID of the newly inserted row, or -1 if an error occurred
 	 */
 	public long create (E entity) throws EasyLiteSqlException;
@@ -30,7 +31,8 @@ public interface Dao<K,E> {
 	 * Because this method is transactional if any
 	 * insert operation fail all fails.
 	 * @author Mario Dennis
-	 * @param entities
+	 * @param entities objects that should be saved
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return true when batch transactions succeeds, otherwise false
 	 */
 	public boolean batchCreate (List<E> entities) throws EasyLiteSqlException;
@@ -38,20 +40,21 @@ public interface Dao<K,E> {
 	
 	
 	/**
-	 * Dispatch batch insert where rows are overwritten 
-	 * where already exist.
-	 * @author Mario Dennis
-	 * @return number of elements inserted successfully 
+	 * Dispatch batch insert. This method overwrites records 
+	 * that already exist.
+	 * @author Mario Dennis 
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @param entities objects that should be saved
 	 */
-	public int batchCreateOverridable (List<E> entities);
+	public void batchCreateOverridable (List<E> entities) throws EasyLiteSqlException;
 	
 	
 	/**
 	 * Delete a record from database
 	 * @author Mario Dennis
-	 * @param entity to delete
-	 * @exception EasyLiteSqlException
-	 * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and get a count pass "1" as the whereClause.
+	 * @param entity to delete from database
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return the number of rows affected 
 	 */
 	public int delete (E entity) throws EasyLiteSqlException;
 	
@@ -59,26 +62,30 @@ public interface Dao<K,E> {
 	/**
 	 * Delete all records from database
 	 * @author Mario Dennis
-	 * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and get a count pass "1" as the whereClause.
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return the number of rows affected.
 	 */
-    public int deleteAll ();
+    public int deleteAll () throws EasyLiteSqlException;
 	
     
     /**
-     * Delete records where condition is true
+     * Delete records with give where condition.
      * @author Mario Dennis
-     * @param whereClause
-     * @param whereArgs
+     * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+     * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
+     * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
      * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and get a count pass "1" as the whereClause.
      */
-	public int deleteAll(String whereClause, String... whereArgs);
+	public int deleteAll(String whereClause, String... whereArgs) throws EasyLiteSqlException;
 	
 	
 	/**
 	 * Update database record
 	 * @author Mario Dennis
-	 * @param entity
-	 * @exception EasyLiteSqlException
+	 * @param entity entity to update. This entity should contain corresponding primary key value of record in database
+	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
+     * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the number of rows affected
 	 */
 	public int update (E entity,String whereClause,String... whereArgs) throws EasyLiteSqlException;
@@ -87,9 +94,9 @@ public interface Dao<K,E> {
 	/**
 	 * Find record by primary key
 	 * @author Mario Dennis
-	 * @param key - primary key
-	 * @exception EasyLiteSqlException
-	 * @return E record
+	 * @param key - primary key value
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return E entity record
 	 */
 	public E findById (K key) throws EasyLiteSqlException;
 	
@@ -97,9 +104,9 @@ public interface Dao<K,E> {
 	/**
 	 * Check if record exist
 	 * @author Mario Dennis
-	 * @param entity
-	 * @exception EasyLiteSqlException
-	 * @return
+	 * @param entity to check if exist. Must contain the primary key of corresponding record
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return true when batch transactions succeeds, otherwise false
 	 */
 	public boolean isExist (E entity) throws EasyLiteSqlException;
 	
@@ -107,8 +114,8 @@ public interface Dao<K,E> {
 	/**
 	 * Find all records
 	 * @author Mario Dennis
-	 * @exception EasyLiteSqlException
-	 * @return
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return List of all records
 	 */
 	public List<E> findAll () throws EasyLiteSqlException;
 	
@@ -116,12 +123,14 @@ public interface Dao<K,E> {
 	/**
 	 * Find all records
 	 * @author Mario Dennis
-	 * @param whereClause
-	 * @param whereArgs
-	 * @return
-	 * @throws EasyLiteSqlException
+	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
+     * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
+	 * @param orderBy How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER BY itself). Passing null will use the default sort order, which may be unordered.
+	 * @param orderByType specifies the order data will be returned based on orderBy column. Defaults to ASC when null.
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return List of all records
 	 */
-	public List<E> findAll (String whereClause,String[] whereArgs) throws EasyLiteSqlException; 
+	public List<E> findAll (String whereClause,String[] whereArgs,String orderBy,OrderByType orderByType) throws EasyLiteSqlException; 
 	
 	
 	/**

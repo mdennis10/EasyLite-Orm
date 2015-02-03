@@ -8,6 +8,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.easylite.annotation.Entity;
 import com.easylite.annotation.GenerationType;
 import com.easylite.annotation.Id;
 import com.easylite.exception.EasyLiteSqlException;
@@ -24,11 +25,11 @@ public final class Table {
 	/**
 	 * Create a database table 
 	 * @author Mario Dennis
-	 * @param db
-	 * @param clazz
-	 * @exception EasyLiteSqlException
-	 * @exception NoPrimaryKeyFoundException
-	 * @exception NotTableException
+	 * @param db instance
+	 * @param clazz type of entity
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @exception NoPrimaryKeyFoundException when no primary key annotation found on entity class
+	 * @exception NotTableException when no table annotation found on entity class
 	 */
 	protected static synchronized final void createTable (SQLiteDatabase db, Class<?> clazz) throws EasyLiteSqlException{
 		try {
@@ -47,9 +48,9 @@ public final class Table {
 	/**
 	 * Drop a database table
 	 * @author Mario Dennis
-	 * @param db
-	 * @param table class to drop
-	 * @exception EasyLiteSqlException
+	 * @param db instance
+	 * @param clazz type of entity
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 */
 	protected static synchronized final void dropTable (SQLiteDatabase db,Class<?> clazz) throws EasyLiteSqlException{
 		try {
@@ -62,7 +63,7 @@ public final class Table {
 	/**
 	 * Prepare SQL statement to create table
 	 * @author Mario Dennis
-	 * @param clazz
+	 * @param clazz type of entity
 	 * @return sql statement
 	 */
 	private static String prepareCreateStatment (Class<?> clazz){	
@@ -95,9 +96,9 @@ public final class Table {
 	/**
 	 * Get GenerationStrategy utilized by entity class
 	 * @author Mario Dennis
-	 * @param clazz
-	 * @param primaryKey
-	 * @return GenerationType
+	 * @param clazz type of entity
+	 * @param primaryKey field name
+	 * @return GenerationType strategy
 	 */
 	protected final static GenerationType getGenerationStrategy (Class<?> clazz,String primaryKey){
 		try {
@@ -116,12 +117,12 @@ public final class Table {
 	/**
 	 * Get table name of domain entity
 	 * @author Mario Dennis
-	 * @param clazz
-	 * @throws NotTableException
-	 * @return tableName
+	 * @param clazz type of entity
+	 * @throws NotTableException when no table annotation found on entity class
+	 * @return tableName of entity class
 	 */
 	protected final static String getTableName (Class<?> clazz){
-		com.easylite.annotation.Table annotation = clazz.getAnnotation(com.easylite.annotation.Table.class);
+		Entity annotation = clazz.getAnnotation(Entity.class);
 		if (annotation == null)
 			throw new NotTableException();
 		return (!annotation.name().isEmpty()) ? annotation.name() : clazz.getSimpleName();
@@ -131,9 +132,9 @@ public final class Table {
 	/**
 	 * Get information about table keys of entity class
 	 * @author Mario Dennis
-	 * @throws NoPrimaryKeyFoundException
-	 * @param clazz
-	 * @return keys
+	 * @exception NoPrimaryKeyFoundException when no primary key annotation found on entity class
+	 * @param clazz type of entity
+	 * @return table keys
 	 */
 	protected final static Map<String, String> getTableKeys(Class<?> clazz) {
 		Map<String, String> keys = new HashMap<String, String>();
@@ -151,8 +152,8 @@ public final class Table {
 	/**
 	 * Get table columns
 	 * @author Mario Dennis
-	 * @param clazz
-	 * @return List of all table columns
+	 * @param clazz type of entity
+	 * @return Map of all table columns except primary key column
 	 */
 	protected final static Map<String, String> getTableColumns (Class<?> clazz){
 		Map<String, String> columns = new HashMap<String, String>();

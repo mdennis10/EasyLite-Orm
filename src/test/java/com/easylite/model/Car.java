@@ -1,10 +1,10 @@
 package com.easylite.model;
 
-import com.easylite.annotation.Table;
+import com.easylite.annotation.Entity;
 import com.easylite.annotation.GenerationType;
 import com.easylite.annotation.Id;
 
-@Table
+@Entity
 public class Car {
 	@Id(strategy = GenerationType.AUTO)
 	public Integer id;

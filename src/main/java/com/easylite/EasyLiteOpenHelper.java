@@ -9,12 +9,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import dalvik.system.DexFile;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import com.easylite.annotation.Entity;
+
+import dalvik.system.DexFile;
 
 public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	private Set<Class<?>> entityClasses;
@@ -38,8 +41,8 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	/**
 	 * Get Domain Entity Classes
 	 * @author Mario
-	 * @param context
-	 * @return Set<Class<?>>
+	 * @param context android
+	 * @return Set of entity classes
 	 */
 	public static Set<Class<?>> getDomainClasses(Context context) {
         Set<Class<?>> domainClasses = new HashSet<Class<?>>();
@@ -62,15 +65,15 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	/**
 	 * Get Domain class
 	 * @author Mario Dennis
-	 * @param className
-	 * @param context
-	 * @return Class<?>
+	 * @param className for class
+	 * @param context android
+	 * @return Class entity class or null if not a entity class
 	 */
 	 private static Class<?> getDomainClass(String className, Context context) {
 		Class<?> discoveredClass = null;
 		try {
 		    discoveredClass = Class.forName(className, true, context.getClass().getClassLoader());
-			if (discoveredClass != null && discoveredClass.isAnnotationPresent(com.easylite.annotation.Table.class))
+			if (discoveredClass != null && discoveredClass.isAnnotationPresent(Entity.class))
 			    return discoveredClass;    
 		} catch (ClassNotFoundException e) {
 		    Log.e("EasyLite", e.getMessage());
@@ -81,8 +84,8 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	/**
 	 * Get All classes 
 	 * @author Mario Dennis
-	 * @param context
-	 * @return
+	 * @param context android
+	 * @return List of all classes
 	 * @throws PackageManager.NameNotFoundException
 	 * @throws IOException
 	 */

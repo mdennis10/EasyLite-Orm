@@ -1,7 +1,7 @@
 package com.easylite.model;
 
-import com.easylite.annotation.Table;
+import com.easylite.annotation.Entity;
 
-@Table
+@Entity
 public class NoIdEntity {
 }

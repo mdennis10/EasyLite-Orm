@@ -17,6 +17,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.easylite.annotation.OrderByType;
 import com.easylite.model.Note;
 
 @RunWith(RobolectricTestRunner.class)
@@ -104,11 +105,11 @@ public class DaoImplTest {
 		notes.add(note2);
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		int numInserted = dao.batchCreateOverridable(notes);
-		Assert.assertEquals(2, numInserted);
+		dao.batchCreateOverridable(notes);
+
 		
 		Cursor cursor = db.query("Note", null, null, null, null, null, null);
-		numInserted = 0;
+		int numInserted = 0;
 		while (cursor.moveToNext())
 			++numInserted;
 		Assert.assertEquals(2, numInserted);
@@ -292,9 +293,30 @@ public class DaoImplTest {
 		Assert.assertTrue("Note instance not created",id > 0);
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		List<Note> notes = dao.findAll("id=?", new String[]{"1"});
+		List<Note> notes = dao.findAll("id=?", new String[]{"1"},null,null);
 		Assert.assertTrue("Empty List<Note> Returned",!notes.isEmpty());
 		Assert.assertEquals(1, notes.get(0).id);
+	}
+	
+	@Test public void findAllOrderByTest (){
+		ContentValues values = new ContentValues();
+		values.put("id", 11);
+		values.put("body", "text");
+		values.put("date", new Date().getTime());
+		
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+		
+		values.put("id", 15);
+		values.put("date", new Date().getTime());
+		long id2 = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		List<Note> notes = dao.findAll(null, null,"date",OrderByType.ASC);
+		Assert.assertTrue("Empty List<Note> Returned",!notes.isEmpty());
+		Assert.assertEquals(id, notes.get(0).id);
+		Assert.assertEquals(id2, notes.get(1).id);
 	}
 	
 	@After public void tearDown (){

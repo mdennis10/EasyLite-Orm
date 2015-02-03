@@ -14,7 +14,8 @@ public final class EasyLite {
 	/**
 	 * Gets Singleton instance of EasyLite
 	 * @author Mario Dennis
-	 * @return OrmDroid
+	 * @param context android 
+	 * @return singleton instance of EasyLite
 	 */
 	public synchronized static EasyLite getInstance(Context context) {
 		if (INSTANCE == null){
@@ -27,8 +28,8 @@ public final class EasyLite {
 	/**
 	 * Gets Dao for database entity 
 	 * @author Mario Dennis
-	 * @param clazz
-	 * @return Dao<K, E>
+	 * @param  type of DAO
+	 * @return Dao instance
 	 */
 	public final <K,E> Dao<K, E> getDao (Class<E> type) {
 		return new DaoImpl<K, E>(openHelper,type);

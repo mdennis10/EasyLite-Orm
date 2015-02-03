@@ -14,7 +14,8 @@ public class ManifestUtil {
 	
 	/**
 	 * Get database version 
-	 * @param context
+	 * @author Mario Dennis
+	 * @param context android
 	 * @return  1 when none is defined within manifest
 	 */
 	public static int getDatabaseVersion (Context context){
@@ -28,8 +29,8 @@ public class ManifestUtil {
 	/**
 	 * Get database name
 	 * @author Mario Dennis
-	 * @param context
-	 * @retur default database name when none is defined
+	 * @param context context
+	 * @return databaseName or default when none is defined
 	 */
 	public static String getDatabaseName (Context context){
 		String databaseName = getMetaDataString(context, METADATA_DATABASE);
@@ -42,7 +43,7 @@ public class ManifestUtil {
 	/**
 	 * Get package name of domain entity classes
 	 * @author Mario Dennis
-	 * @param context
+	 * @param context android
 	 * @return empty when not defined in manifest
 	 */
 	public static String getModelPackageName (Context context){

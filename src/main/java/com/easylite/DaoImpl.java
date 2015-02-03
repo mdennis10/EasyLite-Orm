@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import com.easylite.annotation.Id;
+import com.easylite.annotation.OrderByType;
 import com.easylite.exception.EasyLiteSqlException;
 
 public final class DaoImpl<K,E> implements Dao<K, E>{
@@ -74,8 +75,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 	@Override
-	public int batchCreateOverridable(List<E> entities) throws EasyLiteSqlException{
-		int numInserted = 0;
+	public synchronized void batchCreateOverridable(List<E> entities) throws EasyLiteSqlException{
 		try {
 			if (entities != null && !entities.isEmpty()){
 				StringBuilder sql = new StringBuilder();
@@ -102,7 +102,6 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 					String[] args = bindArgs (statement,entity,columns);
 					statement.bindAllArgsAsStrings(args);
 					statement.executeInsert();
-					++numInserted;
 				}
 				db.setTransactionSuccessful();
 			}
@@ -119,7 +118,6 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}finally{
 			db.endTransaction();
 		}
-		return numInserted;
 	}
 	
 
@@ -270,15 +268,11 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 	@Override
-	public List<E> findAll(String whereClause, String[] whereArgs) throws EasyLiteSqlException {
+	public List<E> findAll(String whereClause, String[] whereArgs,String orderBy,OrderByType orderByType) throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E>();
 		try {
-			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT * FROM ")
-			   .append(tableName)
-			   .append(" WHERE ")
-			   .append(whereClause);
-			Cursor cursor = db.rawQuery(sql.toString(), whereArgs);
+			String orderType = (orderByType != null) ? orderByType.toString() : "ASC";
+			Cursor cursor = db.query(tableName, null, whereClause, whereArgs, null, null, String.format("%s %s", orderBy,orderType));
 			while (cursor.moveToNext()) {
 				E entity = type.newInstance();
 				Field[] fields = type.getDeclaredFields();

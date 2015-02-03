@@ -4,7 +4,6 @@ package com.easylite.exception;
  * Constructs a NotTableException with 
  * the specified detail message.
  * @author Mario Dennis
- *
  */
 public class NotTableException extends RuntimeException{
 

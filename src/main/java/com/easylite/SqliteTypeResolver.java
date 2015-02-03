@@ -22,8 +22,8 @@ public final class SqliteTypeResolver {
 	/**
 	 * Resolve data-type to sqlite equivalent
 	 * @author Mario Dennis
-	 * @param primitiveTypeName
-	 * @return Sqlite data-type 
+	 * @param clazz to resolve
+	 * @return sqlite data-type 
 	 */
 	public static String resolver (Class<?> clazz){
 		if (clazz.isAssignableFrom(String.class) ||
