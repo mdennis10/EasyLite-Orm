@@ -92,7 +92,7 @@ public class DaoImplTest {
 	}
 	
 	
-	@Test public void batchCreateWhereNotExistTest (){
+	@Test public void batchCreateOverridableTest (){
 		List<Note> notes = new ArrayList<Note>();
 		Note note = new Note();
 		note.id = 1;
@@ -113,6 +113,23 @@ public class DaoImplTest {
 		while (cursor.moveToNext())
 			++numInserted;
 		Assert.assertEquals(2, numInserted);
+	}
+	
+	@Test public void batchCreateOverridableDateValueIsSaved(){
+		Note note = new Note();
+		note.id = 1;
+		note.date = new Date();
+	
+		List<Note> notes = new ArrayList<Note>();
+		notes.add(note);
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		dao.batchCreateOverridable(notes);
+		
+		Cursor cursor = db.query("Note", null, null, null, null, null, null);
+		cursor.moveToFirst();
+		long time = cursor.getLong(cursor.getColumnIndex("date"));
+		Assert.assertEquals(note.date.getTime(), time);
 	}
 	
 	@Test public void deleteAll (){

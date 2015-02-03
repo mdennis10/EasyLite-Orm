@@ -1,5 +1,7 @@
 package com.easylite;
 
+import java.util.Date;
+
 
 public class ConverterUtil {
 
@@ -22,6 +24,11 @@ public class ConverterUtil {
 		if (type.isAssignableFrom(boolean.class) || 
 			type.isAssignableFrom(Boolean.class) && key != null)
 			return (((Boolean)key)) ? "1" : "0";
+		
+		if (type.isAssignableFrom(Date.class)){
+			Date date = (Date) key;
+			return (date != null) ? Long.toString(date.getTime()) : "";
+		}
 		if (key == null)
 			return "";
 		
