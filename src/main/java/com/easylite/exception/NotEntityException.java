@@ -1,11 +1,11 @@
 package com.easylite.exception;
 
 /**
- * Constructs a NotTableException with 
+ * Constructs a NotEntityException with 
  * the specified detail message.
  * @author Mario Dennis
  */
-public class NotTableException extends RuntimeException{
+public class NotEntityException extends RuntimeException{
 
 	private static final long serialVersionUID = -8404086083437701272L;
 

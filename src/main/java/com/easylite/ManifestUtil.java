@@ -53,32 +53,26 @@ public class ManifestUtil {
 		return packageName;
 	}
 	
-	/*
-	 * Get MetaData from Manifest file
-	 */
+	// Get MetaData from Manifest file
 	private static String getMetaDataString(Context context, String name) {
 		String value = null;
 		PackageManager pm = context.getPackageManager();
 		try {
-		    ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(),
-		            								    PackageManager.GET_META_DATA);
+		    ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
 		    value = ai.metaData.getString(name);
 		} catch (Exception e) {
 		    Log.d("EasyLite", "Couldn't find config value: " + name);
 		}
-		
 		return value;
     }
 	
-	/*
-	 * Get MetaData from Manifest File
-	 */
+	
+	// Get MetaData from Manifest File
 	private static Integer getMetaDataInteger(Context context, String name) {
 		Integer value = null;
 		PackageManager pm = context.getPackageManager();
 		try {
-		    ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(),
-		            								   PackageManager.GET_META_DATA);
+		    ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(),PackageManager.GET_META_DATA);
 		    value = ai.metaData.getInt(name);
 		} catch (Exception e) {
 		    Log.d("EasyLite", "Couldn't find config value: " + name);

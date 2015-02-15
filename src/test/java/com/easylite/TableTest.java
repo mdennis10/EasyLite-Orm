@@ -18,7 +18,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.easylite.annotation.GenerationType;
 import com.easylite.exception.NoPrimaryKeyFoundException;
-import com.easylite.exception.NotTableException;
+import com.easylite.exception.NotEntityException;
 import com.easylite.model.Car;
 import com.easylite.model.NoIdEntity;
 import com.easylite.model.Note;
@@ -41,7 +41,7 @@ public class TableTest {
 		Assert.assertEquals("Car", actual);
 	}
 	
-	@Test (expected = NotTableException.class)
+	@Test (expected = NotEntityException.class)
 	public void getTableNameThrowNotTableException (){
 		Table.getTableName(String.class);
 	}

@@ -45,23 +45,23 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	 * @return Set of entity classes
 	 */
 	public static Set<Class<?>> getDomainClasses(Context context) {
-        Set<Class<?>> domainClasses = new HashSet<Class<?>>();
-        try {
-            for (String className : getAllClasses(context)) {
-                if (className.startsWith(ManifestUtil.getModelPackageName(context))) {
-                    Class<?> domainClass = getDomainClass(className, context);
-                    if (domainClass != null) 
-                    	domainClasses.add(domainClass);
-                }
-            }
-        } catch (IOException e) {
-            Log.e("EasyLite", e.getMessage());
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e("EasyLite", e.getMessage());
-        }
-        return domainClasses;
-    }
-	
+		Set<Class<?>> domainClasses = new HashSet<Class<?>>();
+		try {
+			for (String className : getAllClasses(context)) {
+				if (className.startsWith(ManifestUtil.getModelPackageName(context))) {
+					Class<?> domainClass = getDomainClass(className, context);
+					if (domainClass != null) 
+						domainClasses.add(domainClass);
+				}
+			}
+		} catch (IOException e) {
+			Log.e("EasyLite", e.getMessage());
+		} catch (PackageManager.NameNotFoundException e) {
+			Log.e("EasyLite", e.getMessage());
+		}
+		return domainClasses;
+	}
+
 	/**
 	 * Get Domain class
 	 * @author Mario Dennis
@@ -69,75 +69,75 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	 * @param context android
 	 * @return Class entity class or null if not a entity class
 	 */
-	 private static Class<?> getDomainClass(String className, Context context) {
+	private static Class<?> getDomainClass(String className, Context context) {
 		Class<?> discoveredClass = null;
 		try {
-		    discoveredClass = Class.forName(className, true, context.getClass().getClassLoader());
+			discoveredClass = Class.forName(className, true, context.getClass().getClassLoader());
 			if (discoveredClass != null && discoveredClass.isAnnotationPresent(Entity.class))
-			    return discoveredClass;    
+				return discoveredClass;    
 		} catch (ClassNotFoundException e) {
-		    Log.e("EasyLite", e.getMessage());
+			Log.e("EasyLite", e.getMessage());
 		}
 		return null;
 	}
-	 
-	/**
-	 * Get All classes 
-	 * @author Mario Dennis
-	 * @param context android
-	 * @return List of all classes
-	 * @throws PackageManager.NameNotFoundException
-	 * @throws IOException
-	 */
-	private static List<String> getAllClasses(Context context) throws PackageManager.NameNotFoundException, IOException {
-		String path = getSourcePath(context);
-		List<String> classNames = new ArrayList<String>();
-		try {
-		    DexFile dexfile = new DexFile(path);
-		    Enumeration<String> dexEntries = dexfile.entries();
-		    while (dexEntries.hasMoreElements()) 
-		        classNames.add(dexEntries.nextElement());
-		}catch (NullPointerException e) {
-		    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-		    Enumeration<URL> urls = classLoader.getResources("");
-		    List<String> fileNames = new ArrayList<String>();
-		   
-		    while (urls.hasMoreElements()) {
-		    	String classDirectoryName = urls.nextElement().getFile();
-		    	if (classDirectoryName.contains("bin") || classDirectoryName.contains("classes")) {
-		    		File classDirectory = new File(classDirectoryName);
-		    		for (File filePath : classDirectory.listFiles()) {
-		    			populateFiles(filePath, fileNames, "");
-		            }
-		            classNames.addAll(fileNames);
-		        }
-		    }
-		}
-		return classNames;
+
+	 /**
+	  * Get All classes 
+	  * @author Mario Dennis
+	  * @param context android
+	  * @return List of all classes
+	  * @throws PackageManager.NameNotFoundException
+	  * @throws IOException
+	  */
+	 private static List<String> getAllClasses(Context context) throws PackageManager.NameNotFoundException, IOException {
+		 String path = getSourcePath(context);
+		 List<String> classNames = new ArrayList<String>();
+		 try {
+			 DexFile dexfile = new DexFile(path);
+			 Enumeration<String> dexEntries = dexfile.entries();
+			 while (dexEntries.hasMoreElements()) 
+				 classNames.add(dexEntries.nextElement());
+		 }catch (NullPointerException e) {
+			 ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			 Enumeration<URL> urls = classLoader.getResources("");
+			 List<String> fileNames = new ArrayList<String>();
+
+			 while (urls.hasMoreElements()) {
+				 String classDirectoryName = urls.nextElement().getFile();
+				 if (classDirectoryName.contains("bin") || classDirectoryName.contains("classes")) {
+					 File classDirectory = new File(classDirectoryName);
+					 for (File filePath : classDirectory.listFiles()) {
+						 populateFiles(filePath, fileNames, "");
+					 }
+					 classNames.addAll(fileNames);
+				 }
+			 }
+		 }
+		 return classNames;
 	 }
 	 
-	 private static void populateFiles(File path, List<String> fileNames, String parent) {
+	private static void populateFiles(File path, List<String> fileNames, String parent) {
 		if (path.isDirectory()) {
-		    for (File newPath : path.listFiles()) {
-		        if ("".equals(parent)) 
-		        	populateFiles(newPath, fileNames, path.getName());
-		        else 
-		        	populateFiles(newPath, fileNames, parent + "." + path.getName());
-		        
-		    }
+			for (File newPath : path.listFiles()) {
+				if ("".equals(parent)) 
+					populateFiles(newPath, fileNames, path.getName());
+				else 
+					populateFiles(newPath, fileNames, parent + "." + path.getName());
+
+			}
 		} 
 		else {
-		    String pathName = path.getName();
-		    String classSuffix = ".class";
-		    pathName = pathName.endsWith(classSuffix) ? pathName.substring(0, pathName.length() - classSuffix.length()) : pathName;
-		    if ("".equals(parent)) 
-		    	fileNames.add(pathName);
-		    else 
-		    	fileNames.add(parent + "." + pathName);
+			String pathName = path.getName();
+			String classSuffix = ".class";
+			pathName = pathName.endsWith(classSuffix) ? pathName.substring(0, pathName.length() - classSuffix.length()) : pathName;
+			if ("".equals(parent)) 
+				fileNames.add(pathName);
+			else 
+				fileNames.add(parent + "." + pathName);
 		}
 	}	
-	 
-	 private static String getSourcePath(Context context) throws PackageManager.NameNotFoundException {
-	        return context.getPackageManager().getApplicationInfo(context.getPackageName(), 0).sourceDir;
-	 }
+
+	private static String getSourcePath(Context context) throws PackageManager.NameNotFoundException {
+		return context.getPackageManager().getApplicationInfo(context.getPackageName(), 0).sourceDir;
+	}
 }

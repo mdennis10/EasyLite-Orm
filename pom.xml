@@ -13,10 +13,8 @@
  
 	<name>Easylite Orm</name>
 	<url>https://github.com/mdennis10/EasyLite-Orm</url>
-	<description>
-		Very simply Object Relationship Mapping framework (ORM)
-		for Android.
-	</description>
+	<description>Very simple Object Relationship Mapping framework (ORM)
+		for Android.</description>
 	<licenses>
 	  <license>
 	    <name>MIT license</name>

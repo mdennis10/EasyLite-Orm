@@ -13,7 +13,7 @@ import com.easylite.annotation.GenerationType;
 import com.easylite.annotation.Id;
 import com.easylite.exception.EasyLiteSqlException;
 import com.easylite.exception.NoPrimaryKeyFoundException;
-import com.easylite.exception.NotTableException;
+import com.easylite.exception.NotEntityException;
 
 public final class Table {	
 	
@@ -29,7 +29,7 @@ public final class Table {
 	 * @param clazz type of entity
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @exception NoPrimaryKeyFoundException when no primary key annotation found on entity class
-	 * @exception NotTableException when no table annotation found on entity class
+	 * @exception NotEntityException when no table annotation found on entity class
 	 */
 	protected static synchronized final void createTable (SQLiteDatabase db, Class<?> clazz) throws EasyLiteSqlException{
 		try {
@@ -39,7 +39,7 @@ public final class Table {
 			throw new EasyLiteSqlException(e);
 		} catch (NoPrimaryKeyFoundException e){
 			Log.e("EasyLite", e.getMessage());
-		} catch (NotTableException e) {
+		} catch (NotEntityException e) {
 			Log.e("EasyLite", e.getMessage());
 		}
 	}
@@ -118,13 +118,13 @@ public final class Table {
 	 * Get table name of domain entity
 	 * @author Mario Dennis
 	 * @param clazz type of entity
-	 * @throws NotTableException when no table annotation found on entity class
+	 * @throws NotEntityException when no table annotation found on entity class
 	 * @return tableName of entity class
 	 */
 	protected final static String getTableName (Class<?> clazz){
 		Entity annotation = clazz.getAnnotation(Entity.class);
 		if (annotation == null)
-			throw new NotTableException();
+			throw new NotEntityException();
 		return (!annotation.name().isEmpty()) ? annotation.name() : clazz.getSimpleName();
 	}
 	
