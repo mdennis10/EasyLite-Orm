@@ -34,4 +34,15 @@ public final class EasyLite {
 	public final <K,E> Dao<K, E> getDao (Class<E> type) {
 		return new DaoImpl<K, E>(openHelper,type);
 	}
+	
+	
+	/**
+	 * Gets EasyLiteOpenHelper instance being 
+	 * utilized by easylite.
+	 * @author Mario Dennis
+	 * @return EasyLiteOpenHelper
+	 */
+	public EasyLiteOpenHelper getEasyLiteOpenHelper (){
+		return openHelper;
+	}
 }
