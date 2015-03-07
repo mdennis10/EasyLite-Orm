@@ -18,6 +18,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.easylite.annotation.OrderByType;
+import com.easylite.model.Book;
 import com.easylite.model.Note;
 
 @RunWith(RobolectricTestRunner.class)
@@ -265,16 +266,22 @@ public class DaoImplTest {
 	}
 	
 	@Test public void privateFieldsGetterAndSetterMethodTest (){
-		Note note = new Note();
-		note.id = 1;
-		note.setReciever("Mario");
+		Book book = new Book();
+		book.setId(1);
+		book.setReciever("Mario");
+		book.setAmountSent(2);
+		book.setDateRecieved(new Date());
+		book.setRecieved(true);
 		
-		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		long rowID = dao.create(note);
-		Assert.assertEquals(note.id, rowID);
+		Dao<Integer, Book> dao = dbLite.getDao(Book.class);
+		long rowID = dao.create(book);
+		Assert.assertEquals(book.getId(), rowID);
 		
-		Note noteDB = dao.findById(note.id);
-		Assert.assertEquals(note.getReciever(), noteDB.getReciever());
+		Book bookDB = dao.findById(book.getId());
+		Assert.assertEquals(book.getReciever(), bookDB.getReciever());
+		Assert.assertEquals(book.getAmountSent(), bookDB.getAmountSent());
+		Assert.assertEquals(book.isRecieved(), bookDB.isRecieved());
+		Assert.assertEquals(book.getDateRecieved(), bookDB.getDateRecieved());
 	}
 	
 	
