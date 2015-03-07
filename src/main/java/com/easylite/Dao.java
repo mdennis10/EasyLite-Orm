@@ -83,8 +83,8 @@ public interface Dao<K,E> {
 	 * Update database record
 	 * @author Mario Dennis
 	 * @param entity entity to update. This entity should contain corresponding primary key value of record in database
-	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
-     * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
+	 * @param whereClause the optional WHERE clause to apply when updating. Passing null will update all rows.
+     * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings.
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the number of rows affected
 	 */
