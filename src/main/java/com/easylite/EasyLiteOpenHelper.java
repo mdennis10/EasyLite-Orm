@@ -9,20 +9,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.easylite.annotation.Entity;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-
-import com.easylite.annotation.Entity;
-
 import dalvik.system.DexFile;
 
 public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	private Set<Class<?>> entityClasses;
-	protected EasyLiteOpenHelper(Context context, String dbName,int version) {
-		super(context,dbName,null,version);
+	
+	protected EasyLiteOpenHelper(Context context) {
+		super(context,ManifestUtil.getDatabaseName(context),null,ManifestUtil.getDatabaseVersion(context));
 		this.entityClasses = getDomainClasses(context);
 	}
 
@@ -36,6 +36,12 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		for(Class<?> clazz : entityClasses)
 			Table.dropTable(db, clazz);
+		
+		onCreate(db);//recreates database schema
+	}
+	
+	public Set<Class<?>> getEntityClasses (){
+		return entityClasses;
 	}
 
 	/**

@@ -7,7 +7,7 @@ public final class EasyLite {
 	protected final EasyLiteOpenHelper openHelper;
 	
 	private EasyLite(Context context) {
-		this.openHelper = new EasyLiteOpenHelper(context,ManifestUtil.getDatabaseName(context),ManifestUtil.getDatabaseVersion(context));
+		this.openHelper = new EasyLiteOpenHelper(context);
 	}
 	
 	
