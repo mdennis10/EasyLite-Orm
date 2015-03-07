@@ -34,6 +34,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	public long create(E entity) throws EasyLiteSqlException {
 		if (entity == null)
 			throw new NullPointerException("Null Entity Supplied");
+		
 		try {
 			ContentValues values = new ContentValues();
 			Field[] fields = type.getDeclaredFields();
@@ -129,6 +130,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		args[position] = pKey;
 		for (String column : columns.keySet()){
 			Field field = type.getDeclaredField(column);
+			field.setAccessible(true);
 			String val = ConverterUtil.toString(field.getType(), field.get(entity));
 			args[++position] = val;
 		}
@@ -136,6 +138,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 	public Object getFieldValue (Field field, E entity) throws IllegalArgumentException, IllegalAccessException{
+		field.setAccessible(true);
 		Class<?> type = field.getType();
 		if (type.equals(Date.class)){
 			Date date = (Date) field.get(entity);
@@ -334,6 +337,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	 * @throws IllegalAccessException
 	 */
 	private void setEntityFields (Cursor cursor,Field field,E entity) throws IllegalArgumentException, IllegalAccessException{
+		field.setAccessible(true);
 		Class<?> type = field.getType();
 		if (type.isAssignableFrom(int.class) || type.equals(Integer.class))
 			field.setInt(entity, cursor.getInt(cursor.getColumnIndex(field.getName())));
@@ -370,9 +374,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	 * @throws IllegalAccessException
 	 */
 	private void putContentValue (ContentValues values,Field field,E entity) throws IllegalArgumentException, IllegalAccessException{
+		field.setAccessible(true);
 		String name = field.getName();
 		Class<?> type = field.getType();
-		
 		
 		if (type.isAssignableFrom(int.class) || 
 			type.equals(Integer.class))

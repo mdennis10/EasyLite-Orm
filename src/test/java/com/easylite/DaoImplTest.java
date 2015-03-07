@@ -264,6 +264,20 @@ public class DaoImplTest {
 		Assert.assertNotNull(note);
 	}
 	
+	@Test public void privateFieldsGetterAndSetterMethodTest (){
+		Note note = new Note();
+		note.id = 1;
+		note.setReciever("Mario");
+		
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		long rowID = dao.create(note);
+		Assert.assertEquals(note.id, rowID);
+		
+		Note noteDB = dao.findById(note.id);
+		Assert.assertEquals(note.getReciever(), noteDB.getReciever());
+	}
+	
+	
 	@Test (expected = NullPointerException.class)
 	public void deleteMethodThrowsNullPointerExceptionTest (){
 		dbLite.getDao(Note.class).delete(null);

@@ -13,4 +13,13 @@ public class Note {
 	public String author;
 	public boolean sent;
 	public Date date;
+	private String reciever;
+	
+	public String getReciever() {
+		return reciever;
+	}
+	public void setReciever(String reciever) {
+		this.reciever = reciever;
+	}
+	
 }
