@@ -1,5 +1,6 @@
 package com.easylite;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 
 
@@ -33,5 +34,27 @@ public class ConverterUtil {
 			return "";
 		
 		return  key.toString();
+	}
+	
+	/**
+	 * Converts parameter value to SQLite
+	 * column type equivalent.[Note] this 
+	 * necessary to convert boolean values.
+	 * @author Mario Dennis 
+	 * @param clazz
+	 * @param param
+	 * @return
+	 */
+	public static String convertParamValue (String param,Field field){
+		if (field == null)
+			throw new NullPointerException("Null field instance suppled");
+		
+		if (param != null){
+			Class<?> type = field.getType();
+			
+			if (type.isAssignableFrom(boolean.class) || type.isAssignableFrom(Boolean.class))
+				return (param.equalsIgnoreCase("true") || param.equalsIgnoreCase("1")) ? "1" : "0";
+		}
+		return param;
 	}
 }

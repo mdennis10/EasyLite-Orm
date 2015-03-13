@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -16,6 +18,7 @@ import android.util.Log;
 import com.easylite.annotation.Id;
 import com.easylite.annotation.OrderByType;
 import com.easylite.exception.EasyLiteSqlException;
+import com.easylite.exception.IllegalWhereArgumentException;
 
 public final class DaoImpl<K,E> implements Dao<K, E>{
 	private final SQLiteDatabase db;
@@ -271,10 +274,11 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 	@Override
-	public List<E> findAll(String whereClause, String[] whereArgs,String orderBy,OrderByType orderByType) throws EasyLiteSqlException {
+	public List<E> findAll(String orderBy,OrderByType orderByType,String whereClause, String... whereArgs) throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E>();
 		try {
-			String orderType = (orderByType != null) ? orderByType.toString() : "ASC";
+			String orderType = (orderByType != null) ? orderByType.toString() : "DESC";
+			whereArgs = formatWhereParams(whereClause, whereArgs);
 			Cursor cursor = db.query(tableName, null, whereClause, whereArgs, null, null, String.format("%s %s", orderBy,orderType));
 			while (cursor.moveToNext()) {
 				E entity = type.newInstance();
@@ -289,10 +293,39 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
 			Log.e("EasyLite", e.getMessage());
+		} catch (IllegalArgumentException e) {
+			Log.e("EasyLite", new IllegalWhereArgumentException(e).getMessage());
 		}
 		return results;
 	}
+	
+	
+	public String[] formatWhereParams (String whereClause,String... whereArgs){
+		String[] newWhereArgs = new String[whereArgs.length];
+		List<String> fieldNames = getWhereParamFields(whereClause);
+		int size = fieldNames.size();
+		for(int x = 0; x < size;x++){
+			try {
+				Field field = type.getDeclaredField(fieldNames.get(x));
+				newWhereArgs[x] = ConverterUtil.convertParamValue(whereArgs[x], field);
+			} catch (NoSuchFieldException e) {
+				Log.e("EasyLite", e.getMessage());
+			} catch (SecurityException e) {
+				Log.e("EasyLite", e.getMessage());
+			}
+		}
+		return newWhereArgs;
+	}
+	
 
+	public List<String> getWhereParamFields (String whereClause){
+		Matcher matcher = Pattern.compile("[^\\s=?]+(?=\\s*[=?])").matcher(whereClause);
+		List<String> fieldNames = new ArrayList<String>();
+		while (matcher.find()) 
+			fieldNames.add(matcher.group());
+		return fieldNames;
+	}
+	
 	
 	@Override
 	public boolean isExist(E entity) throws EasyLiteSqlException {

@@ -331,7 +331,7 @@ public class DaoImplTest {
 		Assert.assertTrue("Note instance not created",id > 0);
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		List<Note> notes = dao.findAll("id=?", new String[]{"1"},null,null);
+		List<Note> notes = dao.findAll(null,null,"id=? AND body=?", "1","text");
 		Assert.assertTrue("Empty List<Note> Returned",!notes.isEmpty());
 		Assert.assertEquals(1, notes.get(0).id);
 	}
@@ -351,14 +351,41 @@ public class DaoImplTest {
 		Assert.assertTrue("Note instance not created",id > 0);
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		List<Note> notes = dao.findAll(null, null,"date",OrderByType.ASC);
+		List<Note> notes = dao.findAll("date",OrderByType.ASC,null);
 		Assert.assertTrue("Empty List<Note> Returned",!notes.isEmpty());
 		Assert.assertEquals(id, notes.get(0).id);
 		Assert.assertEquals(id2, notes.get(1).id);
 	}
 	
+	
+	@Test public void findAllBooleanWhereValueConvertedTest (){
+		ContentValues values = new ContentValues();
+		values.put("id", 11);
+		values.put("isRecieved", true);
+		
+		long id = db.insert("Book", null, values);
+		Assert.assertTrue("Book instance not created",id > 0);
+		
+		List<Book> books = dbLite.getDao(Book.class)
+								 .findAll(null, null, "isRecieved=?", Boolean.toString(true));
+		Assert.assertFalse(books.isEmpty());
+	}
+	
+	@Test public void getWhereParamFieldsTest (){
+		DaoImpl<Integer, Note> dao = new DaoImpl<Integer, Note>(dbLite.getEasyLiteOpenHelper(), Note.class);
+		List<String> result = dao.getWhereParamFields("id =? AND name =?");
+		
+		Assert.assertTrue(result.contains("id") && result.contains("name") &&
+				         !result.isEmpty() && result.size() == 2);
+		
+		result = dao.getWhereParamFields("body=? AND first=? or id=?");
+		Assert.assertTrue(result.contains("body") && result.contains("first") &&
+		         		  result.contains("id") && !result.isEmpty() && result.size() == 3);
+	}
+	
 	@After public void tearDown (){
 		db.execSQL("DELETE FROM Note");
+		db.execSQL("DELETE FROM Book");
 		this.dbLite = null;
 	}
 }

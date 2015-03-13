@@ -41,7 +41,7 @@ public final class Table {
 			Log.e("EasyLite", e.getMessage());
 		} catch (NotEntityException e) {
 			Log.e("EasyLite", e.getMessage());
-		}
+		} 
 	}
 	
 	
@@ -106,9 +106,9 @@ public final class Table {
 			Id id = field.getAnnotation(Id.class);
 			return id.strategy();
 		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage() + " " +clazz.getName());
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			Log.e("EasyLite", e.getMessage());
 		}
 		return GenerationType.MANUAL;
 	}
