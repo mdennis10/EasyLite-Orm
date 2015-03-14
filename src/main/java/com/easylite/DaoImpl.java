@@ -277,7 +277,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	public List<E> findAll(String orderBy,OrderByType orderByType,String whereClause, String... whereArgs) throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E>();
 		try {
-			String orderType = (orderByType != null) ? orderByType.toString() : "DESC";
+			String orderType = (orderByType != null) ? orderByType.toString() : OrderByType.ASC.toString();
 			whereArgs = formatWhereParams(whereClause, whereArgs);
 			Cursor cursor = db.query(tableName, null, whereClause, whereArgs, null, null, String.format("%s %s", orderBy,orderType));
 			while (cursor.moveToNext()) {
@@ -301,20 +301,25 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	
 	
 	public String[] formatWhereParams (String whereClause,String... whereArgs){
-		String[] newWhereArgs = new String[whereArgs.length];
-		List<String> fieldNames = getWhereParamFields(whereClause);
-		int size = fieldNames.size();
-		for(int x = 0; x < size;x++){
-			try {
-				Field field = type.getDeclaredField(fieldNames.get(x));
-				newWhereArgs[x] = ConverterUtil.convertParamValue(whereArgs[x], field);
-			} catch (NoSuchFieldException e) {
-				Log.e("EasyLite", e.getMessage());
-			} catch (SecurityException e) {
-				Log.e("EasyLite", e.getMessage());
+		if (whereClause != null && !whereClause.isEmpty() && whereArgs != null) {
+			String[] newWhereArgs;
+			newWhereArgs = new String[whereArgs.length];
+			List<String> fieldNames = getWhereParamFields(whereClause);
+			int size = fieldNames.size();
+			for (int x = 0; x < size; x++) {
+				try {
+					Field field = type.getDeclaredField(fieldNames.get(x));
+					newWhereArgs[x] = ConverterUtil.convertParamValue(
+							whereArgs[x], field);
+				} catch (NoSuchFieldException e) {
+					Log.e("EasyLite", e.getMessage());
+				} catch (SecurityException e) {
+					Log.e("EasyLite", e.getMessage());
+				}
 			}
+			return newWhereArgs;
 		}
-		return newWhereArgs;
+		return whereArgs;
 	}
 	
 

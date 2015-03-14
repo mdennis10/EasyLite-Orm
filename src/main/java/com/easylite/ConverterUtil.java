@@ -41,9 +41,9 @@ public class ConverterUtil {
 	 * column type equivalent.[Note] this 
 	 * necessary to convert boolean values.
 	 * @author Mario Dennis 
-	 * @param clazz
-	 * @param param
-	 * @return
+	 * @param param value to convert
+	 * @param field that is associated with value
+	 * @return converted string value
 	 */
 	public static String convertParamValue (String param,Field field){
 		if (field == null)
