@@ -57,4 +57,40 @@ public class ConverterUtil {
 		}
 		return param;
 	}
+	
+	
+	/**
+	 * Converts parameter value to SQLite
+	 * column type equivalent.[Note] this 
+	 * necessary to convert boolean values.
+	 * @author Mario Dennis 
+	 * @return converted string value
+	 */
+	public static String convertParamValue (Object param){
+		if (param == null)
+			throw new NullPointerException("Null field instance suppled");
+		Class<?> type = param.getClass();
+		
+		if (type.isAssignableFrom(String.class))
+			return (String) param;
+		
+		else if (type.isAssignableFrom(int.class)|| type.isAssignableFrom(Integer.class))
+			return Integer.toString((Integer)param);
+		
+		else if (type.isAssignableFrom(double.class) || type.isAssignableFrom(Double.class)||
+				 type.isAssignableFrom(float.class) || type.isAssignableFrom(Float.class))
+			return Double.toString((Double)param);
+		
+		else if (type.isAssignableFrom(boolean.class) || type.isAssignableFrom(Boolean.class))
+			return (((Boolean)param) == true) ? "1" : "0";
+		
+		else if (type.isAssignableFrom(Date.class))
+			return Long.toString(((Date)param).getTime());
+		
+		if (type.isAssignableFrom(long.class) ||
+			type.isAssignableFrom(Long.class))
+			return Long.toString((Long) param);
+		
+		else return "NONE";
+	}
 }

@@ -367,20 +367,21 @@ public class DaoImplTest {
 		Assert.assertTrue("Book instance not created",id > 0);
 		
 		List<Book> books = dbLite.getDao(Book.class)
-								 .findAll(null, null, "isRecieved=?", Boolean.toString(true));
+								 .findAll(null, null, "isRecieved=?", true);
 		Assert.assertFalse(books.isEmpty());
 	}
 	
-	@Test public void getWhereParamFieldsTest (){
+	@Test public void formatWhereParamsTest (){
 		DaoImpl<Integer, Note> dao = new DaoImpl<Integer, Note>(dbLite.getEasyLiteOpenHelper(), Note.class);
-		List<String> result = dao.getWhereParamFields("id =? AND name =?");
-		
-		Assert.assertTrue(result.contains("id") && result.contains("name") &&
-				         !result.isEmpty() && result.size() == 2);
-		
-		result = dao.getWhereParamFields("body=? AND first=? or id=?");
-		Assert.assertTrue(result.contains("body") && result.contains("first") &&
-		         		  result.contains("id") && !result.isEmpty() && result.size() == 3);
+		Date date = new Date ();
+		String[] result = dao.formatWhereParams(true,false,"Mario",2.1,1,date,Long.parseLong("1"));
+		Assert.assertEquals("1", result[0]); //return String representation of boolean true
+		Assert.assertEquals("0", result[1]); //return String representation of boolean false
+		Assert.assertEquals("Mario", result[2]);
+		Assert.assertEquals("2.1", result[3]);
+		Assert.assertEquals("1", result[4]);
+		Assert.assertEquals(Long.toString(date.getTime()), result[5]);
+		Assert.assertEquals("1", result[6]);
 	}
 	
 	@After public void tearDown (){

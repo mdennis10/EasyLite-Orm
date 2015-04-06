@@ -130,7 +130,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return List of all records
 	 */
-	public List<E> findAll (String orderBy,OrderByType orderByType,String whereClause,String... whereArgs) throws EasyLiteSqlException; 
+	public List<E> findAll (String orderBy,OrderByType orderByType,String whereClause,Object... whereArgs) throws EasyLiteSqlException; 
 	
 	
 	/**
