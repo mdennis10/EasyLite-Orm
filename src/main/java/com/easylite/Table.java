@@ -80,7 +80,8 @@ public final class Table {
 		   .append(keys.get(P_KEY_TYPE))
 		   .append(" PRIMARY KEY ");
 		
-		if (getGenerationStrategy(clazz, keys.get(P_KEY_NAME)) == GenerationType.AUTO)
+		GenerationType generationType = getGenerationStrategy(clazz, keys.get(P_KEY_NAME));
+		if ( generationType == GenerationType.AUTO)
 			sql.append("AUTOINCREMENT");
 
 		for (String columnName: columns.keySet())
@@ -102,7 +103,7 @@ public final class Table {
 	 */
 	protected final static GenerationType getGenerationStrategy (Class<?> clazz,String primaryKey){
 		try {
-			Field field = clazz.getField(primaryKey);
+			Field field = clazz.getDeclaredField(primaryKey);
 			Id id = field.getAnnotation(Id.class);
 			return id.strategy();
 		} catch (NoSuchFieldException e) {

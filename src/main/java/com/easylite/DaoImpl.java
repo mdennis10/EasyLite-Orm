@@ -13,6 +13,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
+import com.easylite.annotation.GenerationType;
 import com.easylite.annotation.Id;
 import com.easylite.annotation.OrderByType;
 import com.easylite.exception.EasyLiteSqlException;
@@ -22,6 +23,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	private final SQLiteDatabase db;
 	private final Class<E> type;
 	private final String tableName;
+	private final GenerationType generationType;
 	Map<String, String> tableKeys; 
 	
 	protected DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type){
@@ -29,20 +31,21 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		this.type = type;
 		this.tableKeys = Table.getTableKeys(type);
 		this.tableName = Table.getTableName(type);
+		this.generationType = Table.getGenerationStrategy(type, tableKeys.get(Table.P_KEY_NAME));
 	}
 	
 	@Override
 	public long create(E entity) throws EasyLiteSqlException {
 		if (entity == null)
 			throw new NullPointerException("Null Entity Supplied");
-		
+		long result = -1;
 		try {
 			ContentValues values = new ContentValues();
 			Field[] fields = type.getDeclaredFields();
 			for (Field field : fields) 
 				putContentValue(values, field, entity);
 			
-			return this.db.insert(tableName, null, values);
+			result =  this.db.insert(tableName, null, values);
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		} catch (IllegalArgumentException e) {
@@ -50,7 +53,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		} catch (IllegalAccessException e) {
 			Log.e("EasyLite", e.getMessage());
 		}
-		return -1;
+		return result;
 	}
 	
 	@Override
@@ -298,6 +301,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 	public String[] formatWhereParams (Object... whereArgs){
+		if (whereArgs == null)
+			return null;
+		
 		String[] newWhereArgs = new String[whereArgs.length];
 		for(int x = 0; x < whereArgs.length;x++)
 			newWhereArgs[x] = ConverterUtil.convertParamValue(whereArgs[x]);
@@ -419,38 +425,72 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		field.setAccessible(true);
 		String name = field.getName();
 		Class<?> type = field.getType();
+		boolean isPrimaryKey = (field.getAnnotation(Id.class) != null) ? true : false;
 		
-		if (type.isAssignableFrom(int.class) || 
-			type.equals(Integer.class))
+		if (isPrimaryKey){
+			setPrimaryKey(field, name, type,isPrimaryKey, values,entity);
+			return;
+		}
+	
+		if (type.isAssignableFrom(int.class) || type.equals(Integer.class))
 			values.put(name, field.getInt(entity));
-		
-		else if (type.isAssignableFrom(String.class) && field.get(entity) != null)
-				 values.put(name, (String) field.get(entity));
-		
-		else if (type.isAssignableFrom(double.class) || 
-				 type.equals(Double.class))
-				 values.put(name, field.getDouble(entity));
-		
-		else if (type.isAssignableFrom(long.class) ||
-				 type.equals(Long.class.getName()))
+
+		else if (type.isAssignableFrom(String.class)
+				&& field.get(entity) != null)
+			values.put(name, (String) field.get(entity));
+
+		else if (type.isAssignableFrom(double.class)
+				|| type.equals(Double.class))
+			values.put(name, field.getDouble(entity));
+
+		else if (type.isAssignableFrom(long.class)
+				|| type.equals(Long.class.getName()))
 			values.put(name, field.getLong(entity));
-		
-		else if (type.isAssignableFrom(boolean.class) ||
-				 type.equals(Boolean.class))
-				 values.put(name, field.getBoolean(entity));
-		
-		else if (type.isAssignableFrom(char.class) || 
-				 type.equals(Character.class))
-				 values.put(name,Character.toString(field.getChar(entity)));
-		
-		else if (type.isAssignableFrom(float.class) || 
-				 type.equals(Float.class.getName()))
-				 values.put(name,field.getFloat(entity));
-		
-		else if (type.equals(Date.class) && field.get(entity) != null){
+
+		else if (type.isAssignableFrom(boolean.class)
+				|| type.equals(Boolean.class))
+			values.put(name, field.getBoolean(entity));
+
+		else if (type.isAssignableFrom(char.class)
+				|| type.equals(Character.class))
+			values.put(name, Character.toString(field.getChar(entity)));
+
+		else if (type.isAssignableFrom(float.class)
+				|| type.equals(Float.class.getName()))
+			values.put(name, field.getFloat(entity));
+
+		else if (type.equals(Date.class) && field.get(entity) != null) {
 			Date date = (Date) field.get(entity);
-			values.put(name,date.getTime());	
+			values.put(name, date.getTime());
 		}
 	}
 
+	
+	private void setPrimaryKey (Field field,String fieldName, Class<?> fieldType,Boolean isPrimaryKey,ContentValues contentValues,E entity) throws IllegalArgumentException, IllegalAccessException{
+		if (!isPrimaryKey)
+			return;
+		
+		if (fieldType.isAssignableFrom(int.class) || fieldType.equals(Integer.class)){
+			int value = field.getInt(entity);
+			if (isPrimaryKey && value != 0)
+				contentValues.put(fieldName, value);
+			else  return;
+		}
+		
+		else if (fieldType.isAssignableFrom(double.class) || fieldType.equals(Double.class)){
+			 double value = field.getDouble(entity);
+			 if (isPrimaryKey && value != 0)
+					contentValues.put(fieldName, value);
+			else  return;
+		}
+		
+
+		else if (fieldType.isAssignableFrom(long.class) || fieldType.equals(Long.class)){
+			long value = field.getLong(entity);
+			if (isPrimaryKey && value != 0)
+				contentValues.put(fieldName, value);
+			else  return;
+		}
+		
+	}
 }

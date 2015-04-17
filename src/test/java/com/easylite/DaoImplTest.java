@@ -1,6 +1,9 @@
 package com.easylite;
 
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,6 +52,17 @@ public class DaoImplTest {
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
 		long id = dao.create(note);
+		Assert.assertTrue(id > 0);
+	}
+	
+	@Test public void createMethodGetterAndSetterTest (){
+		Book book = new Book();
+		book.setDateRecieved(new Date());
+		book.setRecieved(true);
+		book.setReciever("some");
+		
+		Dao<Integer, Book> dao =  dbLite.getDao(Book.class);
+		long id = dao.create(book);
 		Assert.assertTrue(id > 0);
 	}
 	
@@ -284,6 +298,32 @@ public class DaoImplTest {
 		Assert.assertEquals(book.getDateRecieved(), bookDB.getDateRecieved());
 	}
 	
+	@Test public void dateEqualityTest () throws ParseException{
+		Book book = new Book();
+		book.setId(1);
+		book.setReciever("Mario");
+		book.setAmountSent(2);
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
+		Date date = sdf.parse("24/11/2014");
+		book.setDateRecieved(date);
+		
+		Dao<Integer, Book> dao = dbLite.getDao(Book.class);
+		long rowID = dao.create(book);
+		Assert.assertEquals(book.getId(), rowID);
+		
+		Book book2 = new Book();
+		book2.setId(2);
+		book2.setReciever("Mario");
+		book2.setAmountSent(2);
+		book2.setDateRecieved(new Date());
+
+		long rowID2 = dao.create(book2);
+		Assert.assertEquals(book2.getId(), rowID2);
+		
+		List<Book> books = dao.findAll(null, null, "dateRecieved > ?", date);
+		Assert.assertTrue(books.size() > 0);
+	}
+	
 	
 	@Test (expected = NullPointerException.class)
 	public void deleteMethodThrowsNullPointerExceptionTest (){
@@ -323,17 +363,34 @@ public class DaoImplTest {
 	}
 	
 	@Test public void findAllWithWhereClauseTest (){
+		Date date = new Date();
+		@SuppressWarnings("deprecation")
+		Date laterDate = new Date(date.getYear() + 1,2,4);
+		
 		ContentValues values = new ContentValues();
 		values.put("id", 1);
 		values.put("body", "text");
+		values.put("date", date.getTime());
 		
 		long id = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+		
+		values = new ContentValues();
+		values.put("id", 2);
+		values.put("body", "text");
+		values.put("date", laterDate.getTime());
+		
+		id = db.insert("Note", null, values);
 		Assert.assertTrue("Note instance not created",id > 0);
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
 		List<Note> notes = dao.findAll(null,null,"id=? AND body=?", "1","text");
 		Assert.assertTrue("Empty List<Note> Returned",!notes.isEmpty());
 		Assert.assertEquals(1, notes.get(0).id);
+		
+		notes = dao.findAll(null, null, "date >= ?", date);
+		Assert.assertTrue("Empty List<Note> Returned",!notes.isEmpty());
+		Assert.assertEquals(2, notes.size());
 	}
 	
 	@Test public void findAllOrderByTest (){
@@ -383,6 +440,7 @@ public class DaoImplTest {
 		Assert.assertEquals(Long.toString(date.getTime()), result[5]);
 		Assert.assertEquals("1", result[6]);
 	}
+	
 	
 	@After public void tearDown (){
 		db.execSQL("DELETE FROM Note");

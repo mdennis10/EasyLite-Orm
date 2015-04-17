@@ -3,11 +3,12 @@ package com.easylite.model;
 import java.util.Date;
 
 import com.easylite.annotation.Entity;
+import com.easylite.annotation.GenerationType;
 import com.easylite.annotation.Id;
 
 @Entity
 public class Book {
-	@Id
+	@Id(strategy = GenerationType.AUTO)
 	private int id;
 	private String reciever;
 	private boolean isRecieved;
