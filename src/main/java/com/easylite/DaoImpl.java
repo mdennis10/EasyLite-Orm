@@ -13,7 +13,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
-import com.easylite.annotation.GenerationType;
 import com.easylite.annotation.Id;
 import com.easylite.annotation.OrderByType;
 import com.easylite.exception.EasyLiteSqlException;
@@ -23,7 +22,6 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	private final SQLiteDatabase db;
 	private final Class<E> type;
 	private final String tableName;
-	private final GenerationType generationType;
 	Map<String, String> tableKeys; 
 	
 	protected DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type){
@@ -31,7 +29,6 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		this.type = type;
 		this.tableKeys = Table.getTableKeys(type);
 		this.tableName = Table.getTableName(type);
-		this.generationType = Table.getGenerationStrategy(type, tableKeys.get(Table.P_KEY_NAME));
 	}
 	
 	@Override
