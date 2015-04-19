@@ -391,6 +391,19 @@ public class DaoImplTest {
 		Assert.assertEquals(2, notes.size());
 	}
 	
+	@Test public void primaryKeyAutoGenerationTest (){
+		Book book = new Book();
+		Dao<Long, Book> dao = dbLite.getDao(Book.class);
+		long id = dao.create(book);
+		
+		Assert.assertTrue("pimary key not auto generated", id > 0);
+		
+		book.setId(10);
+		id = dao.create(book);
+		Assert.assertTrue("primary key not manually  generated", id == 10);
+	}
+	
+	
 	@Test public void findAllOrderByTest (){
 		ContentValues values = new ContentValues();
 		values.put("id", 11);
