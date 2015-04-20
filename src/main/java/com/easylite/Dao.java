@@ -2,8 +2,6 @@ package com.easylite;
 
 import java.util.List;
 
-import android.database.sqlite.SQLiteDatabase;
-
 import com.easylite.annotation.OrderByType;
 import com.easylite.exception.EasyLiteSqlException;
 
@@ -106,9 +104,17 @@ public interface Dao<K,E> {
 	 * @author Mario Dennis
 	 * @param entity to check if exist. Must contain the primary key of corresponding record
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @return true when batch transactions succeeds, otherwise false
+	 * @return true when entity exist, otherwise false
 	 */
 	public boolean isExist (E entity) throws EasyLiteSqlException;
+	
+	/**
+	 * Check if entity table contains any record
+	 * @author Mario Dennis
+	 * @return true when table is not empty
+	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
+	 */
+	public boolean isExist () throws EasyLiteSqlException; 
 	
 	
 	/**
@@ -131,12 +137,4 @@ public interface Dao<K,E> {
 	 * @return List of all records
 	 */
 	public List<E> findAll (String orderBy,OrderByType orderByType,String whereClause,Object... whereArgs) throws EasyLiteSqlException; 
-	
-	
-	/**
-	 * Get instance of SQLiteDatabase.
-	 * @author Mario Dennis
-	 * @return instance of SQLiteDatabase used by DAO
-	 */
-	public SQLiteDatabase getSqLiteDatabase ();
 }

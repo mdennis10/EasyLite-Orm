@@ -17,6 +17,7 @@ import com.easylite.annotation.Id;
 import com.easylite.annotation.OrderByType;
 import com.easylite.exception.EasyLiteSqlException;
 import com.easylite.exception.IllegalWhereArgumentException;
+import com.easylite.exception.NoSuitablePrimaryKeySuppliedException;
 
 public final class DaoImpl<K,E> implements Dao<K, E>{
 	private final SQLiteDatabase db;
@@ -367,6 +368,11 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 
 	
 	@Override
+	public boolean isExist() throws EasyLiteSqlException {
+		return db.query(tableName, null, null, null, null, null, null)
+				 .moveToFirst();
+	}
+	
 	public SQLiteDatabase getSqLiteDatabase() {
 		return db;
 	}
@@ -462,7 +468,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 	}
 
-	
+	/*
+	 * Adds primary key value to ContentValue 
+	 */
 	private void setPrimaryKey (Field field,String fieldName, Class<?> fieldType,Boolean isPrimaryKey,ContentValues contentValues,E entity) throws IllegalArgumentException, IllegalAccessException{
 		if (!isPrimaryKey)
 			return;
@@ -474,14 +482,6 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			else  return;
 		}
 		
-		else if (fieldType.isAssignableFrom(double.class) || fieldType.equals(Double.class)){
-			 double value = field.getDouble(entity);
-			 if (isPrimaryKey && value != 0)
-					contentValues.put(fieldName, value);
-			else  return;
-		}
-		
-
 		else if (fieldType.isAssignableFrom(long.class) || fieldType.equals(Long.class)){
 			long value = field.getLong(entity);
 			if (isPrimaryKey && value != 0)
@@ -489,5 +489,17 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			else  return;
 		}
 		
+		else if (fieldType.isAssignableFrom(String.class)){
+			String value = (String) field.get(entity);
+			if (isPrimaryKey && value != null && !value.isEmpty())
+				contentValues.put(fieldName, (String) field.get(entity));
+			else 
+				throw new NoSuitablePrimaryKeySuppliedException();;
+		}
+			
+		else
+			throw new NoSuitablePrimaryKeySuppliedException();
 	}
+
+	
 }

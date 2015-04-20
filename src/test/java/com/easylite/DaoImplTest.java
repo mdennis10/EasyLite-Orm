@@ -19,7 +19,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.easylite.annotation.OrderByType;
+import com.easylite.exception.NoSuitablePrimaryKeySuppliedException;
 import com.easylite.model.Book;
+import com.easylite.model.NonNumeric;
 import com.easylite.model.Note;
 
 @RunWith(RobolectricTestRunner.class)
@@ -32,7 +34,7 @@ public class DaoImplTest {
 		Activity activity = Robolectric.buildActivity(Activity.class).create().get();
 		
 		this.dbLite = EasyLite.getInstance(activity);
-		db = dbLite.getDao(Note.class).getSqLiteDatabase();
+		db = ((DaoImpl<Object, Note>) dbLite.getDao(Note.class)).getSqLiteDatabase();
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -360,6 +362,19 @@ public class DaoImplTest {
 		Assert.assertTrue("Note instance not found",dao.isExist(note));
 	}
 	
+	@Test public void isExistAnyRecordExistTest (){
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		Assert.assertFalse("Note record was found",dao.isExist());
+		
+		ContentValues values = new ContentValues();
+		values.put("id", 1);
+		values.put("body", "text");
+		
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+		Assert.assertTrue("No Note record was found",dao.isExist());
+	}
+	
 	@Test public void findAllWithWhereClauseTest (){
 		Date date = new Date();
 		@SuppressWarnings("deprecation")
@@ -391,7 +406,8 @@ public class DaoImplTest {
 		Assert.assertEquals(2, notes.size());
 	}
 	
-	@Test public void primaryKeyAutoGenerationTest (){
+	@Test(expected = NoSuitablePrimaryKeySuppliedException.class) 
+	public void primaryKeyAutoGenerationTest (){
 		Book book = new Book();
 		Dao<Long, Book> dao = dbLite.getDao(Book.class);
 		long id = dao.create(book);
@@ -400,7 +416,17 @@ public class DaoImplTest {
 		
 		book.setId(10);
 		id = dao.create(book);
-		Assert.assertTrue("primary key not manually  generated", id == 10);
+		Assert.assertTrue("primary key not created manually", id == 10);
+		
+		//Test Non Numeric PrimaryKey 
+		NonNumeric nonNumeric = new NonNumeric();
+		Dao<String, NonNumeric> dao2 = dbLite.getDao(NonNumeric.class);
+		id = dao2.create(nonNumeric);//should throw NoSuitablePrimaryKeySuppliedException
+		
+		
+		nonNumeric.setId("mdennis");
+		id = dao2.create(nonNumeric);
+		Assert.assertTrue("Entity with Non-Numeric primary key not stored", id > 0);
 	}
 	
 	
@@ -456,6 +482,7 @@ public class DaoImplTest {
 	@After public void tearDown (){
 		db.execSQL("DELETE FROM Note");
 		db.execSQL("DELETE FROM Book");
+		db.execSQL("DELETE FROM NonNumeric");
 		this.dbLite = null;
 	}
 }
