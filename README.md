@@ -45,6 +45,6 @@ Note note = new Note ();
 dao.create(note);
 
 List<Note> notes = dao.findAll();
-notes = dao.findAll(orderBy,OrderByType.ASC,"author=?",note.author);
+List<Note> notesByArtist = dao.findAll(orderBy,OrderByType.ASC,"author=?",note.author);
 </pre>
 
