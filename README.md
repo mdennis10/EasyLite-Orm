@@ -22,13 +22,13 @@ public class Note {
 </pre>
 
 ##Usage
-Get singleton instance of EasyLite to create Data Access Object
+Get singleton instance of EasyLite to create Data Access Object (DAO)
 <pre>
 Dao<Integer, Note> dao = EasyLite.getInstance(context)
                         .getDao(Note.class);
 </pre>
 
-Once dao is create use it for database operations
+Once dao is createf use it for database operations
 <pre>
 Note note = new Note ();
 dao.create(note);
