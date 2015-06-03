@@ -1,7 +1,16 @@
 # EasyLite-Orm
+
 Very simple Object Relationship Mapping framework (ORM) for Android. 
 
+## Features
+
+- Very minimal configuration.
+- Annotation driven data modeling 
+- POJO Entity Classes that are loosely coupled
+- Use of Data Access Objects for CRUD operations 
+
 ##Configuration
+
 ```xml
 <application>
     <meta-data android:name="DATABASE" android:value="app.db" />
@@ -11,6 +20,7 @@ Very simple Object Relationship Mapping framework (ORM) for Android.
 ```
 
 ##Entity Models
+
 <pre>
 @Entity
 public class Note {
@@ -22,6 +32,7 @@ public class Note {
 </pre>
 
 ##Usage
+
 Get singleton instance of EasyLite to create Data Access Object (DAO)
 <pre>
 Dao<Integer, Note> dao = EasyLite.getInstance(context)
