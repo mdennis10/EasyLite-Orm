@@ -39,7 +39,7 @@ Dao<Integer, Note> dao = EasyLite.getInstance(context)
                         .getDao(Note.class);
 </pre>
 
-Once dao is createf use it for database operations
+Once dao is created, use it for database operations
 <pre>
 Note note = new Note ();
 dao.create(note);
