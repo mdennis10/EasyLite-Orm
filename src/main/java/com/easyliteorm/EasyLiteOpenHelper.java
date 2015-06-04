@@ -20,10 +20,13 @@ import dalvik.system.DexFile;
 
 public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	private Set<Class<?>> entityClasses;
+	private String msg = "No entity class was found in package %s. Please ensure correct package defined in Manifest";
 	
 	protected EasyLiteOpenHelper(Context context) {
 		super(context,ManifestUtil.getDatabaseName(context),null,ManifestUtil.getDatabaseVersion(context));
 		this.entityClasses = getDomainClasses(context);
+		if (entityClasses.isEmpty())
+			Log.e("EasyLite",String.format(msg, ManifestUtil.getModelPackageName(context)));
 	}
 
 	@Override
