@@ -74,7 +74,7 @@ public interface Dao<K,E> {
      * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
      * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and get a count pass "1" as the whereClause.
      */
-	public int deleteAll(String whereClause, String... whereArgs) throws EasyLiteSqlException;
+	public int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException;
 	
 	
 	/**
@@ -86,7 +86,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the number of rows affected
 	 */
-	public int update (E entity,String whereClause,String... whereArgs) throws EasyLiteSqlException;
+	public int update (E entity,String whereClause,Object... whereArgs) throws EasyLiteSqlException;
 	
 	
 	/**

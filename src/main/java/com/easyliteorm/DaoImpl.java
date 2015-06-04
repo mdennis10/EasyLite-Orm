@@ -162,9 +162,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 	@Override
-	public int deleteAll(String whereClause, String... whereArgs) throws EasyLiteSqlException{
+	public int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException{
 		try {
-			return db.delete(tableName, whereClause, whereArgs);
+			return db.delete(tableName, whereClause, formatWhereParams(whereArgs));
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		}
@@ -198,7 +198,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 
 	
 	@Override
-	public int update(E entity,String whereClause,String... whereArgs) throws EasyLiteSqlException{
+	public int update(E entity,String whereClause,Object... whereArgs) throws EasyLiteSqlException{
 		if (entity == null)
 			throw new NullPointerException("null Entity Supplied");
 		
@@ -208,7 +208,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			for (Field field : fields) 
 				putContentValue(values, field, entity);
 			
-			return db.update(tableName, values, whereClause, whereArgs);
+			return db.update(tableName, values, whereClause,formatWhereParams(whereArgs));
 		} catch (SQLException e){
 			throw new EasyLiteSqlException(e);
 		} catch (IllegalArgumentException e) {

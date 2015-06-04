@@ -175,13 +175,13 @@ public class DaoImplTest {
 		long id = db.insert("Note", null, values);
 		Assert.assertTrue("Insertion failed", id > 0);
 		
-		int rowsAffected = dbLite.getDao(Note.class).deleteAll("id=?", new String[]{"4"});
+		int rowsAffected = dbLite.getDao(Note.class).deleteAll("id=?",4);
 		Assert.assertEquals(1, rowsAffected);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void updateMethodThrowNullPointException (){
-		dbLite.getDao(Note.class).update(null,null,new String[]{});
+		dbLite.getDao(Note.class).update(null,null);
 	}
 	
 	@Test public void updateMethodTest (){
@@ -197,7 +197,7 @@ public class DaoImplTest {
 		note.author = "new author";
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		dao.update(note,"id=?",new String[] {Integer.toString(note.id)});
+		dao.update(note,"id=?",note.id);
 		
 		Cursor cursor = db.rawQuery("SELECT * FROM Note WHERE id=?", new String []{Long.toString(id)});
 		if (cursor.moveToFirst()){
@@ -222,7 +222,7 @@ public class DaoImplTest {
 		Assert.assertEquals(1, id);
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		int rowAffected = dao.update(note, "id=?", new String[] {Integer.toString(note.id)});
+		int rowAffected = dao.update(note, "id=?",note.id);
 		Assert.assertTrue("No rows affected, so Date not updated",rowAffected > 0);
 	}
 	
