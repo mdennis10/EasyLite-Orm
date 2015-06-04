@@ -215,6 +215,8 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
 			Log.e("EasyLite", e.getMessage());
+		} catch (IndexOutOfBoundsException e) {
+			return 0;
 		}
 		return 0;
 	}
@@ -244,6 +246,8 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalAccessException e) {
 			Log.e("EasyLite", e.getMessage());
+		}catch (IndexOutOfBoundsException e) {
+			return null;
 		}
 		return null;
 	}
@@ -268,6 +272,8 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalArgumentException e) {
 			Log.e("EasyLite", e.getMessage());
+		} catch (IndexOutOfBoundsException e) {
+			return results;
 		}
 		return results;
 	}
@@ -294,6 +300,8 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			Log.e("EasyLite", e.getMessage());
 		} catch (IllegalArgumentException e) {
 			Log.e("EasyLite", new IllegalWhereArgumentException(e).getMessage());
+		}catch (IndexOutOfBoundsException e) {
+			return results;
 		}
 		return results;
 	}
@@ -307,38 +315,6 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			newWhereArgs[x] = ConverterUtil.convertParamValue(whereArgs[x]);
 		return newWhereArgs;
 	}
-	
-//	public String[] formatWhereParams (String whereClause,String... whereArgs){
-//		if (whereClause != null && !whereClause.isEmpty() && whereArgs != null) {
-//			String[] newWhereArgs;
-//			newWhereArgs = new String[whereArgs.length];
-//			List<String> fieldNames = getWhereParamFields(whereClause);
-//			int size = fieldNames.size();
-//			for (int x = 0; x < size; x++) {
-//				try {
-//					Field field = type.getDeclaredField(fieldNames.get(x));
-//					newWhereArgs[x] = ConverterUtil.convertParamValue(
-//							whereArgs[x], field);
-//				} catch (NoSuchFieldException e) {
-//					Log.e("EasyLite", e.getMessage());
-//				} catch (SecurityException e) {
-//					Log.e("EasyLite", e.getMessage());
-//				}
-//			}
-//			return newWhereArgs;
-//		}
-//		return whereArgs;
-//	}
-//	
-//
-//	public List<String> getWhereParamFields (String whereClause){
-//		Matcher matcher = Pattern.compile("[^\\s>=?]+(?=\\s*[>=?])").matcher(whereClause);
-//		List<String> fieldNames = new ArrayList<String>();
-//		while (matcher.find()) 
-//			fieldNames.add(matcher.group());
-//		return fieldNames;
-//	}
-	
 	
 	@Override
 	public boolean isExist(E entity) throws EasyLiteSqlException {
