@@ -49,7 +49,7 @@ public class Note {
 Get singleton instance of EasyLite to create Data Access Object (DAO)
 <pre>
 Dao<Integer, Note> dao = EasyLite.getInstance(context)
-                        .getDao(Note.class);
+                                 .getDao(Note.class);
 </pre>
 
 Once dao is created, use it for database operations
