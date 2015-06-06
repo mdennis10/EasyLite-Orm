@@ -13,7 +13,9 @@ import com.easyliteorm.annotation.GenerationType;
 import com.easyliteorm.annotation.Id;
 import com.easyliteorm.exception.EasyLiteSqlException;
 import com.easyliteorm.exception.NoPrimaryKeyFoundException;
+import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
 import com.easyliteorm.exception.NotEntityException;
+import com.easyliteorm.exception.UnAuthorizeGenerationTypeException;
 
 public final class Table {	
 	
@@ -105,7 +107,19 @@ public final class Table {
 		try {
 			Field field = clazz.getDeclaredField(primaryKey);
 			Id id = field.getAnnotation(Id.class);
-			return id.strategy();
+			if (id.strategy() == GenerationType.AUTO){
+				Class<?> type = field.getType();
+				
+				/*
+				 * Ensure only data type suitable for 
+				 * GenerationType.AUTO are used
+				 */
+				if (type.isAssignableFrom(long.class) || type.isAssignableFrom(Long.class) ||
+					type.isAssignableFrom(int.class)  || type.isAssignableFrom(Integer.class))
+					return id.strategy();
+				else 
+					throw new UnAuthorizeGenerationTypeException(type);
+			}
 		} catch (NoSuchFieldException e) {
 			Log.e("EasyLite", e.getMessage() + " " +clazz.getName());
 		} catch (SecurityException e) {
@@ -142,9 +156,21 @@ public final class Table {
 		Field[] fields = clazz.getDeclaredFields();
 		for(Field field : fields)
 			if (field.getAnnotation(Id.class) != null){
-				keys.put(P_KEY_NAME, field.getName());
-				keys.put(P_KEY_TYPE, SqliteTypeResolver.resolver(field.getType()));
-				return keys;
+				Class<?> type = field.getType();
+				/*
+				 * Ensure only suitable primary key
+				 * types are used
+				 */
+				if (type.isAssignableFrom(long.class) || type.isAssignableFrom(Long.class) ||
+					type.isAssignableFrom(int.class)  || type.isAssignableFrom(Integer.class) ||
+					type.isAssignableFrom(String.class)){
+				
+					keys.put(P_KEY_NAME, field.getName());
+					keys.put(P_KEY_TYPE, SqliteTypeResolver.resolver(type));
+					return keys;
+				}
+				else
+					throw new NoSuitablePrimaryKeySuppliedException();
 			}
 		throw new NoPrimaryKeyFoundException();
 	}

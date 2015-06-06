@@ -16,9 +16,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.easyliteorm.annotation.Entity;
 import com.easyliteorm.annotation.GenerationType;
+import com.easyliteorm.annotation.Id;
 import com.easyliteorm.exception.NoPrimaryKeyFoundException;
+import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
 import com.easyliteorm.exception.NotEntityException;
+import com.easyliteorm.exception.UnAuthorizeGenerationTypeException;
 import com.easyliteorm.model.Car;
 import com.easyliteorm.model.NoIdEntity;
 import com.easyliteorm.model.Note;
@@ -33,12 +37,25 @@ public class TableTest {
 		this.db = SQLiteDatabase.openOrCreateDatabase(new File(ManifestUtil.getDatabaseName(context)),null);
 	}
 	
+	
 	@Test public void getTableNameTest (){
 		String actual = Table.getTableName(Note.class);
 		Assert.assertEquals("Note", actual);
-		
+
 		actual = Table.getTableName(Car.class);
 		Assert.assertEquals("Car", actual);
+	}
+	
+	@Entity private class MyModel{@Id boolean key;}
+	@Test(expected = NoSuitablePrimaryKeySuppliedException.class)
+	public void noSuitablePrimaryKeySuppliedExceptionIsThrownWhenNotIntLongStringTest (){
+		Table.getTableKeys(MyModel.class);
+	}
+	
+	@Entity private class MyModel2{@Id(strategy = GenerationType.AUTO) String key;}
+	@Test(expected = UnAuthorizeGenerationTypeException.class) 
+	public void unAuthorizeGenerationTypeExceptionForAutoStrategyTest (){
+		Table.getGenerationStrategy(MyModel2.class, "key");
 	}
 	
 	@Test (expected = NotEntityException.class)
@@ -89,6 +106,8 @@ public class TableTest {
 	@After public void tearDown (){
 		db.execSQL("DROP TABLE IF EXISTS Note");
 		db.execSQL("DROP TABLE IF EXISTS Car");
+		db.execSQL("DROP TABLE IF EXISTS MyModel");
+		db.execSQL("DROP TABLE IF EXISTS MyModel2");
 		this.db.close();
 		this.db    = null;
 	}

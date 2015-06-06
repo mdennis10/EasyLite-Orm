@@ -19,7 +19,7 @@ public interface Dao<K,E> {
 	 * @author Mario Dennis
 	 * @param entity instance to save.
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @return the row ID of the newly inserted row, or -1 if an error occurred
+	 * @return the row ID of the newly inserted row, or -1 if an error occurred.A value greater than 0 if primary key is of type String
 	 */
 	public long create (E entity) throws EasyLiteSqlException;
 	

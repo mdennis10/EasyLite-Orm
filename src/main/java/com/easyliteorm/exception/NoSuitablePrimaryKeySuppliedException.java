@@ -1,7 +1,7 @@
 package com.easyliteorm.exception;
 
 /**
- * Constructs a NoSuitablePrimaryKeySuppliedExceptio with 
+ * Constructs a NoSuitablePrimaryKeySuppliedException with 
  * the specified detail message.
  * @author Mario Dennis
  *

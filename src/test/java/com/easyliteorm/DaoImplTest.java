@@ -23,6 +23,7 @@ import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
 import com.easyliteorm.model.Book;
 import com.easyliteorm.model.NonNumeric;
 import com.easyliteorm.model.Note;
+import com.easyliteorm.model.NoteStringKey;
 
 @RunWith(RobolectricTestRunner.class)
 public class DaoImplTest {
@@ -51,6 +52,17 @@ public class DaoImplTest {
 		note.author = "John Doe";
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		long id = dao.create(note);
+		Assert.assertTrue(id > 0);
+	}
+	
+	@Test public void createEntityWithStringPrimaryKeyTest (){
+		NoteStringKey note = new NoteStringKey();
+		note.id = 2;
+		note.body = "Body Text";
+		note.author = "John Doe";
+		
+		Dao<String, NoteStringKey> dao = dbLite.getDao(NoteStringKey.class);
 		long id = dao.create(note);
 		Assert.assertTrue(id > 0);
 	}
@@ -483,6 +495,7 @@ public class DaoImplTest {
 		db.execSQL("DELETE FROM Note");
 		db.execSQL("DELETE FROM Book");
 		db.execSQL("DELETE FROM NonNumeric");
+		db.execSQL("DELETE FROM NoteStringKey");
 		dbLite.getEasyLiteOpenHelper().close();
 		this.dbLite = null;
 	}
