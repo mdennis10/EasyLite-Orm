@@ -94,9 +94,9 @@
 		    <groupId>org.eluder.coveralls</groupId>
 		    <artifactId>coveralls-maven-plugin</artifactId>
 		    <version>3.1.0</version>
-<!-- 		    <configuration>
+		    <configuration>
 		        <repoToken>5qZ9eXELfgdOfFiIAQsPgThGqz5v6M7LF</repoToken>
-		    </configuration> -->
+		    </configuration>
 		</plugin>
 		
 		<!-- Javadoc Generation Plugin -->
