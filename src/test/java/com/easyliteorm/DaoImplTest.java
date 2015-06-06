@@ -483,6 +483,7 @@ public class DaoImplTest {
 		db.execSQL("DELETE FROM Note");
 		db.execSQL("DELETE FROM Book");
 		db.execSQL("DELETE FROM NonNumeric");
+		dbLite.getEasyLiteOpenHelper().close();
 		this.dbLite = null;
 	}
 }
