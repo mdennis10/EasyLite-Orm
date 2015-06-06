@@ -10,12 +10,12 @@ Very simple Object Relationship Mapping framework (ORM) for Android.
 - Use of Data Access Objects for CRUD operations 
 
 ##Installation
-###Gradle
+####Gradle
 <pre>
 compile 'com.easyliteorm:easyliteorm:0.0.1.Beta'
 </pre>
 
-###Maven
+####Maven
 ```xml
 <dependency>
   <groupId>com.easyliteorm</groupId>
@@ -23,4 +23,41 @@ compile 'com.easyliteorm:easyliteorm:0.0.1.Beta'
   <version>0.0.1.Beta</version>
 </dependency>
 ```
+
+##Basic Setup
+#####Configuration 
+Add information about datababse to manifest.xml
+```xml
+<application>
+    <meta-data android:name="DATABASE" android:value="dbname.db" />
+    <meta-data android:name="VERSION" android:value="1" />
+    <meta-data android:name="MODEL_PACKAGE_NAME" android:value="com.somepackagename.model" />
+</application>
+```
+Define Entity Model
+<pre>
+@Entity
+public class Note {
+	@Id(strategy = GenerationType.AUTO)
+	public int id;
+	public String body;
+	public String author;
+}
+</pre>
+
+#####Usage
+Get singleton instance of EasyLite to create Data Access Object (DAO)
+<pre>
+Dao<Integer, Note> dao = EasyLite.getInstance(context)
+                        .getDao(Note.class);
+</pre>
+
+Once dao is created, use it for database operations
+<pre>
+Note note = new Note ();
+dao.create(note);
+
+List<Note> notes = dao.findAll();
+List<Note> notesByArtist = dao.findAll(orderBy,OrderByType.ASC,"author=?",note.author);
+</pre>
 
