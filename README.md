@@ -1,4 +1,4 @@
-# EasyLite-Orm  [![Build Status](https://travis-ci.org/mdennis10/EasyLite-Orm.svg?branch=master)](https://travis-ci.org/mdennis10/EasyLite-Orm)  [![Coverage Status](https://coveralls.io/repos/mdennis10/EasyLite-Orm/badge.svg)](https://coveralls.io/r/mdennis10/EasyLite-Orm)
+# EasyliteOrm  [![Build Status](https://travis-ci.org/mdennis10/EasyLite-Orm.svg?branch=master)](https://travis-ci.org/mdennis10/EasyLite-Orm)  [![Coverage Status](https://coveralls.io/repos/mdennis10/EasyLite-Orm/badge.svg)](https://coveralls.io/r/mdennis10/EasyLite-Orm)
 
 Very simple Object Relationship Mapping framework (ORM) for Android. 
 
@@ -61,3 +61,4 @@ List<Note> notes = dao.findAll();
 List<Note> notesByArtist = dao.findAll(orderBy,OrderByType.ASC,"author=?",note.author);
 </pre>
 
+[Get Started with EasyliteOrm](https://github.com/mdennis10/EasyLite-Orm/wiki)!
