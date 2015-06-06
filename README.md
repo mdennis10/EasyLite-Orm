@@ -26,7 +26,7 @@ compile 'com.easyliteorm:easyliteorm:1.0.1'
 
 ##Basic Setup
 #####Configuration 
-Add information about datababse to manifest.xml
+Add information about datababse to AndroidManifest.xml
 ```xml
 <application>
     <meta-data android:name="DATABASE" android:value="dbname.db" />
