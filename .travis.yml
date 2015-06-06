@@ -4,3 +4,6 @@ jdk: oraclejdk7
 android:
   components:
     - build-tools-19.0.1
+    
+after_success:
+  - mvn clean cobertura:cobertura org.eluder.coveralls:coveralls-maven-plugin:report
