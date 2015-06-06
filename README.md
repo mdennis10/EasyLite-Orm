@@ -50,15 +50,10 @@ Get singleton instance of EasyLite to create Data Access Object (DAO)
 <pre>
 Dao<Integer, Note> dao = EasyLite.getInstance(context)
                                  .getDao(Note.class);
-</pre>
-
-Once dao is created, use it for database operations
-<pre>
 Note note = new Note ();
 dao.create(note);
-
 List<Note> notes = dao.findAll();
-List<Note> notesByArtist = dao.findAll(orderBy,OrderByType.ASC,"author=?",note.author);
+
 </pre>
 
 [Get Started with EasyliteOrm](https://github.com/mdennis10/EasyLite-Orm/wiki)!
