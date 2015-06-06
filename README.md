@@ -1,4 +1,5 @@
 # EasyLite-Orm
+[![Build Status](https://travis-ci.org/mdennis10/EasyLite-Orm.svg?branch=master)](https://travis-ci.org/mdennis10/EasyLite-Orm)
 
 Very simple Object Relationship Mapping framework (ORM) for Android. 
 
