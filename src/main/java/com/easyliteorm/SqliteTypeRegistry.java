@@ -6,6 +6,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * SqliteTypeRegistry contains a registry of all supported 
+ * data types and their associated Sqlite column types.
+ * 
+ * @author Mario Dennis
+ */
 public class SqliteTypeRegistry {
 
 	private final Map<String, String> mapRegistry = new HashMap<String, String>();
@@ -13,11 +19,20 @@ public class SqliteTypeRegistry {
 	protected SqliteTypeRegistry() {
 		init();
 	}
+	
 
+	/**
+	 * Get instance of registry.
+	 * @author Mario Dennis
+	 * @return Map<String,String>
+	 */
 	protected final Map<String, String> getRegistry() {
 		return mapRegistry;
 	}
 	
+	/*
+	 * Registers default support data types
+	 */
 	private void init (){
 		register(String.class,SqliteType.TEXT);
 		register(char.class,SqliteType.TEXT);
@@ -44,14 +59,33 @@ public class SqliteTypeRegistry {
 	}
 	
 
+	/**
+	 * Registers data type
+	 * @author Mario Dennis
+	 * @param clazz - Class to register
+	 * @param sqliteType - associated SQLite data type 
+	 */
 	public <T> void register(Class<T> clazz,SqliteType sqliteType) {
 		getRegistry().put(clazz.getName(),sqliteType.getValue());
 	}
 
+	
+	/**
+	 * Gets SQLite type associated with class.
+	 * @author Mario Dennis
+	 * @param clazz 
+	 * @return SQLite data type when class is registered, otherwise returns null
+	 */
 	public <T> String resolve(Class<T> clazz) {
 		return getRegistry().get(clazz.getName());
 	}
 
+	
+	/**
+	 * Check if a class is registered
+	 * @param clazz
+	 * @return
+	 */
 	public <T> boolean isRegistered(Class<T> clazz) {
 		return (getRegistry().get(clazz.getName()) != null);
 	}

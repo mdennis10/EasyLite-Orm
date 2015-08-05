@@ -107,6 +107,13 @@ public class SqliteTypeRegistryTest {
 		Assert.assertEquals(SqliteType.INTEGER.getValue(), registry.get(key));
 	}
 	
+	@Test public void resolve_returnNullWhenTypeIsNotRegistered (){
+		Map<String, String> registry = sqliteTypeRegistry.getRegistry();
+		registry.remove(String.class.getName());
+		
+		Assert.assertNull(sqliteTypeRegistry.resolve(String.class));
+	}
+	
 	
 	@Test public void resolverTest (){
 		Map<String, String> registry = sqliteTypeRegistry.getRegistry();
