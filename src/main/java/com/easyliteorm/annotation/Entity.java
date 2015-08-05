@@ -8,11 +8,11 @@ import java.lang.annotation.Target;
 /**
  * Makes class has Database Entity
  * @author Mario Dennis
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Entity {
+	
 	/**
 	 * Specifies the name of the entity table 
 	 * @author Mario Dennis 

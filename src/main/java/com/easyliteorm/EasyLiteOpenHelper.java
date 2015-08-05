@@ -13,7 +13,7 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	
 	protected EasyLiteOpenHelper(Context context) {
 		super(context,ManifestUtil.getDatabaseName(context),null,ManifestUtil.getDatabaseVersion(context));
-		this.entityClasses = new FileLoader().getDomainClasses(context);
+		this.entityClasses = new EntityScanner().getDomainClasses(context);
 		if (entityClasses.isEmpty())
 			Log.e("EasyLite",String.format(msg, ManifestUtil.getModelPackageName(context)));
 	}

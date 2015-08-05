@@ -18,7 +18,7 @@ import com.easyliteorm.annotation.Entity;
 import dalvik.system.DexFile;
 
 
-public class FileLoader {
+public class EntityScanner {
 	
 	/**
 	 * Get Domain Entity Classes

@@ -18,12 +18,12 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import com.easyliteorm.model.Book;
 
 @RunWith(RobolectricTestRunner.class)
-public class FileLoaderTest {
-	private FileLoader fileLoader;
+public class EntityScannerTest {
+	private EntityScanner fileLoader;
 	private Context context;
 	@Before public void setup (){
 		this.context = Robolectric.buildActivity(Activity.class).create().get();
-		this.fileLoader = new FileLoader();
+		this.fileLoader = new EntityScanner();
 	}
 	
 	@Test public void getAllClassesTest () throws NameNotFoundException, IOException{
