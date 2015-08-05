@@ -26,7 +26,7 @@ public class EntityScanner {
 	 * @param context android
 	 * @return Set of entity classes
 	 */
-	public Set<Class<?>> getDomainClasses(Context context) {
+	public static Set<Class<?>> getDomainClasses(Context context) {
 		Set<Class<?>> domainClasses = new HashSet<Class<?>>();
 		try {
 			for (String className : getAllClasses(context)) {
@@ -71,7 +71,7 @@ public class EntityScanner {
 	  * @throws PackageManager.NameNotFoundException
 	  * @throws IOException
 	  */
-	 protected final List<String> getAllClasses(Context context) throws PackageManager.NameNotFoundException, IOException {
+	 protected static List<String> getAllClasses(Context context) throws PackageManager.NameNotFoundException, IOException {
 		 String path = getSourcePath(context);
 		 List<String> classNames = new ArrayList<String>();
 		 try {
@@ -123,7 +123,7 @@ public class EntityScanner {
 		}
 	}	
 
-	private String getSourcePath(Context context) throws PackageManager.NameNotFoundException {
+	private static String getSourcePath(Context context) throws PackageManager.NameNotFoundException {
 		return context.getPackageManager().getApplicationInfo(context.getPackageName(), 0).sourceDir;
 	}
 }
