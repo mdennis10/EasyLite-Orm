@@ -11,12 +11,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
-import com.easyliteorm.model.NoIdEntity;
-import com.easyliteorm.model.TableDoesNotExist;
-
 import android.app.Activity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.easyliteorm.model.NoIdEntity;
+import com.easyliteorm.model.TableDoesNotExist;
 
 @RunWith(RobolectricTestRunner.class)
 public class EasyLiteOpenHelperTest {
@@ -45,6 +45,7 @@ public class EasyLiteOpenHelperTest {
 			Assert.assertTrue(result);
 		}
 	}
+	
 	
 //	@Test public void onUpgradeTest (){
 //		int version = ManifestUtil.getDatabaseVersion(context);
