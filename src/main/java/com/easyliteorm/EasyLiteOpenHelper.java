@@ -115,7 +115,11 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 				 String classDirectoryName = urls.nextElement().getFile();
 				 if (classDirectoryName.contains("bin") || classDirectoryName.contains("classes")) {
 					 File classDirectory = new File(classDirectoryName);
-					 for (File filePath : classDirectory.listFiles()) {
+					 File[] classfiles = classDirectory.listFiles();
+					 if (classfiles == null)
+						 break;
+					 
+					 for (File filePath : classfiles) {
 						 populateFiles(filePath, fileNames, "");
 					 }
 					 classNames.addAll(fileNames);
