@@ -10,11 +10,13 @@ import android.util.Log;
 public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	private Set<Class<?>> entityClasses;
 	private final String msg = "No entity class was found in package %s. Please ensure correct package defined in Manifest";
+	private final SqliteTypeRegistry sqliteTypeRegistry;
 	
-	protected EasyLiteOpenHelper(Context context) {
+	protected EasyLiteOpenHelper(Context context, SqliteTypeRegistry sqliteTypeRegistry) {
 		super(context,ManifestUtil.getDatabaseName(context),null,ManifestUtil.getDatabaseVersion(context));
 		
-		entityClasses = EntityScanner.getDomainClasses(context);
+		this.sqliteTypeRegistry = sqliteTypeRegistry;
+		this.entityClasses = EntityScanner.getDomainClasses(context);
 		
 		if (entityClasses.isEmpty())
 			Log.e("EasyLite",String.format(msg, ManifestUtil.getModelPackageName(context)));
@@ -22,14 +24,16 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+		TableUtil table = new TableUtil(sqliteTypeRegistry);
 		for (Class<?> clazz : entityClasses)
-			Table.createTable(db, clazz);
+			table.createTable(db, clazz);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		TableUtil table = new TableUtil(sqliteTypeRegistry);
 		for(Class<?> clazz : entityClasses)
-			Table.dropTable(db, clazz);
+			table.dropTable(db, clazz);
 		
 		onCreate(db);//recreates database schema
 	}

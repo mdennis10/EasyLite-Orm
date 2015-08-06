@@ -28,8 +28,8 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	protected DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type){
 		this.db = openHelper.getWritableDatabase();
 		this.type = type;
-		this.tableKeys = Table.getTableKeys(type);
-		this.tableName = Table.getTableName(type);
+		this.tableKeys = TableUtil.getTableKeys(type);
+		this.tableName = TableUtil.getTableName(type);
 	}
 	
 	@Override
@@ -82,13 +82,13 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		try {
 			if (entities != null && !entities.isEmpty()){
 				StringBuilder sql = new StringBuilder();
-				String pKeyName = tableKeys.get(Table.P_KEY_NAME);
+				String pKeyName = tableKeys.get(TableUtil.P_KEY_NAME);
 				sql.append("INSERT OR REPLACE INTO ")
 				   .append(tableName)
 				   .append(" (")
 				   .append(pKeyName);
 				
-				Map<String, String> columns = Table.getTableColumns(type);
+				Map<String, String> columns = TableUtil.getTableColumns(type);
 				for (String column : columns.keySet())
 					sql.append(",")
 					   .append(column);
@@ -125,7 +125,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	
 
 	private String[] bindArgs(SQLiteStatement statement, E entity,Map<String, String> columns) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		Object pKeyRaw = getFieldValue(type.getDeclaredField(tableKeys.get(Table.P_KEY_NAME)), entity);
+		Object pKeyRaw = getFieldValue(type.getDeclaredField(tableKeys.get(TableUtil.P_KEY_NAME)), entity);
 		String pKey = ConverterUtil.toString(pKeyRaw.getClass(), pKeyRaw);
 		String[] args = new String[columns.size() + 1];
 		int position = 0;
@@ -184,7 +184,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 					@SuppressWarnings("unchecked")
 					K key = (K) field.get(entity);
 					String[] args = {ConverterUtil.toString(type, key)};
-					return db.delete(tableName, tableKeys.get(Table.P_KEY_NAME) + "=?", args);
+					return db.delete(tableName, tableKeys.get(TableUtil.P_KEY_NAME) + "=?", args);
 				}
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
@@ -227,7 +227,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		sql.append("SELECT * FROM ")
 		   .append(tableName)
 		   .append(" WHERE ")
-		   .append(tableKeys.get(Table.P_KEY_NAME))
+		   .append(tableKeys.get(TableUtil.P_KEY_NAME))
 		   .append("=?");
 		
 		String pKey = ConverterUtil.toString(type, key);
@@ -318,7 +318,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	
 	@Override
 	public boolean isExist(E entity) throws EasyLiteSqlException {
-		String pKeyName = tableKeys.get(Table.P_KEY_NAME);
+		String pKeyName = tableKeys.get(TableUtil.P_KEY_NAME);
 		String pkey = "";
 		try {
 			Field field = type.getDeclaredField(pKeyName);

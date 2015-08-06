@@ -5,9 +5,11 @@ import android.content.Context;
 public final class EasyLite {
 	private static EasyLite INSTANCE;
 	protected final EasyLiteOpenHelper openHelper;
+	private final SqliteTypeRegistry typeRegistry;
 	
 	private EasyLite(Context context) {
-		this.openHelper = new EasyLiteOpenHelper(context);
+		this.typeRegistry = new SqliteTypeRegistry();
+		this.openHelper = new EasyLiteOpenHelper(context,typeRegistry);
 	}
 	
 	
@@ -44,5 +46,25 @@ public final class EasyLite {
 	 */
 	public EasyLiteOpenHelper getEasyLiteOpenHelper (){
 		return openHelper;
+	}
+	
+
+	/**
+	 * Check if class type registered
+	 * @param clazz
+	 * @return true if registered, otherwise false
+	 */
+	public boolean isTypeRegistered(Class<String> clazz) {
+		return getSqlTypeRegistry().isRegistered(clazz);
+	}
+	
+	
+	protected final SqliteTypeRegistry getSqlTypeRegistry (){
+		return typeRegistry;
+	}
+
+
+	public void registerType(Class<String> clazz, SqliteType sqliteType) {
+		getSqlTypeRegistry().register(clazz, sqliteType);
 	}
 }

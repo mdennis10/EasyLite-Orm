@@ -39,9 +39,29 @@ public class EasyLiteTest {
 		Assert.assertNotNull(dao);
 	}
 	
+	@Test public void isTypeRegisteredTest (){
+		boolean result = easyLite.isTypeRegistered(String.class);
+		Assert.assertTrue(result);
+		
+		easyLite.getSqlTypeRegistry()
+			    .getRegistry()
+			    .remove(String.class.getName());
+		
+		result = easyLite.isTypeRegistered(String.class);
+		Assert.assertFalse(result);
+	}
+	
+	
+	@Test public void registerTypeTest (){
+		easyLite.registerType(String.class,SqliteType.REAL);
+		SqliteType result = easyLite.getSqlTypeRegistry().resolve(String.class);
+		Assert.assertEquals(SqliteType.REAL, result);
+	}
+	
 	@After public void tearDown (){
 		this.context = null;
 		this.db.close();
 		this.db    = null;
+		this.easyLite = null;
 	}
 }

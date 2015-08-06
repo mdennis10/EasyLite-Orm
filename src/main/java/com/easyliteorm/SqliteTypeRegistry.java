@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class SqliteTypeRegistry {
 
-	private final Map<String, String> mapRegistry = new HashMap<String, String>();
+	private final Map<String, SqliteType> mapRegistry = new HashMap<String, SqliteType>();
 	
 	protected SqliteTypeRegistry() {
 		init();
@@ -26,7 +26,7 @@ public class SqliteTypeRegistry {
 	 * @author Mario Dennis
 	 * @return Map<String,String>
 	 */
-	protected final Map<String, String> getRegistry() {
+	protected final Map<String, SqliteType> getRegistry() {
 		return mapRegistry;
 	}
 	
@@ -66,7 +66,7 @@ public class SqliteTypeRegistry {
 	 * @param sqliteType - associated SQLite data type 
 	 */
 	public <T> void register(Class<T> clazz,SqliteType sqliteType) {
-		getRegistry().put(clazz.getName(),sqliteType.getValue());
+		getRegistry().put(clazz.getName(),sqliteType);
 	}
 
 	
@@ -76,7 +76,7 @@ public class SqliteTypeRegistry {
 	 * @param clazz 
 	 * @return SQLite data type when class is registered, otherwise returns null
 	 */
-	public <T> String resolve(Class<T> clazz) {
+	public <T> SqliteType resolve(Class<T> clazz) {
 		return getRegistry().get(clazz.getName());
 	}
 
