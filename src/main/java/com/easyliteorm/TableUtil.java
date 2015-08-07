@@ -21,10 +21,8 @@ public final class TableUtil {
 	
 	protected static final String P_KEY_NAME = "PRIMARY_KEY_NAME";
 	protected static final String P_KEY_TYPE = "PRIMARY_KEY_TYPE";
-	private final SqliteTypeRegistry sqliteTypeRegistry;
 	
-	protected TableUtil(SqliteTypeRegistry sqliteTypeRegistry) {
-		this.sqliteTypeRegistry = sqliteTypeRegistry;
+	protected TableUtil() {
 	}
 	
 	/**
@@ -86,7 +84,7 @@ public final class TableUtil {
 		   .append(" PRIMARY KEY ");
 		
 		GenerationType generationType = getGenerationStrategy(clazz, keys.get(P_KEY_NAME));
-		if ( generationType == GenerationType.AUTO)
+		if (generationType == GenerationType.AUTO)
 			sql.append("AUTOINCREMENT");
 
 		for (String columnName: columns.keySet())

@@ -88,7 +88,7 @@ public class TableUtilTest {
 	
 	@Test public void dropTableTest (){
 		db.execSQL("CREATE TABLE Note (id INTEGER PRIMARY KEY)");
-		TableUtil table = new TableUtil(new SqliteTypeRegistry());
+		TableUtil table = new TableUtil();
 		table.dropTable(db,Note.class);
 		
 		String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";
@@ -97,7 +97,7 @@ public class TableUtilTest {
 	}
 	
 	@Test public void createTableTest (){
-		TableUtil table = new TableUtil(new SqliteTypeRegistry());
+		TableUtil table = new TableUtil();
 		table.createTable(db, Note.class);
 		
 		String sql = "SELECT name FROM sqlite_master WHERE type='table' AND name=?";

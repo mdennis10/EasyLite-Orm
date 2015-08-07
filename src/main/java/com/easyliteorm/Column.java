@@ -1,9 +1,12 @@
 package com.easyliteorm;
 
+import com.easyliteorm.annotation.GenerationType;
+
 public class Column {
 	private String name;
 	private SqliteType sqliteType;
 	private ColumnType columnType;
+	private GenerationType generatorType;
 
 	public String getName() {
 		return name;
@@ -27,6 +30,14 @@ public class Column {
 	
 	public void setColumnType(ColumnType columnType) {
 		this.columnType = columnType;
+	}
+
+	public GenerationType getGenerationStrategy() {
+		return generatorType;
+	}
+
+	public void setGenerationType(GenerationType generatorStrategy) {
+		this.generatorType = generatorStrategy;
 	}
 	
 }

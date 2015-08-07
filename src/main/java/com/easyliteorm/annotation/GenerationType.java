@@ -21,5 +21,11 @@ public enum GenerationType {
 	 * for each entity
 	 * @author Mario Dennis
 	 */
-	MANUAL;
+	MANUAL,
+	
+	/**
+	 * This used internally when
+	 * field is a none key field 
+	 */
+	NONE;
 }

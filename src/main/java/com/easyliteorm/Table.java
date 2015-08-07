@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.easyliteorm.annotation.GenerationType;
 import com.easyliteorm.annotation.Id;
 
 public class Table<T> {
@@ -30,15 +31,17 @@ public class Table<T> {
 		columns = new HashSet<Column>();
 		Field[] fields = entity.getDeclaredFields();
 		for (Field field : fields)
-			setColumnField(field.getName(),typeRegistry.resolve(field.getType()), resolveColumnType(field));
+			setColumnField(field.getName(),typeRegistry.resolve(field.getType()), 
+					       resolveColumnType(field),resolveGenerationType(field));
 	}
 	
 	
-	protected void setColumnField (String name,SqliteType sqliteType,ColumnType columnType){
+	protected void setColumnField (String name,SqliteType sqliteType,ColumnType columnType,GenerationType generationType){
 		Column column = new Column();
 		column.setName(name);
 		column.setColumnType(columnType);
 		column.setSqliteType(sqliteType);
+		column.setGenerationType(generationType);
 		columns.add(column);
 	}
 	
@@ -50,4 +53,12 @@ public class Table<T> {
 		
 		return ColumnType.REGULAR;
 	}	
+	
+	protected GenerationType resolveGenerationType(Field field){
+		Id id = field.getAnnotation(Id.class);
+		if (id != null)
+			return id.strategy();
+		
+		return GenerationType.NONE;
+	}
 }

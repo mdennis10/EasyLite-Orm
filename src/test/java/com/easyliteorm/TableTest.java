@@ -1,5 +1,6 @@
 package com.easyliteorm;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import org.junit.After;
@@ -8,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.easyliteorm.annotation.Entity;
+import com.easyliteorm.annotation.GenerationType;
 import com.easyliteorm.model.Book;
 import com.easyliteorm.model.Note;
 
@@ -41,6 +43,20 @@ public class TableTest {
 		Set<Column> result = book.getColumns();
 		Assert.assertNotNull(result);
 		Assert.assertFalse(result.isEmpty());
+		
+		Iterator<Column> iterator = result.iterator();
+		while (iterator.hasNext()){
+			Column column = iterator.next();
+			Assert.assertNotNull(column.getName());
+			Assert.assertFalse(column.getName().isEmpty());
+			
+			Assert.assertNotNull(column.getColumnType());
+
+			Assert.assertNotNull(column.getSqliteType());
+			Assert.assertFalse(column.getSqliteType().getValue().isEmpty());
+			
+			Assert.assertNotNull(column.getGenerationStrategy());
+		}
 	}
 	
 	@Test public void resolveColumnTypeTest () throws NoSuchFieldException, SecurityException{
@@ -53,6 +69,18 @@ public class TableTest {
 		columnType = table.resolveColumnType(Book.class.getDeclaredField("reciever"));
 		Assert.assertNotNull(columnType);
 		Assert.assertEquals(ColumnType.REGULAR, columnType);
+	}
+	
+	@Test public void resolveGenerationTypeTest () throws NoSuchFieldException, SecurityException{
+		Table<Book> table = new Table<Book>(Book.class, typeRegistry);
+		
+		GenerationType result = table.resolveGenerationType(Book.class.getDeclaredField("id"));
+		Assert.assertNotNull(result);
+		Assert.assertEquals(GenerationType.AUTO, result);
+		
+		result = table.resolveGenerationType(Book.class.getDeclaredField("reciever"));
+		Assert.assertNotNull(result);
+		Assert.assertEquals(GenerationType.NONE, result);
 	}
 	
 	@After public void tearDown (){
