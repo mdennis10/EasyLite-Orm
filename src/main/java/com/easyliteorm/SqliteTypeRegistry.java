@@ -31,7 +31,7 @@ public class SqliteTypeRegistry {
 	}
 	
 	/*
-	 * Registers default support data types
+	 * Registers default data types
 	 */
 	private void init (){
 		register(String.class,SqliteType.TEXT);

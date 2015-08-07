@@ -6,7 +6,7 @@ package com.easyliteorm.exception;
  * @author Mario Dennis
  *
  */
-public class NoPrimaryKeyFoundException extends RuntimeException {
+public class NoPrimaryKeyFoundException extends Exception {
 	private static final long serialVersionUID = -2105458566036231564L;
 
 	@Override

@@ -3,27 +3,31 @@ package com.easyliteorm;
 import android.content.Context;
 
 public final class EasyLite {
-	private static EasyLite INSTANCE;
 	protected final EasyLiteOpenHelper openHelper;
 	private final SqliteTypeRegistry typeRegistry;
 	
-	private EasyLite(Context context) {
+	public EasyLite(Context context) {
 		this.typeRegistry = new SqliteTypeRegistry();
 		this.openHelper = new EasyLiteOpenHelper(context,typeRegistry);
 	}
 	
 	
 	/**
-	 * Gets Singleton instance of EasyLite
+	 * This method does not return a singleton instance
+	 * and will be removed from future releases. Instead
+	 * it returns a new instance of EasyLite.
+	 * <pre>
+	 * {@code
+	 * 		EasyLite easyLite = new EasyLite(context);
+	 * }
+	 * <pre>
 	 * @author Mario Dennis
 	 * @param context android 
 	 * @return singleton instance of EasyLite
 	 */
-	public synchronized static EasyLite getInstance(Context context) {
-		if (INSTANCE == null){
-			INSTANCE = new EasyLite(context);
-		}
-		return INSTANCE;
+	@Deprecated
+	public static EasyLite getInstance(Context context) {
+		return new EasyLite(context);
 	}
 	
 	
@@ -34,7 +38,7 @@ public final class EasyLite {
 	 * @return Dao instance
 	 */
 	public final <K,E> Dao<K, E> getDao (Class<E> type) {
-		return new DaoImpl<K, E>(openHelper,type);
+		return new DaoImpl<K, E>(openHelper,type,typeRegistry);
 	}
 	
 	
@@ -44,7 +48,7 @@ public final class EasyLite {
 	 * @author Mario Dennis
 	 * @return EasyLiteOpenHelper
 	 */
-	public EasyLiteOpenHelper getEasyLiteOpenHelper (){
+	protected final EasyLiteOpenHelper getEasyLiteOpenHelper (){
 		return openHelper;
 	}
 	
@@ -54,7 +58,7 @@ public final class EasyLite {
 	 * @param clazz
 	 * @return true if registered, otherwise false
 	 */
-	public boolean isTypeRegistered(Class<String> clazz) {
+	public final boolean isTypeRegistered(Class<String> clazz) {
 		return getSqlTypeRegistry().isRegistered(clazz);
 	}
 	
@@ -64,7 +68,7 @@ public final class EasyLite {
 	}
 
 
-	public void registerType(Class<String> clazz, SqliteType sqliteType) {
+	public final void registerType(Class<String> clazz, SqliteType sqliteType) {
 		getSqlTypeRegistry().register(clazz, sqliteType);
 	}
 }

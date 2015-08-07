@@ -16,7 +16,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.easyliteorm.model.NoIdEntity;
-import com.easyliteorm.model.TableDoesNotExist;
+import com.easyliteorm.model.NonNumeric;
 
 @RunWith(RobolectricTestRunner.class)
 public class EasyLiteOpenHelperTest {
@@ -31,10 +31,16 @@ public class EasyLiteOpenHelperTest {
 		this.openHelper = new EasyLiteOpenHelper(context,new SqliteTypeRegistry());
 		
 		entities = openHelper.getEntityClasses();
-		entities.remove(TableDoesNotExist.class);
-		entities.remove(NoIdEntity.class);	
 	}
 	
+	@Test public void invalidEntityClassesAreRemove (){
+		int size = entities.size();
+		openHelper.onCreate(db);
+		
+		Assert.assertTrue(size > entities.size());
+		Assert.assertFalse(entities.contains(NoIdEntity.class));
+		Assert.assertFalse(entities.contains(NonNumeric.class));
+	}
 	
 	@Test public void onCreateTest (){
 		openHelper.onCreate(db);	

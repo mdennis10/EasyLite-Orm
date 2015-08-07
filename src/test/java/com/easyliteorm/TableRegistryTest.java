@@ -31,17 +31,17 @@ public class TableRegistryTest {
 	@Test public void addTableTest (){		
 		tableRegistry.addTable(Book.class);
 		
-		Map<String, Table<?>> registry = tableRegistry.getRegistry();
-		Table<?> result = registry.get(Book.class.getSimpleName());
+		Map<String, Table> registry = tableRegistry.getRegistry();
+		Table result = registry.get(Book.class.getSimpleName());
 		Assert.assertNotNull(result);
 	}
 	
 	
 	@Test public void getRegisteredTablesTest (){
 		tableRegistry.getRegistry()
-		             .put("Book", new Table<Book>(Book.class,typeRegistry));
+		             .put("Book", new Table(Book.class,typeRegistry));
 		
-		Set<Table<?>> result = tableRegistry.getRegisteredTables();
+		Set<Table> result = tableRegistry.getRegisteredTables();
 		Assert.assertNotNull(result);
 		Assert.assertFalse(result.isEmpty());
 	}

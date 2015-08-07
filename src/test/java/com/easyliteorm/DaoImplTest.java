@@ -23,18 +23,19 @@ import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
 import com.easyliteorm.model.Book;
 import com.easyliteorm.model.NonNumeric;
 import com.easyliteorm.model.Note;
-import com.easyliteorm.model.NoteStringKey;
 
 @RunWith(RobolectricTestRunner.class)
 public class DaoImplTest {
 	
 	private EasyLite dbLite;
 	private SQLiteDatabase db;
-
+	private SqliteTypeRegistry typeRegistry;
+	
 	public DaoImplTest() {
 		Activity activity = Robolectric.buildActivity(Activity.class).create().get();
 		
-		this.dbLite = EasyLite.getInstance(activity);
+		this.dbLite = new EasyLite(activity);
+		this.typeRegistry = dbLite.getSqlTypeRegistry();
 		db = ((DaoImpl<Object, Note>) dbLite.getDao(Note.class)).getSqLiteDatabase();
 	}
 
@@ -52,17 +53,6 @@ public class DaoImplTest {
 		note.author = "John Doe";
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		long id = dao.create(note);
-		Assert.assertTrue(id > 0);
-	}
-	
-	@Test public void createEntityWithStringPrimaryKeyTest (){
-		NoteStringKey note = new NoteStringKey();
-		note.id = 2;
-		note.body = "Body Text";
-		note.author = "John Doe";
-		
-		Dao<String, NoteStringKey> dao = dbLite.getDao(NoteStringKey.class);
 		long id = dao.create(note);
 		Assert.assertTrue(id > 0);
 	}
@@ -478,7 +468,7 @@ public class DaoImplTest {
 	}
 	
 	@Test public void formatWhereParamsTest (){
-		DaoImpl<Integer, Note> dao = new DaoImpl<Integer, Note>(dbLite.getEasyLiteOpenHelper(), Note.class);
+		DaoImpl<Integer, Note> dao = new DaoImpl<Integer, Note>(dbLite.getEasyLiteOpenHelper(), Note.class,typeRegistry);
 		Date date = new Date ();
 		String[] result = dao.formatWhereParams(true,false,"Mario",2.1,1,date,Long.parseLong("1"));
 		Assert.assertEquals("1", result[0]); //return String representation of boolean true
@@ -494,9 +484,8 @@ public class DaoImplTest {
 	@After public void tearDown (){
 		db.execSQL("DELETE FROM Note");
 		db.execSQL("DELETE FROM Book");
-		db.execSQL("DELETE FROM NonNumeric");
-		db.execSQL("DELETE FROM NoteStringKey");
 		dbLite.getEasyLiteOpenHelper().close();
 		this.dbLite = null;
+		this.typeRegistry = null;
 	}
 }

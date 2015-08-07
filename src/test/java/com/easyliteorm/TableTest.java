@@ -11,6 +11,7 @@ import org.junit.Test;
 import com.easyliteorm.annotation.Entity;
 import com.easyliteorm.annotation.GenerationType;
 import com.easyliteorm.model.Book;
+import com.easyliteorm.model.NoIdEntity;
 import com.easyliteorm.model.Note;
 
 public class TableTest {
@@ -23,7 +24,7 @@ public class TableTest {
 	@Test public void getNameTest (){
 		String tableName = Book.class.getSimpleName();
 		
-		Table<Book> book = new Table<Book>(Book.class,typeRegistry);
+		Table book = new Table(Book.class,typeRegistry);
 		String result = book.getName();
 		Assert.assertNotNull(result);
 		Assert.assertEquals(tableName, result);
@@ -31,7 +32,7 @@ public class TableTest {
 		tableName = Note.class.getAnnotation(Entity.class)
                 			  .name();
 		
-		Table<Note> note = new Table<Note>(Note.class,typeRegistry);
+		Table note = new Table(Note.class,typeRegistry);
 		result = note.getName();
 		Assert.assertNotNull(result);
 		Assert.assertEquals(tableName, result);
@@ -39,7 +40,7 @@ public class TableTest {
 	
 	
 	@Test public void getColumnsTest (){
-		Table<Book> book = new Table<Book>(Book.class,typeRegistry);
+		Table book = new Table(Book.class,typeRegistry);
 		Set<Column> result = book.getColumns();
 		Assert.assertNotNull(result);
 		Assert.assertFalse(result.isEmpty());
@@ -60,7 +61,7 @@ public class TableTest {
 	}
 	
 	@Test public void resolveColumnTypeTest () throws NoSuchFieldException, SecurityException{
-		Table<Book> table = new Table<Book>(Book.class, typeRegistry);
+		Table table = new Table(Book.class, typeRegistry);
 		
 		ColumnType columnType = table.resolveColumnType(Book.class.getDeclaredField("id"));
 		Assert.assertNotNull(columnType);
@@ -72,7 +73,7 @@ public class TableTest {
 	}
 	
 	@Test public void resolveGenerationTypeTest () throws NoSuchFieldException, SecurityException{
-		Table<Book> table = new Table<Book>(Book.class, typeRegistry);
+		Table table = new Table(Book.class, typeRegistry);
 		
 		GenerationType result = table.resolveGenerationType(Book.class.getDeclaredField("id"));
 		Assert.assertNotNull(result);
@@ -81,6 +82,23 @@ public class TableTest {
 		result = table.resolveGenerationType(Book.class.getDeclaredField("reciever"));
 		Assert.assertNotNull(result);
 		Assert.assertEquals(GenerationType.NONE, result);
+	}
+	
+	@Test public void containsPrimaryKeyTest (){
+		Table table = new Table(NoIdEntity.class, typeRegistry);
+		boolean result = table.containPrimaryKey();
+		Assert.assertFalse(result);
+		
+		table = new Table(Book.class, typeRegistry);
+		result = table.containPrimaryKey();
+		Assert.assertTrue(result);
+	}
+	
+	@Test public void getPrimaryKeyColumnTest (){
+		Table table = new Table(Book.class, typeRegistry);
+		Column column = table.getPrimaryKeyColumn ();
+		Assert.assertNotNull(column);
+		Assert.assertEquals(ColumnType.PRIMARY, column.getColumnType());
 	}
 	
 	@After public void tearDown (){

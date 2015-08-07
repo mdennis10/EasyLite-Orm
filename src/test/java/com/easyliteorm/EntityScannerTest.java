@@ -19,15 +19,13 @@ import com.easyliteorm.model.Book;
 
 @RunWith(RobolectricTestRunner.class)
 public class EntityScannerTest {
-	private EntityScanner fileLoader;
 	private Context context;
 	@Before public void setup (){
 		this.context = Robolectric.buildActivity(Activity.class).create().get();
-		this.fileLoader = new EntityScanner();
 	}
 	
 	@Test public void getAllClassesTest () throws NameNotFoundException, IOException{
-		List<String> result = fileLoader.getAllClasses(context);
+		List<String> result = EntityScanner.getAllClasses(context);
 		Assert.assertNotNull(result);
 		Assert.assertFalse(result.isEmpty());
 		Assert.assertTrue(result.contains(Book.class.getName()));
@@ -35,7 +33,6 @@ public class EntityScannerTest {
 	
 	
 	@After public void tearDown (){
-		this.context    = null;
-		this.fileLoader = null;
+		this.context = null;
 	}
 }

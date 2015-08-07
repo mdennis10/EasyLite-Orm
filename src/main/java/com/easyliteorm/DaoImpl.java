@@ -22,14 +22,12 @@ import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
 public final class DaoImpl<K,E> implements Dao<K, E>{
 	private final SQLiteDatabase db;
 	private final Class<E> type;
-	private final String tableName;
-	Map<String, String> tableKeys; 
+	private Table table;
 	
-	protected DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type){
+	protected DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type,SqliteTypeRegistry typeRegistry){
 		this.db = openHelper.getWritableDatabase();
 		this.type = type;
-		this.tableKeys = TableUtil.getTableKeys(type);
-		this.tableName = TableUtil.getTableName(type);
+		this.table = new Table(type, typeRegistry);
 	}
 	
 	@Override
@@ -43,7 +41,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			for (Field field : fields) 
 				putContentValue(values, field, entity);
 			
-			result =  this.db.insert(tableName, null, values);
+			result =  this.db.insert(table.getName(), null, values);
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		} catch (IllegalArgumentException e) {
@@ -82,9 +80,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		try {
 			if (entities != null && !entities.isEmpty()){
 				StringBuilder sql = new StringBuilder();
-				String pKeyName = tableKeys.get(TableUtil.P_KEY_NAME);
+				String pKeyName = table.getPrimaryKeyColumn().getName();
 				sql.append("INSERT OR REPLACE INTO ")
-				   .append(tableName)
+				   .append(table.getName())
 				   .append(" (")
 				   .append(pKeyName);
 				
@@ -125,7 +123,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	
 
 	private String[] bindArgs(SQLiteStatement statement, E entity,Map<String, String> columns) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		Object pKeyRaw = getFieldValue(type.getDeclaredField(tableKeys.get(TableUtil.P_KEY_NAME)), entity);
+		Object pKeyRaw = getFieldValue(type.getDeclaredField(table.getPrimaryKeyColumn().getName()), entity);
 		String pKey = ConverterUtil.toString(pKeyRaw.getClass(), pKeyRaw);
 		String[] args = new String[columns.size() + 1];
 		int position = 0;
@@ -155,7 +153,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	@Override
 	public int deleteAll() throws EasyLiteSqlException{
 		try {
-			return db.delete(tableName, null, new String[]{});
+			return db.delete(table.getName(), null, new String[]{});
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		}
@@ -164,7 +162,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	@Override
 	public int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException{
 		try {
-			return db.delete(tableName, whereClause, formatWhereParams(whereArgs));
+			return db.delete(table.getName(), whereClause, formatWhereParams(whereArgs));
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		}
@@ -184,7 +182,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 					@SuppressWarnings("unchecked")
 					K key = (K) field.get(entity);
 					String[] args = {ConverterUtil.toString(type, key)};
-					return db.delete(tableName, tableKeys.get(TableUtil.P_KEY_NAME) + "=?", args);
+					return db.delete(table.getName(), table.getPrimaryKeyColumn().getName()+ "=?", args);
 				}
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
@@ -208,7 +206,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			for (Field field : fields) 
 				putContentValue(values, field, entity);
 			
-			return db.update(tableName, values, whereClause,formatWhereParams(whereArgs));
+			return db.update(table.getName(), values, whereClause,formatWhereParams(whereArgs));
 		} catch (SQLException e){
 			throw new EasyLiteSqlException(e);
 		} catch (IllegalArgumentException e) {
@@ -225,9 +223,9 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	public E findById(K key) throws EasyLiteSqlException {	
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM ")
-		   .append(tableName)
+		   .append(table.getName())
 		   .append(" WHERE ")
-		   .append(tableKeys.get(TableUtil.P_KEY_NAME))
+		   .append(table.getPrimaryKeyColumn().getName())
 		   .append("=?");
 		
 		String pKey = ConverterUtil.toString(type, key);
@@ -256,7 +254,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	public List<E> findAll() throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E> ();
 		try {
-			Cursor cursor = db.query(tableName, null, null, null, null, null, null);
+			Cursor cursor = db.query(table.getName(), null, null, null, null, null, null);
 			while (cursor.moveToNext()) {
 				E entity = type.newInstance();
 				Field[] fields = type.getDeclaredFields();
@@ -284,7 +282,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		try {
 			String orderType = (orderByType != null) ? orderByType.toString() : OrderByType.ASC.toString();
 			String[] newWhereArgs = formatWhereParams(whereArgs);
-			Cursor cursor = db.query(tableName, null, whereClause, newWhereArgs, null, null, String.format("%s %s", orderBy,orderType));
+			Cursor cursor = db.query(table.getName(), null, whereClause, newWhereArgs, null, null, String.format("%s %s", orderBy,orderType));
 			while (cursor.moveToNext()) {
 				E entity = type.newInstance();
 				Field[] fields = type.getDeclaredFields();
@@ -318,7 +316,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	
 	@Override
 	public boolean isExist(E entity) throws EasyLiteSqlException {
-		String pKeyName = tableKeys.get(TableUtil.P_KEY_NAME);
+		String pKeyName = table.getPrimaryKeyColumn().getName();
 		String pkey = "";
 		try {
 			Field field = type.getDeclaredField(pKeyName);
@@ -334,7 +332,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT * FROM ")
-		   .append(tableName)
+		   .append(table.getName())
 		   .append(" WHERE ")
 		   .append(pKeyName)
 		   .append("=?");
@@ -345,7 +343,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	
 	@Override
 	public boolean isExist() throws EasyLiteSqlException {
-		return db.query(tableName, null, null, null, null, null, null)
+		return db.query(table.getName(), null, null, null, null, null, null)
 				 .moveToFirst();
 	}
 	

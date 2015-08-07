@@ -20,19 +20,13 @@ public class EasyLiteTest {
 	private Activity context;
 	private SQLiteDatabase db;
 	private EasyLite easyLite;
+	
 	@Before public void setUp (){
 		this.context = Robolectric.buildActivity(Activity.class).create().get();
 		this.db = SQLiteDatabase.openOrCreateDatabase(new File(ManifestUtil.getDatabaseName(context)),null);
-		this.easyLite = EasyLite.getInstance(context);
+		this.easyLite = new EasyLite(context);
 	}
 	
-	@Test public void sameInstanceIsReturnedTest (){
-		EasyLite easyLite1  = EasyLite.getInstance (context);
-		EasyLite easyLite2 = EasyLite.getInstance (context);
-		
-		Assert.assertTrue(easyLite1.equals(easyLite2));
-		Assert.assertEquals(easyLite1.hashCode(), easyLite2.hashCode());
-	}
 	
 	@Test public void instanceOfDaoIsReturnTest (){
 		Dao<Integer, Note> dao  = easyLite.getDao(Note.class);

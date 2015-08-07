@@ -40,9 +40,9 @@ public final class TableUtil {
 			db.execSQL(sql);
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
-		} catch (NoPrimaryKeyFoundException e){
-			Log.e("EasyLite", e.getMessage());
 		} catch (NotEntityException e) {
+			Log.e("EasyLite", e.getMessage());
+		} catch (NoPrimaryKeyFoundException e) {
 			Log.e("EasyLite", e.getMessage());
 		} 
 	}
@@ -68,8 +68,9 @@ public final class TableUtil {
 	 * @author Mario Dennis
 	 * @param clazz type of entity
 	 * @return sql statement
+	 * @throws NoPrimaryKeyFoundException 
 	 */
-	private static String prepareCreateStatment (Class<?> clazz){	
+	private static String prepareCreateStatment (Class<?> clazz) throws NoPrimaryKeyFoundException{	
 		String tableName = getTableName(clazz);
 		Map<String, String> keys = getTableKeys(clazz);
 		Map<String, String> columns = getTableColumns(clazz);
@@ -152,7 +153,7 @@ public final class TableUtil {
 	 * @param clazz type of entity
 	 * @return table keys
 	 */
-	protected final static Map<String, String> getTableKeys(Class<?> clazz) {
+	protected final static Map<String, String> getTableKeys(Class<?> clazz) throws NoPrimaryKeyFoundException {
 		Map<String, String> keys = new HashMap<String, String>();
 		Field[] fields = clazz.getDeclaredFields();
 		for(Field field : fields)

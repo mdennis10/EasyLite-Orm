@@ -7,12 +7,14 @@ import java.util.Set;
 import com.easyliteorm.annotation.GenerationType;
 import com.easyliteorm.annotation.Id;
 
-public class Table<T> {
+public class Table {
+	private boolean CONTAIN_PRIMARY_KEY = false;
 	private final String name;
-	private final Class<T> entity;
+	private final Class<?> entity;
 	private Set<Column> columns;
+	private Column primaryKeyColumn;
 	
-	protected Table(Class<T> entity,SqliteTypeRegistry typeRegistry) {
+	protected Table(Class<?> entity,SqliteTypeRegistry typeRegistry) {
 		this.entity  = entity;
 		this.name    = TableRegistry.getTableName(entity);
 		setColumns(typeRegistry);
@@ -43,13 +45,18 @@ public class Table<T> {
 		column.setSqliteType(sqliteType);
 		column.setGenerationType(generationType);
 		columns.add(column);
+		
+		if (columnType == ColumnType.PRIMARY)
+			primaryKeyColumn = column;
 	}
 	
 	
 	protected ColumnType resolveColumnType (Field field){
 		Id id = field.getAnnotation(Id.class);
-		if (id != null)
+		if (id != null){
+			CONTAIN_PRIMARY_KEY = true;
 			return ColumnType.PRIMARY;
+		}
 		
 		return ColumnType.REGULAR;
 	}	
@@ -60,5 +67,15 @@ public class Table<T> {
 			return id.strategy();
 		
 		return GenerationType.NONE;
+	}
+
+
+	protected boolean containPrimaryKey() {
+		return CONTAIN_PRIMARY_KEY;
+	}
+
+
+	protected Column getPrimaryKeyColumn() {
+		return primaryKeyColumn;
 	}
 }
