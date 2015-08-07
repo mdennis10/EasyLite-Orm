@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -86,10 +86,10 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 				   .append(" (")
 				   .append(pKeyName);
 				
-				Map<String, String> columns = TableUtil.getTableColumns(type);
-				for (String column : columns.keySet())
+				Set<Column> columns = table.getColumns();
+				for (Column column : columns)
 					sql.append(",")
-					   .append(column);
+					   .append(column.getName());
 				
 				sql.append(") VALUES (?");
 				int size = columns.size();
@@ -122,14 +122,14 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 
-	private String[] bindArgs(SQLiteStatement statement, E entity,Map<String, String> columns) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+	private String[] bindArgs(SQLiteStatement statement, E entity,Set<Column> columns) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		Object pKeyRaw = getFieldValue(type.getDeclaredField(table.getPrimaryKeyColumn().getName()), entity);
 		String pKey = ConverterUtil.toString(pKeyRaw.getClass(), pKeyRaw);
 		String[] args = new String[columns.size() + 1];
 		int position = 0;
 		args[position] = pKey;
-		for (String column : columns.keySet()){
-			Field field = type.getDeclaredField(column);
+		for (Column column : columns){
+			Field field = type.getDeclaredField(column.getName());
 			field.setAccessible(true);
 			String val = ConverterUtil.toString(field.getType(), field.get(entity));
 			args[++position] = val;

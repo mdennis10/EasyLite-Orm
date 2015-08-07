@@ -24,11 +24,13 @@ public class EasyLiteOpenHelperTest {
 	private Activity context;
 	private EasyLiteOpenHelper openHelper;
 	private Set<Class<?>> entities;
+	private SqliteTypeRegistry typeRegistry;
 	
 	@Before public void setUp (){
 		this.context = Robolectric.buildActivity(Activity.class).create().get();
 		this.db = SQLiteDatabase.openOrCreateDatabase(new File(ManifestUtil.getDatabaseName(context)),null);
-		this.openHelper = new EasyLiteOpenHelper(context,new SqliteTypeRegistry());
+		this.typeRegistry = new SqliteTypeRegistry();
+		this.openHelper = new EasyLiteOpenHelper(context,typeRegistry);
 		
 		entities = openHelper.getEntityClasses();
 	}
@@ -65,7 +67,7 @@ public class EasyLiteOpenHelperTest {
 	
 	@After public void tearDown (){
 		for (Class<?> clazz : entities)
-			this.db.execSQL("DROP TABLE IF EXISTS " + TableUtil.getTableName(clazz));
+			this.db.execSQL("DROP TABLE IF EXISTS " + new Table(clazz, typeRegistry).getName());
 		
 		this.db.close();
 		this.db    = null;
