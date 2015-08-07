@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -31,7 +32,8 @@ public class DaoImplTest {
 	private SQLiteDatabase db;
 	private SqliteTypeRegistry typeRegistry;
 	
-	public DaoImplTest() {
+	@Before
+	public void setup() {
 		Activity activity = Robolectric.buildActivity(Activity.class).create().get();
 		
 		this.dbLite = new EasyLite(activity);
@@ -423,7 +425,7 @@ public class DaoImplTest {
 		//Test Non Numeric PrimaryKey 
 		NonNumeric nonNumeric = new NonNumeric();
 		Dao<String, NonNumeric> dao2 = dbLite.getDao(NonNumeric.class);
-		id = dao2.create(nonNumeric);//should throw NoSuitablePrimaryKeySuppliedException
+		dao2.create(nonNumeric); //should throw NoSuitablePrimaryKeySuppliedException
 		
 		
 		nonNumeric.setId("mdennis");
