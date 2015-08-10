@@ -1,15 +1,14 @@
 package com.easyliteorm;
 
-public enum SqliteType {
+public enum SQLiteType {
 
 	TEXT("TEXT"),
-	BLOG("BLOB"),
 	INTEGER("INTEGER"),
 	REAL("REAL"),
     NONE("NONE");
 	private final String value;
 	
-	SqliteType(String value) {
+	SQLiteType(String value) {
 		this.value = value;
 	}
 	
