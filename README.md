@@ -47,14 +47,15 @@ public class Note {
 
 #####Usage
 Get singleton instance of EasyLite to create Data Access Object (DAO)
-<pre>
+```xml
+
 Dao<Integer, Note> dao = EasyLite.getInstance(context)
                                  .getDao(Note.class);
 Note note = new Note ();
 dao.create(note);
 List<Note> notes = dao.findAll();
 
-</pre>
+```
 
 ###License
 The MIT License (MIT)
