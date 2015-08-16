@@ -68,7 +68,7 @@ public final class EasyLite {
 	}
 
 
-	public final void registerType(Class<String> clazz, SqliteType sqliteType) {
+	public final void registerType(Class<String> clazz, SQLiteType sqliteType) {
 		getSqlTypeRegistry().register(clazz, sqliteType);
 	}
 }

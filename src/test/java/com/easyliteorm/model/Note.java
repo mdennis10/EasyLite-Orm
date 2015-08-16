@@ -13,4 +13,5 @@ public class Note {
 	public String author;
 	public boolean sent;
 	public Date date;
+	public double price;
 }

@@ -47,9 +47,9 @@ public class EasyLiteTest {
 	
 	
 	@Test public void registerTypeTest (){
-		easyLite.registerType(String.class,SqliteType.REAL);
-		SqliteType result = easyLite.getSqlTypeRegistry().resolve(String.class);
-		Assert.assertEquals(SqliteType.REAL, result);
+		easyLite.registerType(String.class, SQLiteType.REAL);
+		SQLiteType result = easyLite.getSqlTypeRegistry().resolve(String.class);
+		Assert.assertEquals(SQLiteType.REAL, result);
 	}
 	
 	@After public void tearDown (){

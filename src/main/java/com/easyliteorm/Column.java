@@ -4,7 +4,7 @@ import com.easyliteorm.annotation.GenerationType;
 
 public class Column {
 	private String name;
-	private SqliteType sqliteType;
+	private SQLiteType sqliteType;
 	private ColumnType columnType;
 	private GenerationType generatorType;
 
@@ -16,11 +16,11 @@ public class Column {
 		this.name = name;
 	}
 
-	public SqliteType getSqliteType() {
+	public SQLiteType getSqliteType() {
 		return sqliteType;
 	}
 	
-	public void setSqliteType(SqliteType sqliteType) {
+	public void setSqliteType(SQLiteType sqliteType) {
 		this.sqliteType = sqliteType;
 	}
 	

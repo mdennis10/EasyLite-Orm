@@ -14,7 +14,7 @@ public final class SchemaGenerator {
 			throw new NoPrimaryKeyFoundException();
 		
 		Column primaryColumn = table.getPrimaryKeyColumn();
-		if (primaryColumn.getSqliteType() == null || primaryColumn.getSqliteType() != SqliteType.INTEGER)
+		if (primaryColumn.getSqliteType() == null || primaryColumn.getSqliteType() != SQLiteType.INTEGER)
 			throw new NoSuitablePrimaryKeySuppliedException();
 		
 		StringBuilder builder = new StringBuilder();
@@ -25,7 +25,7 @@ public final class SchemaGenerator {
 		Iterator<Column> iterator = table.getColumns().iterator();
 		while(iterator.hasNext()){
 			Column column = iterator.next();
-			SqliteType sqliteType = column.getSqliteType();
+			SQLiteType sqliteType = column.getSqliteType();
 			String value = sqliteType.getValue();
 			builder.append(column.getName())
 			       .append(" ")

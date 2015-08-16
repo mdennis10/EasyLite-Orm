@@ -38,7 +38,7 @@ public class Table {
 	}
 	
 	
-	protected void setColumnField (String name,SqliteType sqliteType,ColumnType columnType,GenerationType generationType){
+	protected void setColumnField (String name,SQLiteType sqliteType,ColumnType columnType,GenerationType generationType){
 		Column column = new Column();
 		column.setName(name);
 		column.setColumnType(columnType);
