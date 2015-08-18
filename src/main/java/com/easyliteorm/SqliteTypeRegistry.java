@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 /**
  * SqliteTypeRegistry contains a registry of all supported 
  * data types and their associated Sqlite column types.
@@ -14,7 +13,7 @@ import java.util.Map;
  */
 public class SqliteTypeRegistry {
 
-	private final Map<String, SQLiteType> mapRegistry = new HashMap<String, SQLiteType>();
+	private final Map<String, RegisteredType<?>> mapRegistry = new HashMap<String, RegisteredType<?>>();
 	
 	protected SqliteTypeRegistry() {
 		init();
@@ -24,9 +23,9 @@ public class SqliteTypeRegistry {
 	/**
 	 * Get instance of registry.
 	 * @author Mario Dennis
-	 * @return Map<String,String>
+	 * @return Map<String,RegisteredType<?>>
 	 */
-	protected final Map<String, SQLiteType> getRegistry() {
+	protected final Map<String, RegisteredType<?>> getRegistry() {
 		return mapRegistry;
 	}
 	
@@ -66,7 +65,11 @@ public class SqliteTypeRegistry {
 	 * @param sqliteType - associated SQLite data type 
 	 */
 	public <T> void register(Class<T> clazz,SQLiteType sqliteType) {
-		getRegistry().put(clazz.getName(),sqliteType);
+		RegisteredType<T> registeredType = new RegisteredType<T>();
+		registeredType.setClazz(clazz);
+		registeredType.setSqliteType(sqliteType);
+
+		getRegistry().put(clazz.getName(),registeredType);
 	}
 
 	
@@ -77,7 +80,9 @@ public class SqliteTypeRegistry {
 	 * @return SQLite data type when class is registered, otherwise returns null
 	 */
 	public <T> SQLiteType resolve(Class<T> clazz) {
-		return getRegistry().get(clazz.getName());
+		RegisteredType<?> registeredType = getRegistry().get(clazz.getName());
+
+		return (registeredType != null) ? registeredType.getSqliteType() : null;
 	}
 
 	

@@ -1,23 +1,22 @@
 package com.easyliteorm;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
-
 import com.easyliteorm.annotation.Id;
 import com.easyliteorm.annotation.OrderByType;
 import com.easyliteorm.exception.EasyLiteSqlException;
 import com.easyliteorm.exception.IllegalWhereArgumentException;
 import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 public final class DaoImpl<K,E> implements Dao<K, E>{
 	private final SQLiteDatabase db;
@@ -100,7 +99,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 				db.beginTransaction();
 				for (E entity : entities){
 					SQLiteStatement statement = db.compileStatement(sql.toString());
-					String[] args = bindArgs (statement,entity,columns);
+					String[] args = bindArgs (entity,columns);
 					statement.bindAllArgsAsStrings(args);
 					statement.executeInsert();
 				}
@@ -122,7 +121,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 
-	private String[] bindArgs(SQLiteStatement statement, E entity,Set<Column> columns) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+	private String[] bindArgs(E entity,Set<Column> columns) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		Object pKeyRaw = getFieldValue(type.getDeclaredField(table.getPrimaryKeyColumn().getName()), entity);
 		String pKey = ConverterUtil.toString(pKeyRaw.getClass(), pKeyRaw);
 		String[] args = new String[columns.size() + 1];

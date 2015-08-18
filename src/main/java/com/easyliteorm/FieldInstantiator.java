@@ -6,16 +6,12 @@ import android.util.Log;
 
 import java.lang.reflect.Field;
 
-public class FieldProvider {
+public class FieldInstantiator {
 
     private SqliteTypeRegistry typeRegistry;
 
-    public FieldProvider(SqliteTypeRegistry typeRegistry) {
+    public FieldInstantiator(SqliteTypeRegistry typeRegistry) {
         this.typeRegistry = typeRegistry;
-    }
-
-    public <E> E get (Cursor cursor,E entity) throws NoSuchFieldException, IllegalAccessException {
-        return null;
     }
 
     /**

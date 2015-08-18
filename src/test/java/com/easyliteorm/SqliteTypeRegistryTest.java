@@ -1,14 +1,14 @@
 package com.easyliteorm;
 
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.Map;
-
-import org.junit.Assert;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 public class SQLiteTypeRegistryTest {
 
@@ -94,21 +94,21 @@ public class SQLiteTypeRegistryTest {
 	@Test public void registerTest (){
 		sqliteTypeRegistry.register(String.class, SQLiteType.TEXT);
 		sqliteTypeRegistry.register(int.class, SQLiteType.INTEGER);
-		Map<String, SQLiteType> registry = sqliteTypeRegistry.getRegistry();
+		Map<String, RegisteredType<?>> registry = sqliteTypeRegistry.getRegistry();
 		
 		Assert.assertNotNull(registry);
 		
 		String key = String.class.getName();
 		Assert.assertNotNull(registry.get(key));
-		Assert.assertEquals(SQLiteType.TEXT, registry.get(key));
+		Assert.assertEquals(SQLiteType.TEXT, registry.get(key).getSqliteType());
 		
 		key = int.class.getName();
 		Assert.assertNotNull(registry.get(key));
-		Assert.assertEquals(SQLiteType.INTEGER, registry.get(key));
+		Assert.assertEquals(SQLiteType.INTEGER, registry.get(key).getSqliteType());
 	}
 	
 	@Test public void resolve_returnNullWhenTypeIsNotRegistered (){
-		Map<String, SQLiteType> registry = sqliteTypeRegistry.getRegistry();
+		Map<String, RegisteredType<?>> registry = sqliteTypeRegistry.getRegistry();
 		registry.remove(String.class.getName());
 		
 		Assert.assertNull(sqliteTypeRegistry.resolve(String.class));
@@ -116,8 +116,11 @@ public class SQLiteTypeRegistryTest {
 	
 	
 	@Test public void resolverTest (){
-		Map<String, SQLiteType> registry = sqliteTypeRegistry.getRegistry();
-		registry.put(int.class.getName(), SQLiteType.INTEGER);
+		Map<String, RegisteredType<?>> registry = sqliteTypeRegistry.getRegistry();
+		RegisteredType<?> registeredType = new RegisteredType<Integer>();
+		registeredType.setSqliteType(SQLiteType.INTEGER);
+		registeredType.setClazz(int.class);
+		registry.put(int.class.getName(), registeredType);
 		
 		SQLiteType result = sqliteTypeRegistry.resolve(int.class);
 		Assert.assertNotNull(result);
@@ -126,8 +129,11 @@ public class SQLiteTypeRegistryTest {
 	
 	
 	@Test public void isRegisteredTest (){
-		Map<String, SQLiteType> registry = sqliteTypeRegistry.getRegistry();
-		registry.put(String.class.getName(), SQLiteType.TEXT);
+		Map<String, RegisteredType<?>> registry = sqliteTypeRegistry.getRegistry();
+		RegisteredType<?> registeredType = new RegisteredType<Integer>();
+		registeredType.setClazz(String.class);
+		registeredType.setSqliteType(SQLiteType.TEXT);
+		registry.put(String.class.getName(), registeredType);
 		
 		Assert.assertTrue(sqliteTypeRegistry.isRegistered(String.class));
 		

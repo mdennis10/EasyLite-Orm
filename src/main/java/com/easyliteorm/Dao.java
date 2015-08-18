@@ -1,9 +1,9 @@
 package com.easyliteorm;
 
-import java.util.List;
-
 import com.easyliteorm.annotation.OrderByType;
 import com.easyliteorm.exception.EasyLiteSqlException;
+
+import java.util.List;
 
 /**
  * Data Access Object interface
@@ -72,7 +72,7 @@ public interface Dao<K,E> {
      * @exception EasyLiteSqlException when error with sql parsing or execution occurs
      * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
      * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
-     * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and get a count pass "1" as the whereClause.
+     * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and instantiate a count pass "1" as the whereClause.
      */
 	public int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException;
 	

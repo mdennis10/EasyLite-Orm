@@ -17,25 +17,22 @@ import org.robolectric.RobolectricTestRunner;
 import java.util.Date;
 
 @RunWith(RobolectricTestRunner.class)
-public class FieldProviderTest {
+public class FieldInstantiatorTest {
     private SqliteTypeRegistry typeRegistry;
-    private FieldProvider provider;
+    private FieldInstantiator provider;
     private EasyLite dbLite;
     private SQLiteDatabase db;
 
     @Before
     public void setUp() throws Exception {
         this.typeRegistry = new SqliteTypeRegistry();
-        this.provider     = new FieldProvider(typeRegistry);
+        this.provider     = new FieldInstantiator(typeRegistry);
 
         Activity context = Robolectric.buildActivity(Activity.class).create().get();
         this.dbLite = new EasyLite(context);
         db = ((DaoImpl<Object, Note>) dbLite.getDao(Note.class)).getSqLiteDatabase();
     }
 
-    @Test public void getTest () throws NoSuchFieldException, IllegalAccessException {
-
-    }
 
     @Test public void cursorInteger_returnAppropiateNumericValueAndTypeTest () throws NoSuchFieldException{
         Cursor cursor = Mockito.mock(Cursor.class);
@@ -132,7 +129,7 @@ public class FieldProviderTest {
         Assert.assertEquals(actual, provider.cursorReal(cursor, MyEntity.class.getDeclaredField("floatingPoint")), 0.01);
         Assert.assertEquals((float)actual, provider.cursorReal(cursor, MyEntity.class.getDeclaredField("floatingPoint1")),0.01);
         Assert.assertEquals(new Double(actual), provider.cursorReal(cursor, MyEntity.class.getDeclaredField("floatingPoint2")),0.01);
-        Assert.assertEquals(new Float(actual), provider.cursorReal(cursor, MyEntity.class.getDeclaredField("floatingPoint3")),0.01);
+        Assert.assertEquals(new Float(actual), provider.cursorReal(cursor, MyEntity.class.getDeclaredField("floatingPoint3")), 0.01);
 
         // Assert that 0 is returned when no value found
         Mockito.when(cursor.getColumnIndex("floatingPoint"))
