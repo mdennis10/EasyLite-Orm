@@ -4,10 +4,10 @@ import android.content.Context;
 
 public final class EasyLite {
 	protected final EasyLiteOpenHelper openHelper;
-	private final SqliteTypeRegistry typeRegistry;
+	private final SQLiteTypeRegistry typeRegistry;
 	
 	public EasyLite(Context context) {
-		this.typeRegistry = new SqliteTypeRegistry();
+		this.typeRegistry = new SQLiteTypeRegistry();
 		this.openHelper = new EasyLiteOpenHelper(context,typeRegistry);
 	}
 	
@@ -63,7 +63,7 @@ public final class EasyLite {
 	}
 	
 	
-	protected final SqliteTypeRegistry getSqlTypeRegistry (){
+	protected final SQLiteTypeRegistry getSqlTypeRegistry (){
 		return typeRegistry;
 	}
 

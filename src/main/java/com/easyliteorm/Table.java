@@ -1,11 +1,11 @@
 package com.easyliteorm;
 
+import com.easyliteorm.annotation.GenerationType;
+import com.easyliteorm.annotation.Id;
+
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.easyliteorm.annotation.GenerationType;
-import com.easyliteorm.annotation.Id;
 
 public class Table {
 	private boolean CONTAIN_PRIMARY_KEY = false;
@@ -14,7 +14,7 @@ public class Table {
 	private Set<Column> columns;
 	private Column primaryKeyColumn;
 	
-	protected Table(Class<?> entity,SqliteTypeRegistry typeRegistry) {
+	protected Table(Class<?> entity,SQLiteTypeRegistry typeRegistry) {
 		this.entity  = entity;
 		this.name    = TableRegistry.getTableName(entity);
 		setColumns(typeRegistry);
@@ -29,7 +29,7 @@ public class Table {
 		return columns;
 	}
 
-	private void setColumns(SqliteTypeRegistry typeRegistry) {
+	private void setColumns(SQLiteTypeRegistry typeRegistry) {
 		columns = new HashSet<Column>();
 		Field[] fields = entity.getDeclaredFields();
 		for (Field field : fields)

@@ -1,24 +1,23 @@
 package com.easyliteorm;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.easyliteorm.annotation.Entity;
 import com.easyliteorm.annotation.GenerationType;
 import com.easyliteorm.model.Book;
 import com.easyliteorm.model.NoIdEntity;
 import com.easyliteorm.model.Note;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Iterator;
+import java.util.Set;
 
 public class TableTest {
-	private SqliteTypeRegistry typeRegistry;
+	private SQLiteTypeRegistry typeRegistry;
 	
 	@Before public void setup (){
-		this.typeRegistry = new SqliteTypeRegistry();
+		this.typeRegistry = new SQLiteTypeRegistry();
 	}
 	
 	@Test public void getNameTest (){

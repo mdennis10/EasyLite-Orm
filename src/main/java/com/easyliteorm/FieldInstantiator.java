@@ -8,9 +8,9 @@ import java.lang.reflect.Field;
 
 public class FieldInstantiator {
 
-    private SqliteTypeRegistry typeRegistry;
+    private SQLiteTypeRegistry typeRegistry;
 
-    public FieldInstantiator(SqliteTypeRegistry typeRegistry) {
+    public FieldInstantiator(SQLiteTypeRegistry typeRegistry) {
         this.typeRegistry = typeRegistry;
     }
 

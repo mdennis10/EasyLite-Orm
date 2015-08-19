@@ -12,11 +12,11 @@ import java.util.Map;
 
 public class SQLiteTypeRegistryTest {
 
-	private SqliteTypeRegistry sqliteTypeRegistry;
+	private SQLiteTypeRegistry sqliteTypeRegistry;
 	
 	@Before
 	public void setup (){
-		sqliteTypeRegistry = new SqliteTypeRegistry();
+		sqliteTypeRegistry = new SQLiteTypeRegistry();
 	}
 	
 	

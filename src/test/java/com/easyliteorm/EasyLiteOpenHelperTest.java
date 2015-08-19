@@ -1,8 +1,10 @@
 package com.easyliteorm;
 
-import java.io.File;
-import java.util.Set;
-
+import android.app.Activity;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import com.easyliteorm.model.NoIdEntity;
+import com.easyliteorm.model.NonNumeric;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,12 +13,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
-import android.app.Activity;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.easyliteorm.model.NoIdEntity;
-import com.easyliteorm.model.NonNumeric;
+import java.io.File;
+import java.util.Set;
 
 @RunWith(RobolectricTestRunner.class)
 public class EasyLiteOpenHelperTest {
@@ -24,12 +22,12 @@ public class EasyLiteOpenHelperTest {
 	private Activity context;
 	private EasyLiteOpenHelper openHelper;
 	private Set<Class<?>> entities;
-	private SqliteTypeRegistry typeRegistry;
+	private SQLiteTypeRegistry typeRegistry;
 	
 	@Before public void setUp (){
 		this.context = Robolectric.buildActivity(Activity.class).create().get();
 		this.db = SQLiteDatabase.openOrCreateDatabase(new File(ManifestUtil.getDatabaseName(context)),null);
-		this.typeRegistry = new SqliteTypeRegistry();
+		this.typeRegistry = new SQLiteTypeRegistry();
 		this.openHelper = new EasyLiteOpenHelper(context,typeRegistry);
 		
 		entities = openHelper.getEntityClasses();

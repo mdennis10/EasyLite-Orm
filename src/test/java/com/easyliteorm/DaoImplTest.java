@@ -31,7 +31,7 @@ public class DaoImplTest {
 	
 	private EasyLite dbLite;
 	private SQLiteDatabase db;
-	private SqliteTypeRegistry typeRegistry;
+	private SQLiteTypeRegistry typeRegistry;
 	
 	@Before
 	public void setup() {

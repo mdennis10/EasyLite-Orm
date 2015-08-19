@@ -18,14 +18,14 @@ import java.util.Date;
 
 @RunWith(RobolectricTestRunner.class)
 public class FieldInstantiatorTest {
-    private SqliteTypeRegistry typeRegistry;
+    private SQLiteTypeRegistry typeRegistry;
     private FieldInstantiator provider;
     private EasyLite dbLite;
     private SQLiteDatabase db;
 
     @Before
     public void setUp() throws Exception {
-        this.typeRegistry = new SqliteTypeRegistry();
+        this.typeRegistry = new SQLiteTypeRegistry();
         this.provider     = new FieldInstantiator(typeRegistry);
 
         Activity context = Robolectric.buildActivity(Activity.class).create().get();

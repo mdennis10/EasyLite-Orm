@@ -1,23 +1,22 @@
 package com.easyliteorm;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import com.easyliteorm.exception.NoPrimaryKeyFoundException;
-import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import com.easyliteorm.exception.NoPrimaryKeyFoundException;
+import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
+
+import java.util.Iterator;
+import java.util.Set;
 
 public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	private Set<Class<?>> entityClasses;
 	private final String msg = "No entity class was found in package %s. Please ensure correct package defined in Manifest";
-	private final SqliteTypeRegistry sqliteTypeRegistry;
+	private final SQLiteTypeRegistry sqliteTypeRegistry;
 	private final SchemaGenerator schemaGenerator;
 	
-	protected EasyLiteOpenHelper(Context context, SqliteTypeRegistry sqliteTypeRegistry) {
+	protected EasyLiteOpenHelper(Context context, SQLiteTypeRegistry sqliteTypeRegistry) {
 		super(context,ManifestUtil.getDatabaseName(context),null,ManifestUtil.getDatabaseVersion(context));
 		
 		this.sqliteTypeRegistry = sqliteTypeRegistry;

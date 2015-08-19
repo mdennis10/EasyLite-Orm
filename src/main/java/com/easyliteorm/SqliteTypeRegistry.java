@@ -6,16 +6,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 /**
- * SqliteTypeRegistry contains a registry of all supported 
+ * SQLiteTypeRegistry contains a registry of all supported
  * data types and their associated Sqlite column types.
  * 
  * @author Mario Dennis
  */
-public class SqliteTypeRegistry {
+public class SQLiteTypeRegistry {
 
 	private final Map<String, RegisteredType<?>> mapRegistry = new HashMap<String, RegisteredType<?>>();
 	
-	protected SqliteTypeRegistry() {
+	protected SQLiteTypeRegistry() {
 		init();
 	}
 	

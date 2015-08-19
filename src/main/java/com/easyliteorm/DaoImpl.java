@@ -23,7 +23,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	private final Class<E> type;
 	private Table table;
 
-	protected DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type,SqliteTypeRegistry typeRegistry){
+	protected DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type,SQLiteTypeRegistry typeRegistry){
 		this.db = openHelper.getWritableDatabase();
 		this.type = type;
 		this.table = new Table(type, typeRegistry);
