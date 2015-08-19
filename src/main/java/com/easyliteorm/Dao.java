@@ -21,8 +21,18 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the row ID of the newly inserted row, or -1 if an error occurred.A value greater than 0 if primary key is of type String
 	 */
-	public long create (E entity) throws EasyLiteSqlException;
-	
+	long create (E entity) throws EasyLiteSqlException;
+
+
+	/**
+	 * Create new instance of record
+	 * @author Mario Dennis
+	 * @param entity instance to save.
+	 * @param  listener to call once operation is complete
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return the row ID of the newly inserted row, or -1 if an error occurred.A value greater than 0 if primary key is of type String
+	 */
+	void createAsync (E entity, ResponseListener<Long> listener);
 	
 	/**
 	 * Dispatch batch insert to database. [NOTE]
@@ -33,7 +43,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return true when batch transactions succeeds, otherwise false
 	 */
-	public boolean batchCreate (List<E> entities) throws EasyLiteSqlException;
+	boolean batchCreate (List<E> entities) throws EasyLiteSqlException;
 	
 	
 	
@@ -44,7 +54,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @param entities objects that should be saved
 	 */
-	public void batchCreateOverridable (List<E> entities) throws EasyLiteSqlException;
+	void batchCreateOverridable (List<E> entities) throws EasyLiteSqlException;
 	
 	
 	/**
@@ -54,7 +64,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the number of rows affected 
 	 */
-	public int delete (E entity) throws EasyLiteSqlException;
+	int delete (E entity) throws EasyLiteSqlException;
 	
 	
 	/**
@@ -63,7 +73,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the number of rows affected.
 	 */
-    public int deleteAll () throws EasyLiteSqlException;
+    int deleteAll () throws EasyLiteSqlException;
 	
     
     /**
@@ -74,7 +84,7 @@ public interface Dao<K,E> {
      * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
      * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and instantiate a count pass "1" as the whereClause.
      */
-	public int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException;
+	int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException;
 	
 	
 	/**
@@ -86,7 +96,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the number of rows affected
 	 */
-	public int update (E entity,String whereClause,Object... whereArgs) throws EasyLiteSqlException;
+	int update (E entity,String whereClause,Object... whereArgs) throws EasyLiteSqlException;
 	
 	
 	/**
@@ -96,7 +106,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return E entity record
 	 */
-	public E findById (K key) throws EasyLiteSqlException;
+	E findById (K key) throws EasyLiteSqlException;
 	
 	
 	/**
@@ -106,7 +116,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return true when entity exist, otherwise false
 	 */
-	public boolean isExist (E entity) throws EasyLiteSqlException;
+	boolean isExist (E entity) throws EasyLiteSqlException;
 	
 	/**
 	 * Check if entity table contains any record
@@ -114,7 +124,7 @@ public interface Dao<K,E> {
 	 * @return true when table is not empty
 	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
 	 */
-	public boolean isExist () throws EasyLiteSqlException; 
+	boolean isExist () throws EasyLiteSqlException;
 	
 	
 	/**
@@ -123,7 +133,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return List of all records
 	 */
-	public List<E> findAll () throws EasyLiteSqlException;
+	List<E> findAll () throws EasyLiteSqlException;
 	
 	
 	/**
@@ -136,5 +146,5 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return List of all records
 	 */
-	public List<E> findAll (String orderBy,OrderByType orderByType,String whereClause,Object... whereArgs) throws EasyLiteSqlException; 
+	List<E> findAll (String orderBy,OrderByType orderByType,String whereClause,Object... whereArgs) throws EasyLiteSqlException;
 }

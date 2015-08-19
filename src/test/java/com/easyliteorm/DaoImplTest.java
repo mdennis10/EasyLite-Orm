@@ -1,31 +1,32 @@
 package com.easyliteorm;
 
+import android.app.Activity;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import com.easyliteorm.annotation.OrderByType;
+import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
+import com.easyliteorm.model.Book;
+import com.easyliteorm.model.NonNumeric;
+import com.easyliteorm.model.Note;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
-
-import android.app.Activity;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.easyliteorm.annotation.OrderByType;
-import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
-import com.easyliteorm.model.Book;
-import com.easyliteorm.model.NonNumeric;
-import com.easyliteorm.model.Note;
-
 @RunWith(RobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public class DaoImplTest {
 	
 	private EasyLite dbLite;
@@ -57,6 +58,33 @@ public class DaoImplTest {
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
 		long id = dao.create(note);
 		Assert.assertTrue(id > 0);
+	}
+
+	@Test public void createAsyncMethodTest (){
+		Note note = new Note();
+		note.id = 2;
+		note.body = "Body Text";
+		note.author = "John Doe";
+
+
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		// verify that listener is called.
+		// This is very import because if the
+		// listener is not called then the rest of
+		// the test doesn't need execution
+		ResponseListener<Long> listener = Mockito.mock(ResponseListener.class);
+		Note mockNote = new Note();
+		mockNote.id = 1;
+		dao.createAsync(mockNote, listener);
+		Mockito.verify(listener).onComplete((long) mockNote.id);
+
+		dao.createAsync(note, new ResponseListener<Long>() {
+			@Override
+			public void onComplete(Long response) {
+				Assert.assertNotNull(response);
+				Assert.assertTrue(response > 0);
+			}
+		});
 	}
 	
 	@Test public void createMethodGetterAndSetterTest (){

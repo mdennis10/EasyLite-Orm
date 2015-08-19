@@ -50,7 +50,18 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 		return result;
 	}
-	
+
+	@Override
+	public void createAsync(final E entity,final ResponseListener<Long> listener) {
+		EasyLiteAsyncTask<Long> task = new EasyLiteAsyncTask<Long>(new Action<Long>() {
+			@Override
+			public Long execute() {
+				return create(entity);
+			}
+		}, listener);
+		task.execute();
+	}
+
 	@Override
 	public boolean batchCreate(List<E> entities) throws EasyLiteSqlException {
 		boolean success = true;
