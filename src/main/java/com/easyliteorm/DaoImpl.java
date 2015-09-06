@@ -78,7 +78,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 					db.setTransactionSuccessful(); 
 			}
 			else
-				success = false;
+				return false;
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		}finally{
@@ -89,9 +89,14 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 	@Override
-	public void batchCreateAsync(List<E> entities, ResponseListener<Boolean> listener) {
-		if (entities == null || entities.isEmpty())
-			listener.onComplete(false);
+	public void batchCreateAsync(final List<E> entities, ResponseListener<Boolean> listener) {
+		EasyLiteAsyncTask<Boolean> task = new EasyLiteAsyncTask<Boolean>(new Action<Boolean>() {
+			@Override
+			public Boolean execute() {
+				return batchCreate(entities);
+			}
+		},listener);
+		task.execute();
 	}
 
 	@Override
@@ -179,6 +184,17 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 	@Override
+	public void deleteAllAsync(ResponseListener<Integer> listener) {
+		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
+			@Override
+			public Integer execute() {
+				return deleteAll();
+			}
+		},listener);
+		task.execute();
+	}
+
+	@Override
 	public int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException{
 		try {
 			return db.delete(table.getName(), whereClause, formatWhereParams(whereArgs));
@@ -213,7 +229,20 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return 0;
 	}
 
-	
+
+
+	@Override
+	public void deleteAsync(final E entity, ResponseListener<Integer> listener) {
+		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
+			@Override
+			public Integer execute() {
+				return delete(entity);
+			}
+		},listener);
+		task.execute();
+	}
+
+
 	@Override
 	public int update(E entity,String whereClause,Object... whereArgs) throws EasyLiteSqlException{
 		if (entity == null)

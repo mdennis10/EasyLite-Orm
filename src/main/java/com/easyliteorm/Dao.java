@@ -28,7 +28,7 @@ public interface Dao<K,E> {
 	 * Create new instance of record
 	 * @author Mario Dennis
 	 * @param entity instance to save.
-	 * @param  listener to call once operation is complete
+	 * @param listener to call once operation is complete
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the row ID of the newly inserted row, or -1 if an error occurred.A value greater than 0 if primary key is of type String
 	 */
@@ -51,7 +51,7 @@ public interface Dao<K,E> {
 	 * insert operation fail all fails.
 	 * @author Mario Dennis
 	 * @param entities objects that should be saved
-	 * @param  listener to call once operation is complete
+	 * @param listener to call once operation is complete
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return true when batch transactions succeeds, otherwise false
 	 */
@@ -77,6 +77,17 @@ public interface Dao<K,E> {
 	 * @return the number of rows affected 
 	 */
 	int delete (E entity) throws EasyLiteSqlException;
+
+
+	/**
+	 * Delete a record from database
+	 * @author Mario Dennis
+	 * @param entity to delete from database
+	 * @param listener to call once operation is complete
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return the number of rows affected
+	 */
+	void deleteAsync(E entity, ResponseListener<Integer> listener);
 	
 	
 	/**
@@ -86,6 +97,16 @@ public interface Dao<K,E> {
 	 * @return the number of rows affected.
 	 */
     int deleteAll () throws EasyLiteSqlException;
+
+
+	/**
+	 * Delete all records from database
+	 * @author Mario Dennis
+	 * @param listener to call once operation is complete
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return the number of rows affected.
+	 */
+	void deleteAllAsync(ResponseListener<Integer> listener);
 	
     
     /**
