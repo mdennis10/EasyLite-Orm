@@ -70,8 +70,8 @@ public class DaoImplTest {
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
 		// verify that listener is called.
 		// This is very import because if the
-		// listener is not called then the rest of
-		// the test doesn't need execution
+		// listener is not called then the
+		// the test should stop execution
 		ResponseListener<Long> listener = Mockito.mock(ResponseListener.class);
 		Note mockNote = new Note();
 		mockNote.id = 1;
@@ -118,6 +118,42 @@ public class DaoImplTest {
 			Assert.assertEquals(actual.id, notes.get(cursor.getPosition()).id);
 		}
 		Assert.assertTrue(result);
+	}
+
+
+	@Test public void batchCreate_returnsFalseWhenNullEntitiesSuppliedTest (){
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		boolean result = dao.batchCreate(null);
+		Assert.assertFalse(result);
+	}
+
+	@Test public void batchCreate_returnFalseWhenEmptyEntitesSuppliedTest (){
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		boolean result = dao.batchCreate(new ArrayList<Note>());
+		Assert.assertFalse(result);
+	}
+
+	@Test public void batchCreateAsyncTest (){
+		List<Note> notes = new ArrayList<Note>();
+		Note note = new Note();
+		note.id = 1;
+		notes.add(note);
+
+		Note note2 = new Note();
+		note2.id = 2;
+		notes.add(note2);
+
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		ResponseListener<Boolean> mockListener = Mockito.mock(ResponseListener.class);
+		dao.batchCreateAsync(notes,mockListener);
+		Mockito.verify(mockListener).onComplete(true);
+		dao.batchCreateAsync(notes, new ResponseListener<Boolean>() {
+			@Override
+			public void onComplete(Boolean response) {
+				Assert.assertNotNull(response);
+				Assert.assertTrue(response);
+			}
+		});
 	}
 	
 	@Test public void batchCreateFailsWhenAnyInsertOperationFail (){
@@ -172,6 +208,8 @@ public class DaoImplTest {
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
 		dao.batchCreateOverridable(notes);
+
+
 		
 		Cursor cursor = db.query("Note", null, null, null, null, null, null);
 		cursor.moveToFirst();

@@ -44,6 +44,18 @@ public interface Dao<K,E> {
 	 * @return true when batch transactions succeeds, otherwise false
 	 */
 	boolean batchCreate (List<E> entities) throws EasyLiteSqlException;
+
+	/**
+	 * Dispatch batch insert to database. [NOTE]
+	 * Because this method is transactional if any
+	 * insert operation fail all fails.
+	 * @author Mario Dennis
+	 * @param entities objects that should be saved
+	 * @param  listener to call once operation is complete
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return true when batch transactions succeeds, otherwise false
+	 */
+	void batchCreateAsync (List<E> entities,ResponseListener<Boolean> listener);
 	
 	
 	

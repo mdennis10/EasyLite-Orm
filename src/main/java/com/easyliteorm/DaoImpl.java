@@ -77,14 +77,23 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 				if (success) //commits when all transactions successful
 					db.setTransactionSuccessful(); 
 			}
+			else
+				success = false;
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		}finally{
-			db.endTransaction();
+			if (db.inTransaction())
+				db.endTransaction();
 		}
 		return success;
 	}
-	
+
+	@Override
+	public void batchCreateAsync(List<E> entities, ResponseListener<Boolean> listener) {
+		if (entities == null || entities.isEmpty())
+			listener.onComplete(false);
+	}
+
 	@Override
 	public synchronized void batchCreateOverridable(List<E> entities) throws EasyLiteSqlException{
 		try {
