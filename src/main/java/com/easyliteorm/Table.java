@@ -7,7 +7,13 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Table {
+/**
+ * Table contains a information about
+ * underline table
+ *
+ * @author Mario Dennis
+ */
+public final class Table {
 	private boolean CONTAIN_PRIMARY_KEY = false;
 	private final String name;
 	private final Class<?> entity;
@@ -29,7 +35,7 @@ public class Table {
 		return columns;
 	}
 
-	private void setColumns(SQLiteTypeRegistry typeRegistry) {
+	private final void setColumns(SQLiteTypeRegistry typeRegistry) {
 		columns = new HashSet<Column>();
 		Field[] fields = entity.getDeclaredFields();
 		for (Field field : fields)
@@ -38,7 +44,7 @@ public class Table {
 	}
 	
 	
-	protected void setColumnField (String name,SQLiteType sqliteType,ColumnType columnType,GenerationType generationType){
+	protected final void setColumnField (String name,SQLiteType sqliteType,ColumnType columnType,GenerationType generationType){
 		Column column = new Column();
 		column.setName(name);
 		column.setColumnType(columnType);
@@ -51,7 +57,7 @@ public class Table {
 	}
 	
 	
-	protected ColumnType resolveColumnType (Field field){
+	protected final ColumnType resolveColumnType (Field field){
 		Id id = field.getAnnotation(Id.class);
 		if (id != null){
 			CONTAIN_PRIMARY_KEY = true;
@@ -61,7 +67,7 @@ public class Table {
 		return ColumnType.REGULAR;
 	}	
 	
-	protected GenerationType resolveGenerationType(Field field){
+	protected final GenerationType resolveGenerationType(Field field){
 		Id id = field.getAnnotation(Id.class);
 		if (id != null)
 			return id.strategy();
@@ -70,12 +76,12 @@ public class Table {
 	}
 
 
-	protected boolean containPrimaryKey() {
+	protected final boolean containPrimaryKey() {
 		return CONTAIN_PRIMARY_KEY;
 	}
 
 
-	protected Column getPrimaryKeyColumn() {
+	protected final Column getPrimaryKeyColumn() {
 		return primaryKeyColumn;
 	}
 }

@@ -1,7 +1,9 @@
 package com.easyliteorm;
 
 /**
- * Created by Mario on 18/8/2015.
+ * Callback handler that is called once
+ * operation as ended
+ * @author Mario
  */
 public interface ResponseListener <T> {
 

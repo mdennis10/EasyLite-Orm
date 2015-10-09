@@ -513,7 +513,7 @@ public class DaoImplTest {
 		Dao<Long, Book> dao = dbLite.getDao(Book.class);
 		long id = dao.create(book);
 		
-		Assert.assertTrue("pimary key not auto generated", id > 0);
+		Assert.assertTrue("primary key not auto generated", id > 0);
 		
 		book.setId(10);
 		id = dao.create(book);

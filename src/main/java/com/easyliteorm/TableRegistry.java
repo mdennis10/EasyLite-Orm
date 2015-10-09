@@ -9,11 +9,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class TableRegistry {
+
+public final class TableRegistry {
 	private final Map<String, Table> registry;
 	private final SQLiteTypeRegistry sqliteTypeRegistry;
 	
-	public TableRegistry(SQLiteTypeRegistry sqliteTypeRegistry) {
+	protected TableRegistry(SQLiteTypeRegistry sqliteTypeRegistry) {
 		this.sqliteTypeRegistry = sqliteTypeRegistry;
 		this.registry = new HashMap<String, Table>();
 	}
@@ -31,7 +32,7 @@ public class TableRegistry {
 	 */
 	public void addTable(Class<?> entity) {
 		if (entity == null)
-			throw new NullPointerException("Null agrument supplied");
+			throw new NullPointerException("Null argument supplied");
 		
 		Table table = new Table(entity,sqliteTypeRegistry);
 		getRegistry().put(table.getName(), table);

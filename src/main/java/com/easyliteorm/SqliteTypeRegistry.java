@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * SQLiteTypeRegistry contains a registry of all supported
  * data types and their associated Sqlite column types.
