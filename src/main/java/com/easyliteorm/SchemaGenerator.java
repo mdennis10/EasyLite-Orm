@@ -6,22 +6,9 @@ import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
 
 import java.util.Iterator;
 
-/**
- * Generates Data Definition Language (DDL)
- * statements required to model database
- * @author Mario
- */
 public final class SchemaGenerator {
 	protected SchemaGenerator() {}
 
-	/**
-	 * Generate SQL to create new Table
-	 * @author Mario
-	 * @param table
-	 * @return Data Definition Language statement to create table
-	 * @throws NoPrimaryKeyFoundException
-	 * @throws NoSuitablePrimaryKeySuppliedException
-	 */
 	protected synchronized String createTable(Table table) throws NoPrimaryKeyFoundException, NoSuitablePrimaryKeySuppliedException{
 		if (!table.containPrimaryKey())
 			throw new NoPrimaryKeyFoundException();
@@ -55,14 +42,8 @@ public final class SchemaGenerator {
 		}
 		return builder.append(")").toString();
 	}
+	
 
-
-	/**
-	 * Create statement to drop table
-	 * @author Mario
-	 * @param table
-	 * @return Data Definition Language statement
-	 */
 	public String dropTable(Table table) {
 		return String.format("DROP TABLE IF EXISTS %s", table.getName());
 	}

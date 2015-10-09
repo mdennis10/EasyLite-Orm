@@ -52,7 +52,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 	@Override
-	public void createAsync(final E entity,final ResponseListener<Long> listener) {
+	public void createAsync(final ResponseListener<Long> listener, final E entity) {
 		EasyLiteAsyncTask<Long> task = new EasyLiteAsyncTask<Long>(new Action<Long>() {
 			@Override
 			public Long execute() {
@@ -77,28 +77,14 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 				if (success) //commits when all transactions successful
 					db.setTransactionSuccessful(); 
 			}
-			else
-				return false;
 		} catch (SQLException e) {
 			throw new EasyLiteSqlException(e);
 		}finally{
-			if (db.inTransaction())
-				db.endTransaction();
+			db.endTransaction();
 		}
 		return success;
 	}
-
-	@Override
-	public void batchCreateAsync(final List<E> entities, ResponseListener<Boolean> listener) {
-		EasyLiteAsyncTask<Boolean> task = new EasyLiteAsyncTask<Boolean>(new Action<Boolean>() {
-			@Override
-			public Boolean execute() {
-				return batchCreate(entities);
-			}
-		},listener);
-		task.execute();
-	}
-
+	
 	@Override
 	public synchronized void batchCreateOverridable(List<E> entities) throws EasyLiteSqlException{
 		try {
@@ -194,6 +180,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		task.execute();
 	}
 
+
 	@Override
 	public int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException{
 		try {
@@ -229,10 +216,8 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return 0;
 	}
 
-
-
 	@Override
-	public void deleteAsync(final E entity, ResponseListener<Integer> listener) {
+	public void deleteAsync(ResponseListener<Integer> listener,final E entity) {
 		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
 			@Override
 			public Integer execute() {
@@ -242,7 +227,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		task.execute();
 	}
 
-
+	
 	@Override
 	public int update(E entity,String whereClause,Object... whereArgs) throws EasyLiteSqlException{
 		if (entity == null)
@@ -265,6 +250,17 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			return 0;
 		}
 		return 0;
+	}
+
+	@Override
+	public void updateAsync(ResponseListener<Integer> listener, final E entity, final String whereClause, final Object... whereArgs) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
+			@Override
+			public Integer execute() {
+				return update(entity,whereClause,whereArgs);
+			}
+		}, listener);
+		task.execute();
 	}
 
 	@Override
