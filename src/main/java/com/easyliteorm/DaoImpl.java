@@ -296,7 +296,6 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 
 	/**
 	 * Find record by primary key
-	 *
 	 * @param listener to call once operation is complete
 	 * @param key      - primary key value
 	 * @return E entity record
@@ -387,7 +386,29 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 		return results;
 	}
-	
+
+	/**
+	 * Find all records
+	 * @param listener    to call once operation is complete
+	 * @param orderBy     How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER BY itself). Passing null will use the default sort order, which may be unordered.
+	 * @param orderByType specifies the order data will be returned based on orderBy column. Defaults to ASC when null.
+	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
+	 * @param whereArgs   You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
+	 * @return List of all records
+	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @author Mario Dennis
+	 */
+	@Override
+	public void findAllAsync(ResponseListener<List<E>> listener, final String orderBy, final OrderByType orderByType, final String whereClause, final Object... whereArgs) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<List<E>> task = new EasyLiteAsyncTask<List<E>>(new Action<List<E>>() {
+			@Override
+			public List<E> execute() {
+				return findAll(orderBy,orderByType,whereClause,whereArgs);
+			}
+		}, listener);
+		task.execute();
+	}
+
 	public String[] formatWhereParams (Object... whereArgs){
 		if (whereArgs == null)
 			return null;

@@ -32,7 +32,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the row ID of the newly inserted row, or -1 if an error occurred.A value greater than 0 if primary key is of type String
 	 */
-	void createAsync(ResponseListener<Long> listener, E entity);
+	void createAsync(ResponseListener<Long> listener, E entity) throws EasyLiteSqlException;
 	
 	/**
 	 * Dispatch batch insert to database. [NOTE]
@@ -75,7 +75,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the number of rows affected
 	 */
-	void deleteAsync(ResponseListener<Integer> listener,E entity);
+	void deleteAsync(ResponseListener<Integer> listener,E entity) throws EasyLiteSqlException;
 	
 	
 	/**
@@ -94,8 +94,7 @@ public interface Dao<K,E> {
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return the number of rows affected.
 	 */
-
-	void deleteAllAsync(ResponseListener<Integer> listener);
+	void deleteAllAsync(ResponseListener<Integer> listener) throws EasyLiteSqlException;
 	
     
     /**
@@ -184,10 +183,11 @@ public interface Dao<K,E> {
 	/**
 	 * Find all records
 	 * @author Mario Dennis
+	 * @param  listener to call once operation is complete
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
 	 * @return List of all records
 	 */
-	void findAllAsync(ResponseListener<List<E>> listener);
+	void findAllAsync(ResponseListener<List<E>> listener) throws EasyLiteSqlException;
 	
 	
 	/**
@@ -201,4 +201,18 @@ public interface Dao<K,E> {
 	 * @return List of all records
 	 */
 	List<E> findAll(String orderBy, OrderByType orderByType, String whereClause, Object... whereArgs) throws EasyLiteSqlException;
+
+
+	/**
+	 * Find all records
+	 * @author Mario Dennis
+	 * @param  listener to call once operation is complete
+	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
+	 * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
+	 * @param orderBy How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER BY itself). Passing null will use the default sort order, which may be unordered.
+	 * @param orderByType specifies the order data will be returned based on orderBy column. Defaults to ASC when null.
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return List of all records
+	 */
+	void findAllAsync(ResponseListener<List<E>> listener,String orderBy, OrderByType orderByType, String whereClause, Object... whereArgs) throws EasyLiteSqlException;
 }

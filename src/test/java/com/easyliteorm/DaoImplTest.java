@@ -611,8 +611,7 @@ public class DaoImplTest {
 		Assert.assertEquals(id2, notes.get(1).id);
 	}
 
-	@Test
-	public void findAllAsyncTest() throws Exception {
+	@Test public void findAllAsyncTest() throws Exception {
 		ResponseListener<List<Note>> mockListener = Mockito.mock(ResponseListener.class);
 		dbLite.getDao(Note.class)
 			  .findAllAsync(mockListener);
@@ -623,12 +622,12 @@ public class DaoImplTest {
 		values.put("body", "text");
 		values.put("date", new Date().getTime());
 
-		long id = db.insert("Note", null, values);
+		final long id = db.insert("Note", null, values);
 		Assert.assertTrue("Note instance not created",id > 0);
 
 		values.put("id", 15);
 		values.put("date", new Date().getTime());
-		long id2 = db.insert("Note", null, values);
+		final long id2 = db.insert("Note", null, values);
 		Assert.assertTrue("Note instance not created",id > 0);
 
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
@@ -637,13 +636,59 @@ public class DaoImplTest {
 			public void onComplete(List<Note> response) {
 				Assert.assertNotNull(response);
 				Assert.assertFalse(response.isEmpty());
-				Assert.assertEquals(11,response.get(0).id);
-				Assert.assertEquals(15,response.get(1).id);
+				Assert.assertEquals(id,response.get(0).id);
+				Assert.assertEquals(id2,response.get(1).id);
 			}
 		});
 	}
-	
-	
+
+
+	@Test public void findAllAsyncWithConditionsTest(){
+		ResponseListener<List<Note>> mockListener = Mockito.mock(ResponseListener.class);
+		dbLite.getDao(Note.class)
+			  .findAllAsync(mockListener,null,null,null,null);
+		Mockito.verify(mockListener).onComplete(new ArrayList<Note>());
+
+
+		Date date = new Date();
+		@SuppressWarnings("deprecation")
+		Date laterDate = new Date(date.getYear() + 1,2,4);
+
+		ContentValues values = new ContentValues();
+		values.put("id", 1);
+		values.put("body", "text");
+		values.put("date", date.getTime());
+
+		final long id = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+
+		values = new ContentValues();
+		values.put("id", 2);
+		values.put("body", "text");
+		values.put("date", laterDate.getTime());
+
+		final long id2 = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		dao.findAllAsync(new ResponseListener<List<Note>>() {
+			@Override
+			public void onComplete(List<Note> response) {
+				Assert.assertTrue("Empty List<Note> Returned",!response.isEmpty());
+				Assert.assertEquals(id, response.get(0).id);
+			}
+		},null,null,"id=? AND body=?", "1","text");
+
+		dao.findAllAsync(new ResponseListener<List<Note>>() {
+			@Override
+			public void onComplete(List<Note> response) {
+				Assert.assertTrue("Empty List<Note> Returned",!response.isEmpty());
+				Assert.assertEquals(2, response.size());
+			}
+		},null, null, "date >= ?", date);
+	}
+
+
 	@Test public void findAllBooleanWhereValueConvertedTest (){
 		ContentValues values = new ContentValues();
 		values.put("id", 11);
