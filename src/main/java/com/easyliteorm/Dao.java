@@ -163,6 +163,7 @@ public interface Dao<K,E> {
 	 */
 	boolean isExist(E entity) throws EasyLiteSqlException;
 	
+
 	/**
 	 * Check if entity table contains any record
 	 * @author Mario Dennis
@@ -179,6 +180,14 @@ public interface Dao<K,E> {
 	 * @return List of all records
 	 */
 	List<E> findAll() throws EasyLiteSqlException;
+
+	/**
+	 * Find all records
+	 * @author Mario Dennis
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return List of all records
+	 */
+	void findAllAsync(ResponseListener<List<E>> listener);
 	
 	
 	/**

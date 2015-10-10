@@ -339,7 +339,27 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 		return results;
 	}
-	
+
+
+	/**
+	 * Find all records
+	 *
+	 * @param listener
+	 * @return List of all records
+	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @author Mario Dennis
+	 */
+	@Override
+	public void findAllAsync(ResponseListener<List<E>> listener) {
+		EasyLiteAsyncTask<List<E>> task = new EasyLiteAsyncTask<List<E>>(new Action<List<E>>() {
+			@Override
+			public List<E> execute() {
+				return findAll();
+			}
+		},listener);
+		task.execute();
+	}
+
 	@Override
 	public List<E> findAll(String orderBy,OrderByType orderByType,String whereClause,Object... whereArgs) throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E>();
