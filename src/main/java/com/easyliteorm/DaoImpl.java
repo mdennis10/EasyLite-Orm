@@ -294,6 +294,26 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return null;
 	}
 
+	/**
+	 * Find record by primary key
+	 *
+	 * @param listener to call once operation is complete
+	 * @param key      - primary key value
+	 * @return E entity record
+	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @author Mario Dennis
+	 */
+	@Override
+	public void findByIdAsync(ResponseListener<E> listener, final K key) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<E> task = new EasyLiteAsyncTask<E>(new Action<E>() {
+			@Override
+			public E execute() {
+				return findById(key);
+			}
+		}, listener);
+		task.execute();
+	}
+
 	@Override
 	public List<E> findAll() throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E> ();

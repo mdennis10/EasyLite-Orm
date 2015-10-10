@@ -341,7 +341,7 @@ public class DaoImplTest {
 		}
 	}
 	
-	@Test public void findByIdMethodTest (){
+	@Test public void findByIdTest (){
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
 		ContentValues values = new ContentValues();
 		values.put("id", 4);
@@ -355,6 +355,34 @@ public class DaoImplTest {
 		
 		Note note = dao.findById((int) id);
 		Assert.assertNotNull(note);
+	}
+
+	@Test public void findByIdAsyncTest() {
+
+		ResponseListener<Note> mockListener = Mockito.mock(ResponseListener.class);
+		dbLite.getDao(Note.class)
+			  .findByIdAsync(mockListener, 1);
+		Mockito.verify(mockListener).onComplete(null);
+
+
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		ContentValues values = new ContentValues();
+		values.put("id", 4);
+		values.put("body", "text");
+		values.put("author", "john doe");
+		values.put("date", new Date().toString());
+		values.put("sent", true);
+
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue(id > 0);
+
+		dao.findByIdAsync(new ResponseListener<Note>() {
+			@Override
+			public void onComplete(Note response) {
+				Assert.assertNotNull(response);
+				Assert.assertEquals(4,response.id);
+			}
+		},(int)id);
 	}
 	
 	@Test public void privateFieldsGetterAndSetterMethodTest (){
@@ -618,4 +646,5 @@ public class DaoImplTest {
 		this.dbLite = null;
 		this.typeRegistry = null;
 	}
+
 }

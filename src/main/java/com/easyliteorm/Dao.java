@@ -141,6 +141,17 @@ public interface Dao<K,E> {
 	 * @return E entity record
 	 */
 	E findById(K key) throws EasyLiteSqlException;
+
+
+	/**
+	 * Find record by primary key
+	 * @author Mario Dennis
+	 * @param  listener to call once operation is complete
+	 * @param key - primary key value
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @return E entity record
+	 */
+	void findByIdAsync(ResponseListener<E> listener,K key) throws EasyLiteSqlException;
 	
 	
 	/**
