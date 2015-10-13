@@ -5,7 +5,8 @@ import android.content.Context;
 public final class EasyLite {
 	protected final EasyLiteOpenHelper openHelper;
 	private final SQLiteTypeRegistry typeRegistry;
-	
+	private static EasyLite INSTANCE;
+
 	public EasyLite(Context context) {
 		this.typeRegistry = new SQLiteTypeRegistry();
 		this.openHelper = new EasyLiteOpenHelper(context,typeRegistry);
@@ -27,7 +28,10 @@ public final class EasyLite {
 	 */
 	@Deprecated
 	public static EasyLite getInstance(Context context) {
-		return new EasyLite(context);
+		if (INSTANCE == null){
+			INSTANCE = new EasyLite(context);
+		}
+		return INSTANCE;
 	}
 	
 	

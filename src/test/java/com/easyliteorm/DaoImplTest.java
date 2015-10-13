@@ -37,7 +37,7 @@ public class DaoImplTest {
 	public void setup() {
 		Activity activity = Robolectric.buildActivity(Activity.class).create().get();
 		
-		this.dbLite = new EasyLite(activity);
+		this.dbLite = EasyLite.getInstance(activity);
 		this.typeRegistry = dbLite.getSqlTypeRegistry();
 		db = ((DaoImpl<Object, Note>) dbLite.getDao(Note.class)).getSqLiteDatabase();
 	}

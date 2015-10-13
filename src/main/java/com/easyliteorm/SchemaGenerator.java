@@ -9,11 +9,21 @@ import java.util.Iterator;
 public final class SchemaGenerator {
 	protected SchemaGenerator() {}
 
+	/**
+	 * Generate a SQL DDL statement to create Entity table.
+	 * @author Mario Dennis
+	 * @param table
+	 * @return SQL statement for entity table creation
+	 * @throws NoPrimaryKeyFoundException
+	 * @throws NoSuitablePrimaryKeySuppliedException
+	 */
 	protected synchronized String createTable(Table table) throws NoPrimaryKeyFoundException, NoSuitablePrimaryKeySuppliedException{
 		if (!table.containPrimaryKey())
 			throw new NoPrimaryKeyFoundException();
 		
 		Column primaryColumn = table.getPrimaryKeyColumn();
+
+		//Check that primary key constraints met
 		if (primaryColumn.getSqliteType() == null || primaryColumn.getSqliteType() != SQLiteType.INTEGER)
 			throw new NoSuitablePrimaryKeySuppliedException();
 		
@@ -30,9 +40,12 @@ public final class SchemaGenerator {
 			builder.append(column.getName())
 			       .append(" ")
 			       .append(value);
-			
-			if(column.getColumnType() == ColumnType.PRIMARY){
+
+			//add primary key statement
+			if(column.getColumnType() == ColumnType.PRIMARY) {
 				builder.append(" PRIMARY KEY");
+
+				// add autoincrement generation stategy
 				if (column.getGenerationStrategy() == GenerationType.AUTO)
 				       builder.append(" AUTOINCREMENT");
 			}
@@ -42,11 +55,16 @@ public final class SchemaGenerator {
 		}
 		return builder.append(")").toString();
 	}
-	
 
+
+	/**
+	 * Generate a SQL DDL statement to drop Entity table.
+	 * @author Mario Dennis
+	 * @param table
+	 * @return SQL statement for entity table removal
+	 */
 	public String dropTable(Table table) {
 		return String.format("DROP TABLE IF EXISTS %s", table.getName());
 	}
-	
 
 }

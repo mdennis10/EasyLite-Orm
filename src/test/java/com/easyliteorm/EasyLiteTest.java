@@ -1,7 +1,8 @@
 package com.easyliteorm;
 
-import java.io.File;
-
+import android.app.Activity;
+import android.database.sqlite.SQLiteDatabase;
+import com.easyliteorm.model.Note;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,10 +11,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
-import android.app.Activity;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.easyliteorm.model.Note;
+import java.io.File;
 
 @RunWith(RobolectricTestRunner.class)
 public class EasyLiteTest {
@@ -24,7 +22,7 @@ public class EasyLiteTest {
 	@Before public void setUp (){
 		this.context = Robolectric.buildActivity(Activity.class).create().get();
 		this.db = SQLiteDatabase.openOrCreateDatabase(new File(ManifestUtil.getDatabaseName(context)),null);
-		this.easyLite = new EasyLite(context);
+		this.easyLite = EasyLite.getInstance(context);
 	}
 	
 	
