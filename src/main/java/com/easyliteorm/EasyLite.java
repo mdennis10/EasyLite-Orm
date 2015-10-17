@@ -15,10 +15,9 @@ public final class EasyLite {
 
 
 	/**
-	 * Easylite now utilizes its own Context. Therefore,
-	 * this method does not require a context to be supplied,
-	 * while this method still works, it is recommended that you
-	 * use following instead:
+	 * Easylite now utilize an internal android context.
+	 * Therefore, this method no longer needs a context argument.
+	 * It is recommended that you use the following instead:
 	 * <pre>
 	 * {@code
 	 * 		EasyLite easyLite = EasyLite.getInstance ();

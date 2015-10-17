@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -105,6 +106,23 @@ public class TableTest {
 		Assert.assertEquals(ColumnType.PRIMARY, column.getColumnType());
 	}
 
+
+	@Test public void containsForiegnKeyColumnTest (){
+		Table table = new Table(Note.class,typeRegistry);
+		boolean result = table.containForeignKey();
+		Assert.assertTrue("No foreign key",result);
+	}
+
+	@Test public void foriegnKeysColumnsAddToTableTest (){
+		Table table = new Table(Note.class,typeRegistry);
+		Set<Column> columns = table.getColumns();
+		Set<Column> foreignColumns = new HashSet<Column>();
+		for (Column column : columns)
+			if (column.getColumnType() == ColumnType.FOREIGN)
+				foreignColumns.add(column);
+
+		Assert.assertFalse("No Foreign Columns found",foreignColumns.isEmpty());
+	}
 
 	@After public void tearDown (){
 		this.typeRegistry = null;

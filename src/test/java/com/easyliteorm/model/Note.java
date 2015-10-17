@@ -1,6 +1,7 @@
 package com.easyliteorm.model;
 
 import com.easyliteorm.annotation.Entity;
+import com.easyliteorm.annotation.Foreign;
 import com.easyliteorm.annotation.Id;
 
 import java.util.Date;
@@ -15,6 +16,6 @@ public class Note {
 	public Date date;
 	public double price;
 
-	//@Foreign
-//	public Book book;
+	@Foreign
+    public Book book;
 }

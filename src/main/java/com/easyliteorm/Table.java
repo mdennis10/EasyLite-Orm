@@ -1,8 +1,10 @@
 package com.easyliteorm;
 
+import com.easyliteorm.annotation.Entity;
 import com.easyliteorm.annotation.Foreign;
 import com.easyliteorm.annotation.GenerationType;
 import com.easyliteorm.annotation.Id;
+import com.easyliteorm.exception.NotEntityException;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -20,18 +22,29 @@ public final class Table {
 	private final Class<?> entity;
 	private Set<Column> columns;
 	private Column primaryKeyColumn;
-	
+
 	protected Table(Class<?> entity,SQLiteTypeRegistry typeRegistry) {
 		this.entity  = entity;
 		this.name    = TableRegistry.getTableName(entity);
 		setColumns(typeRegistry);
 	}
 
-	
+
+	/**
+	 * Get name of table.
+	 * @author Mario Dennis
+	 * @return table name
+	 */
 	public String getName() {
 		return name;
 	}
-		
+
+
+	/**
+	 * Get all columns associated with table.
+	 * @author Mario Dennis
+	 * @return table columns
+	 */
 	public Set<Column> getColumns(){
 		return columns;
 	}
@@ -41,23 +54,63 @@ public final class Table {
 		columns = new HashSet<Column>();
 		Field[] fields = entity.getDeclaredFields();
 		for (Field field : fields) {
-			setColumnField(field,typeRegistry);
+			addColumn(field, typeRegistry);
 		}
 	}
 
-	protected final void setColumnField (Field field, SQLiteTypeRegistry typeRegistry){
+	/**
+	 * Add entity field to table collection
+	 * of table columns.
+	 * @author Mario Dennis
+	 * @param field
+	 * @param typeRegistry
+	 */
+	private final void addColumn(Field field, SQLiteTypeRegistry typeRegistry){
 		ColumnType columnType = resolveColumnType(field);
 
+		if (columnType == ColumnType.REGULAR) {
+			columns.add(createColumn(field,columnType,typeRegistry));
+		}
+
+		else if (columnType == ColumnType.PRIMARY) {
+			Column column = createColumn(field,columnType,typeRegistry);
+			columns.add(column);
+			CONTAIN_PRIMARY_KEY = true;
+			primaryKeyColumn = column;
+		}
+
+		else if (columnType == ColumnType.FOREIGN) {
+			columns.add(createForeignColumn(field, typeRegistry));
+			CONTAIN_FOREIGN_KEY = true;
+		}
+	}
+
+	/**
+	 * Create a Column instance for foreign key columns
+	 * @author Mario Dennis
+	 * @return created column instance
+	 */
+	private Column createForeignColumn (Field field, SQLiteTypeRegistry typeRegistry){
+		Table table = new Table(field.getType(),typeRegistry);
+		Column column = table.getPrimaryKeyColumn();
+		column.setColumnType(ColumnType.FOREIGN);
+		column.setName(String.format("%s_%s",table.getName(),column.getName()));
+		return column;
+	}
+
+
+	/**
+	 * creates Column instance
+	 * @author Mario Dennis
+	 * @return created column instance
+	 */
+	private Column createColumn (Field field, ColumnType columnType,SQLiteTypeRegistry typeRegistry){
 		Column column = new Column();
 		column.setName(field.getName());
 		column.setColumnType(columnType);
 		column.setSqliteType(typeRegistry.resolve(field.getType()));
 		column.setGenerationType(resolveGenerationType(field));
-
-		columns.add(column);
-
-		if (columnType == ColumnType.PRIMARY)
-			primaryKeyColumn = column;
+		return column;
 	}
 
 
@@ -70,11 +123,13 @@ public final class Table {
 	 */
 	protected final ColumnType resolveColumnType (Field field){
 		if (field.getAnnotation(Id.class) != null){
-			CONTAIN_PRIMARY_KEY = true;
 			return ColumnType.PRIMARY;
 		}
 		else if (field.getAnnotation(Foreign.class) != null){
-			CONTAIN_FOREIGN_KEY = true;
+			Class<?> clazz = field.getType();
+			if (clazz.getAnnotation(Entity.class) == null)
+				throw new NotEntityException();
+
 			return ColumnType.FOREIGN;
 		}
 		return ColumnType.REGULAR;
@@ -95,12 +150,32 @@ public final class Table {
 	}
 
 
+	/**
+	 * Check if table contain primary key column
+	 * @author Mario Dennis
+	 * @return haves primary key or not
+	 */
 	protected final boolean containPrimaryKey() {
 		return CONTAIN_PRIMARY_KEY;
 	}
 
 
+	/**
+	 * Check if table contain foreign key column
+	 * @author Mario Dennis
+	 * @return haves primary key or not
+	 */
+	protected final boolean containForeignKey() {
+		return CONTAIN_FOREIGN_KEY;
+	}
+
+	/**
+	 * Get the primary key column of table
+	 * @author Mario Dennis
+	 * @return primary key column or null if none is defined.
+	 */
 	protected final Column getPrimaryKeyColumn() {
 		return primaryKeyColumn;
 	}
+
 }
