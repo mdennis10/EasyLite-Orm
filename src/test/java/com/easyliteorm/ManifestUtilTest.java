@@ -22,7 +22,7 @@ public class ManifestUtilTest {
 	
 	@Test public void getDatabaseVersionTest(){
 		int actual = ManifestUtil.getDatabaseVersion(context);
-		Assert.assertEquals(2, actual);
+		Assert.assertEquals(1, actual);
 	}
 	
 	@Test public void getDatabaseNameTest (){

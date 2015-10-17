@@ -1,5 +1,6 @@
 package com.easyliteorm;
 
+import com.easyliteorm.annotation.Foreign;
 import com.easyliteorm.annotation.GenerationType;
 import com.easyliteorm.annotation.Id;
 
@@ -14,6 +15,7 @@ import java.util.Set;
  */
 public final class Table {
 	private boolean CONTAIN_PRIMARY_KEY = false;
+	private boolean CONTAIN_FOREIGN_KEY = false;
 	private final String name;
 	private final Class<?> entity;
 	private Set<Column> columns;
@@ -59,6 +61,7 @@ public final class Table {
 	}
 
 
+
 	/**
 	 * Resolve fields sql column type.
 	 * @author Mario Dennis
@@ -66,12 +69,14 @@ public final class Table {
 	 * @return field ColumnType
 	 */
 	protected final ColumnType resolveColumnType (Field field){
-		Id id = field.getAnnotation(Id.class);
-		if (id != null){
+		if (field.getAnnotation(Id.class) != null){
 			CONTAIN_PRIMARY_KEY = true;
 			return ColumnType.PRIMARY;
 		}
-		
+		else if (field.getAnnotation(Foreign.class) != null){
+			CONTAIN_FOREIGN_KEY = true;
+			return ColumnType.FOREIGN;
+		}
 		return ColumnType.REGULAR;
 	}
 

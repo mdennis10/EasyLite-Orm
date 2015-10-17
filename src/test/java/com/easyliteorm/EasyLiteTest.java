@@ -20,9 +20,10 @@ public class EasyLiteTest {
 	private EasyLite easyLite;
 	
 	@Before public void setUp (){
-		this.context = Robolectric.buildActivity(Activity.class).create().get();
+		this.context = Robolectric.setupActivity(Activity.class);
 		this.db = SQLiteDatabase.openOrCreateDatabase(new File(ManifestUtil.getDatabaseName(context)),null);
-		this.easyLite = EasyLite.getInstance(context);
+		this.easyLite = EasyLite.getInstance();
+		//this.easyLite = new EasyLite(context);
 	}
 	
 	
@@ -54,6 +55,6 @@ public class EasyLiteTest {
 		this.context = null;
 		this.db.close();
 		this.db    = null;
-		this.easyLite = null;
+		//this.easyLite = null;
 	}
 }

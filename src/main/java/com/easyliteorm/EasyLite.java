@@ -1,25 +1,28 @@
 package com.easyliteorm;
 
+
 import android.content.Context;
 
 public final class EasyLite {
-	protected final EasyLiteOpenHelper openHelper;
+	protected  final EasyLiteOpenHelper openHelper;
 	private final SQLiteTypeRegistry typeRegistry;
-	private static EasyLite INSTANCE;
+	private final static EasyLite INSTANCE  = new EasyLite();
 
-	public EasyLite(Context context) {
+	private EasyLite() {
 		this.typeRegistry = new SQLiteTypeRegistry();
-		this.openHelper = new EasyLiteOpenHelper(context,typeRegistry);
+		this.openHelper = new EasyLiteOpenHelper(EasyliteContext.getEasyliteContext(),typeRegistry);
 	}
+
 	
 	
 	/**
-	 * This method does not return a singleton instance
-	 * and will be removed from future releases. Instead
-	 * it returns a new instance of EasyLite.
+	 * Easylite now utilizes its own Context. Therefore,
+	 * this method does not require a context to be supplied,
+	 * while this method still works, it is recommended that you
+	 * use following instead:
 	 * <pre>
 	 * {@code
-	 * 		EasyLite easyLite = new EasyLite(context);
+	 * 		EasyLite easyLite = EasyLite.getInstance ();
 	 * }
 	 * <pre>
 	 * @author Mario Dennis
@@ -28,9 +31,15 @@ public final class EasyLite {
 	 */
 	@Deprecated
 	public static EasyLite getInstance(Context context) {
-		if (INSTANCE == null){
-			INSTANCE = new EasyLite(context);
-		}
+		return getInstance();
+	}
+
+	/**
+	 * Gets singleton instance of Easylite class.
+	 * @author Mario Dennis
+	 * @return singleton instance of EasyLite
+	 */
+	public static EasyLite getInstance (){
 		return INSTANCE;
 	}
 	

@@ -1,6 +1,5 @@
 package com.easyliteorm;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -35,9 +33,7 @@ public class DaoImplTest {
 	
 	@Before
 	public void setup() {
-		Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-		
-		this.dbLite = EasyLite.getInstance(activity);
+		this.dbLite = EasyLite.getInstance();
 		this.typeRegistry = dbLite.getSqlTypeRegistry();
 		db = ((DaoImpl<Object, Note>) dbLite.getDao(Note.class)).getSqLiteDatabase();
 	}

@@ -65,10 +65,15 @@ public class TableTest {
 		ColumnType columnType = table.resolveColumnType(Book.class.getDeclaredField("id"));
 		Assert.assertNotNull(columnType);
 		Assert.assertEquals(ColumnType.PRIMARY, columnType);
+
 		
 		columnType = table.resolveColumnType(Book.class.getDeclaredField("reciever"));
 		Assert.assertNotNull(columnType);
 		Assert.assertEquals(ColumnType.REGULAR, columnType);
+
+		columnType = table.resolveColumnType(Note.class.getDeclaredField("book"));
+		Assert.assertNotNull(columnType);
+		Assert.assertEquals(ColumnType.FOREIGN, columnType);
 	}
 	
 	@Test public void resolveGenerationTypeTest () throws NoSuchFieldException, SecurityException{
@@ -99,7 +104,8 @@ public class TableTest {
 		Assert.assertNotNull(column);
 		Assert.assertEquals(ColumnType.PRIMARY, column.getColumnType());
 	}
-	
+
+
 	@After public void tearDown (){
 		this.typeRegistry = null;
 	}
