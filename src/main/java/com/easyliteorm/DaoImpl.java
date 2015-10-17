@@ -190,8 +190,28 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 	}
 
-	
-	
+	/**
+	 * Delete records with give where condition.
+	 *
+	 * @param listener    to call once operation is complete
+	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
+	 * @param whereArgs   You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
+	 * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and instantiate a count pass "1" as the whereClause.
+	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @author Mario Dennis
+	 */
+	@Override
+	public void deleteAllAsync(ResponseListener<Integer> listener, final String whereClause, final Object... whereArgs) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
+			@Override
+			public Integer execute() {
+				return deleteAll(whereClause,whereArgs);
+			}
+		},listener);
+		task.execute();
+	}
+
+
 	@Override
 	public int delete(E entity) throws EasyLiteSqlException {
 		if (entity == null)
@@ -215,6 +235,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 		return 0;
 	}
+
 
 	@Override
 	public void deleteAsync(ResponseListener<Integer> listener,final E entity) {
@@ -340,14 +361,6 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 
-	/**
-	 * Find all records
-	 *
-	 * @param listener
-	 * @return List of all records
-	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @author Mario Dennis
-	 */
 	@Override
 	public void findAllAsync(ResponseListener<List<E>> listener) {
 		EasyLiteAsyncTask<List<E>> task = new EasyLiteAsyncTask<List<E>>(new Action<List<E>>() {
@@ -387,17 +400,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return results;
 	}
 
-	/**
-	 * Find all records
-	 * @param listener    to call once operation is complete
-	 * @param orderBy     How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER BY itself). Passing null will use the default sort order, which may be unordered.
-	 * @param orderByType specifies the order data will be returned based on orderBy column. Defaults to ASC when null.
-	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
-	 * @param whereArgs   You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
-	 * @return List of all records
-	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @author Mario Dennis
-	 */
+
 	@Override
 	public void findAllAsync(ResponseListener<List<E>> listener, final String orderBy, final OrderByType orderByType, final String whereClause, final Object... whereArgs) throws EasyLiteSqlException {
 		EasyLiteAsyncTask<List<E>> task = new EasyLiteAsyncTask<List<E>>(new Action<List<E>>() {
@@ -456,16 +459,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return db;
 	}
 	
-	
-	/**
-	 * Sets entity fields reflectively.
-	 * @author Mario Dennis
-	 * @param cursor
-	 * @param field
-	 * @param entity
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 */
+
 	private void setEntityFields (Cursor cursor,Field field,E entity) throws IllegalArgumentException, IllegalAccessException{
 		field.setAccessible(true);
 		Class<?> type = field.getType();

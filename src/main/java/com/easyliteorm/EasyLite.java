@@ -13,8 +13,7 @@ public final class EasyLite {
 		this.openHelper = new EasyLiteOpenHelper(EasyliteContext.getEasyliteContext(),typeRegistry);
 	}
 
-	
-	
+
 	/**
 	 * Easylite now utilizes its own Context. Therefore,
 	 * this method does not require a context to be supplied,
@@ -39,7 +38,7 @@ public final class EasyLite {
 	 * @author Mario Dennis
 	 * @return singleton instance of EasyLite
 	 */
-	public static EasyLite getInstance (){
+	public final static EasyLite getInstance (){
 		return INSTANCE;
 	}
 	
@@ -81,7 +80,7 @@ public final class EasyLite {
 	}
 
 
-	public final void registerType(Class<String> clazz, SQLiteType sqliteType) {
+	protected final void registerType(Class<String> clazz, SQLiteType sqliteType) {
 		getSqlTypeRegistry().register(clazz, sqliteType);
 	}
 }

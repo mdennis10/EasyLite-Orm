@@ -106,6 +106,18 @@ public interface Dao<K,E> {
      * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and instantiate a count pass "1" as the whereClause.
      */
 	int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException;
+
+
+	/**
+	 * Delete records with give where condition.
+	 * @author Mario Dennis
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @param  listener to call once operation is complete
+	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
+	 * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
+	 * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and instantiate a count pass "1" as the whereClause.
+	 */
+	void deleteAllAsync(ResponseListener<Integer> listener,String whereClause, Object... whereArgs) throws EasyLiteSqlException;
 	
 	
 	/**

@@ -504,6 +504,34 @@ public class DaoImplTest {
 		}, note);
 	}
 
+
+	@Test public void DeleteAllWithConditionAsync() throws Exception {
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		ResponseListener<Integer> mockListener = Mockito.mock(ResponseListener.class);
+		dao.deleteAllAsync(mockListener,"id = ?",1);
+		Mockito.verify(mockListener).onComplete(0);
+
+		ContentValues values = new ContentValues();
+		values.put("id", 7);
+		values.put("body", "text");
+		values.put("author", "john doe");
+		values.put("date", new Date().toString());
+		values.put("sent", true);
+
+		final long id = db.insert("Note", null, values);
+		Assert.assertTrue(id > 0);
+
+		dao.deleteAllAsync(new ResponseListener<Integer>() {
+			@Override
+			public void onComplete(Integer response) {
+				Assert.assertNotNull(response);
+				Assert.assertEquals(1,response.intValue());
+				Cursor cursor = db.rawQuery("SELECT * FROM Note WHERE id=" + id, null);
+				Assert.assertFalse(cursor.moveToFirst());
+			}
+		},"id=?",id);
+	}
+
 	@Test public void isExistMethodTest (){
 		ContentValues values = new ContentValues();
 		values.put("id", 1);
