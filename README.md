@@ -8,6 +8,7 @@ Very simple Object Relationship Mapping framework (ORM) for Android.
 - Annotation driven data modeling 
 - POJO Entity Classes that are loosely coupled
 - Use of Data Access Objects for CRUD operations 
+- Asynchronous Operations
 
 ##Installation
 ####Gradle
