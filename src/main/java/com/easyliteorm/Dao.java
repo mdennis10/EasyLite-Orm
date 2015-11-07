@@ -55,6 +55,17 @@ public interface Dao<K,E> {
 	 * @param entities objects that should be saved
 	 */
 	void batchCreateOverridable(List<E> entities) throws EasyLiteSqlException;
+
+
+	/**
+	 * Dispatch batch insert. This method overwrites records
+	 * that already exist.
+	 * @author Mario Dennis
+	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
+	 * @param listener returns true when batch operation is completed.[Note] listeners response does not relate in anyway to success of operations, therefore always returns true.
+	 * @param entities objects that should be saved
+	 */
+	void batchCreateOverridableAsync (ResponseListener<Boolean> listener,List<E> entities) throws  EasyLiteSqlException;
 	
 	
 	/**

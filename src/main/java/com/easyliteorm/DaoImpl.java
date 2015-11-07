@@ -127,10 +127,24 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}finally{
-			db.endTransaction();
+			if (db.inTransaction())
+				db.endTransaction();
 		}
 	}
-	
+
+
+	@Override
+	public void batchCreateOverridableAsync(ResponseListener<Boolean>listener, final List<E> entities) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<Boolean> task = new EasyLiteAsyncTask<Boolean>(new Action<Boolean>() {
+			@Override
+			public Boolean execute() {
+				batchCreateOverridable(entities);
+				return true;
+			}
+		},listener);
+		task.execute();
+	}
+
 
 	private String[] bindArgs(E entity,Set<Column> columns) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		Object pKeyRaw = getFieldValue(type.getDeclaredField(table.getPrimaryKeyColumn().getName()), entity);

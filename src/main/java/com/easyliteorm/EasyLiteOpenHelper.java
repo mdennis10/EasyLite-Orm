@@ -60,8 +60,7 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 	public void onOpen(SQLiteDatabase db) {
 		super.onOpen(db);
 		if (!db.isReadOnly()) {
-			// Enable foreign key constraints
-			db.execSQL("PRAGMA foreign_keys=ON;");
+			db.execSQL("PRAGMA foreign_keys=ON;");// Enable foreign key constraints
 		}
 	}
 

@@ -155,8 +155,9 @@ public class DaoImplTest {
 		int numInserted = 0;
 		while (cursor.moveToNext())
 			++numInserted;
-		Assert.assertEquals(2, numInserted);
+		Assert.assertTrue("data did not save successfully", numInserted > 0);
 	}
+
 	
 	@Test public void batchCreateOverridableDateValueIsSaved(){
 		Note note = new Note();
@@ -174,6 +175,39 @@ public class DaoImplTest {
 		long time = cursor.getLong(cursor.getColumnIndex("date"));
 		Assert.assertEquals(note.date.getTime(), time);
 	}
+
+	@Test public void batchCreateOverridableAsyncTest (){
+		ResponseListener<Boolean> mockListener = Mockito.mock(ResponseListener.class);
+		Dao<Integer,Note> dao = dbLite.getDao(Note.class);
+		dao.batchCreateOverridableAsync(mockListener,new ArrayList<Note>());
+
+		// Verify that listener is called.
+		// This is very import because if the
+		// listener is not called then the rest of
+		// the test does not need execution
+		Mockito.verify(mockListener).onComplete(true);
+
+		Note note = new Note();
+		note.id = 1;
+		note.date = new Date();
+
+		List<Note> notes = new ArrayList<Note>();
+		notes.add(note);
+
+		dao.batchCreateOverridableAsync(new ResponseListener<Boolean>() {
+			@Override
+			public void onComplete(Boolean response) {
+				Assert.assertNotNull(response);
+				Assert.assertTrue("response is not true", response);
+
+				Cursor cursor = db.query("Note", null, null, null, null, null, null);
+				int numInserted = 0;
+				while (cursor.moveToNext())
+					++numInserted;
+				Assert.assertTrue("data did not save successfully", numInserted > 0);
+			}
+		},notes);
+	}
 	
 	@Test public void deleteAll (){
 		ContentValues values = new ContentValues();
@@ -190,6 +224,7 @@ public class DaoImplTest {
 		int rowsAffected = dao.deleteAll();
 		Assert.assertEquals(1, rowsAffected);
 	}
+
 	
 	
 	@Test public void deleteAllWhereArgsTest (){
