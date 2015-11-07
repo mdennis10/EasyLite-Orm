@@ -1,8 +1,6 @@
 package com.easyliteorm;
 
-/**
- * Created by Mario on 16/8/2015.
- */
+
 public class RegisteredType <T> {
     private Class<?> clazz;
     private SQLiteType sqliteType;

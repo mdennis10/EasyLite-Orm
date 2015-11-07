@@ -1,7 +1,13 @@
 package com.easyliteorm;
 
-import java.io.File;
-
+import android.app.Activity;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import com.easyliteorm.exception.NoPrimaryKeyFoundException;
+import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
+import com.easyliteorm.model.Book;
+import com.easyliteorm.model.NoIdEntity;
+import com.easyliteorm.model.NonNumeric;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,24 +16,16 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
-import android.app.Activity;
-import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.easyliteorm.exception.NoPrimaryKeyFoundException;
-import com.easyliteorm.exception.NoSuitablePrimaryKeySuppliedException;
-import com.easyliteorm.model.Book;
-import com.easyliteorm.model.NoIdEntity;
-import com.easyliteorm.model.NonNumeric;
+import java.io.File;
 
 @RunWith(RobolectricTestRunner.class)
 public class SchemaGeneratorTest {
 	private SchemaGenerator schemaGenerator;
-	private SqliteTypeRegistry typeRegistry;
+	private SQLiteTypeRegistry typeRegistry;
 	private SQLiteDatabase db;
 	
 	@Before public void setup (){
-		this.typeRegistry = new SqliteTypeRegistry();
+		this.typeRegistry = new SQLiteTypeRegistry();
 		this.schemaGenerator = new SchemaGenerator();
 		
 		Context context = Robolectric.buildActivity(Activity.class).get();
@@ -50,7 +48,7 @@ public class SchemaGeneratorTest {
 	}
 	
 	@Test(expected = NoSuitablePrimaryKeySuppliedException.class)
-	public void createTableTest_throwsNoSuitabePrimaryKeySuppliedExceptionTest () throws NoPrimaryKeyFoundException{
+	public void createTableTest_throwsNoSuitablePrimaryKeySuppliedExceptionTest () throws NoPrimaryKeyFoundException{
 		Table table = new Table(NonNumeric.class, typeRegistry);
 		schemaGenerator.createTable(table);
 	}

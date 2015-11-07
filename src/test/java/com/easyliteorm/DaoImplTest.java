@@ -1,6 +1,5 @@
 package com.easyliteorm;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,7 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -31,13 +29,11 @@ public class DaoImplTest {
 	
 	private EasyLite dbLite;
 	private SQLiteDatabase db;
-	private SqliteTypeRegistry typeRegistry;
+	private SQLiteTypeRegistry typeRegistry;
 	
 	@Before
 	public void setup() {
-		Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-		
-		this.dbLite = new EasyLite(activity);
+		this.dbLite = EasyLite.getInstance();
 		this.typeRegistry = dbLite.getSqlTypeRegistry();
 		db = ((DaoImpl<Object, Note>) dbLite.getDao(Note.class)).getSqLiteDatabase();
 	}
@@ -68,23 +64,23 @@ public class DaoImplTest {
 
 
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		// verify that listener is called.
+		// Verify that listener is called.
 		// This is very import because if the
 		// listener is not called then the rest of
-		// the test doesn't need execution
+		// the test does not need execution
 		ResponseListener<Long> listener = Mockito.mock(ResponseListener.class);
 		Note mockNote = new Note();
 		mockNote.id = 1;
-		dao.createAsync(mockNote, listener);
+		dao.createAsync(listener,mockNote);
 		Mockito.verify(listener).onComplete((long) mockNote.id);
 
-		dao.createAsync(note, new ResponseListener<Long>() {
+		dao.createAsync(new ResponseListener<Long>() {
 			@Override
 			public void onComplete(Long response) {
 				Assert.assertNotNull(response);
 				Assert.assertTrue(response > 0);
 			}
-		});
+		}, note);
 	}
 	
 	@Test public void createMethodGetterAndSetterTest (){
@@ -135,7 +131,7 @@ public class DaoImplTest {
 		boolean isSuccessful = dao.batchCreate(notes);
 		Cursor cursor = db.rawQuery("SELECT * FROM Note WHERE id=?", new String[]{"1"});
 		Assert.assertFalse("Batch Create Did Not Fail",isSuccessful);
-		Assert.assertFalse("Batch Create Did Not Fail",cursor.moveToFirst());
+		Assert.assertFalse("Batch Create Did Not Fail", cursor.moveToFirst());
 	}
 	
 	
@@ -159,8 +155,9 @@ public class DaoImplTest {
 		int numInserted = 0;
 		while (cursor.moveToNext())
 			++numInserted;
-		Assert.assertEquals(2, numInserted);
+		Assert.assertTrue("data did not save successfully", numInserted > 0);
 	}
+
 	
 	@Test public void batchCreateOverridableDateValueIsSaved(){
 		Note note = new Note();
@@ -178,6 +175,39 @@ public class DaoImplTest {
 		long time = cursor.getLong(cursor.getColumnIndex("date"));
 		Assert.assertEquals(note.date.getTime(), time);
 	}
+
+	@Test public void batchCreateOverridableAsyncTest (){
+		ResponseListener<Boolean> mockListener = Mockito.mock(ResponseListener.class);
+		Dao<Integer,Note> dao = dbLite.getDao(Note.class);
+		dao.batchCreateOverridableAsync(mockListener,new ArrayList<Note>());
+
+		// Verify that listener is called.
+		// This is very import because if the
+		// listener is not called then the rest of
+		// the test does not need execution
+		Mockito.verify(mockListener).onComplete(true);
+
+		Note note = new Note();
+		note.id = 1;
+		note.date = new Date();
+
+		List<Note> notes = new ArrayList<Note>();
+		notes.add(note);
+
+		dao.batchCreateOverridableAsync(new ResponseListener<Boolean>() {
+			@Override
+			public void onComplete(Boolean response) {
+				Assert.assertNotNull(response);
+				Assert.assertTrue("response is not true", response);
+
+				Cursor cursor = db.query("Note", null, null, null, null, null, null);
+				int numInserted = 0;
+				while (cursor.moveToNext())
+					++numInserted;
+				Assert.assertTrue("data did not save successfully", numInserted > 0);
+			}
+		},notes);
+	}
 	
 	@Test public void deleteAll (){
 		ContentValues values = new ContentValues();
@@ -194,6 +224,7 @@ public class DaoImplTest {
 		int rowsAffected = dao.deleteAll();
 		Assert.assertEquals(1, rowsAffected);
 	}
+
 	
 	
 	@Test public void deleteAllWhereArgsTest (){
@@ -207,13 +238,13 @@ public class DaoImplTest {
 		long id = db.insert("Note", null, values);
 		Assert.assertTrue("Insertion failed", id > 0);
 		
-		int rowsAffected = dbLite.getDao(Note.class).deleteAll("id=?",4);
+		int rowsAffected = dbLite.getDao(Note.class).deleteAll("id=?", 4);
 		Assert.assertEquals(1, rowsAffected);
 	}
 	
 	@Test(expected = NullPointerException.class)
 	public void updateMethodThrowNullPointException (){
-		dbLite.getDao(Note.class).update(null,null);
+		dbLite.getDao(Note.class).update(null, null);
 	}
 	
 	@Test public void updateMethodTest (){
@@ -229,7 +260,9 @@ public class DaoImplTest {
 		note.author = "new author";
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		dao.update(note,"id=?",note.id);
+		int result = dao.update(note,"id=?",note.id);
+
+		Assert.assertTrue(result > 0);//check if row was affected
 		
 		Cursor cursor = db.rawQuery("SELECT * FROM Note WHERE id=?", new String []{Long.toString(id)});
 		if (cursor.moveToFirst()){
@@ -239,7 +272,51 @@ public class DaoImplTest {
 			Assert.assertEquals(note.author, actual.author);
 		}
 	}
-	
+
+
+	@Test public void updateAsyncMethodTest () {
+		ResponseListener<Integer> mockListener = Mockito.mock(ResponseListener.class);
+		Dao<Integer,Note> dao = dbLite.getDao(Note.class);
+		dao.updateAsync(mockListener,new Note(),null);
+
+		// Verify that listener is called.
+		// This is very import because if the
+		// listener is not called then the rest of
+		// the test does not need execution
+		Mockito.verify(mockListener).onComplete(0);
+
+
+
+		ContentValues values = new ContentValues();
+		values.put("id", 1);
+		values.put("author", "john doe");
+
+		final long id = db.insert("Note", null, values);
+		Assert.assertTrue("Insertion failed", id > 0);
+
+		final Note note = new Note();
+		note.id = 1;
+		note.author = "new author";
+
+		dao.updateAsync(new ResponseListener<Integer>() {
+
+			@Override
+			public void onComplete(Integer response) {
+				Assert.assertTrue(response > 0);
+
+				Cursor cursor = db.rawQuery("SELECT * FROM Note WHERE id=?", new String[]{Long.toString(id)});
+				if (cursor.moveToFirst()) {
+					Note actual = new Note();
+					actual.id = cursor.getInt(cursor.getColumnIndex("id"));
+					actual.author = cursor.getString(cursor.getColumnIndex("author"));
+					Assert.assertEquals(note.author, actual.author);
+				}
+			}
+		}, note, "id=?", note.id);
+
+	}
+
+
 	@SuppressWarnings("deprecation")
 	@Test public void updateMethodContentValueExtractsDate (){
 		Note note = new Note();
@@ -254,8 +331,8 @@ public class DaoImplTest {
 		Assert.assertEquals(1, id);
 		
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
-		int rowAffected = dao.update(note, "id=?",note.id);
-		Assert.assertTrue("No rows affected, so Date not updated",rowAffected > 0);
+		int rowAffected = dao.update(note, "id=?", note.id);
+		Assert.assertTrue("No rows affected, so Date not updated", rowAffected > 0);
 	}
 	
 	@Test public void findAllMethodInstancesAddedToListTest (){
@@ -295,7 +372,7 @@ public class DaoImplTest {
 		}
 	}
 	
-	@Test public void findByIdMethodTest (){
+	@Test public void findByIdTest (){
 		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
 		ContentValues values = new ContentValues();
 		values.put("id", 4);
@@ -307,8 +384,36 @@ public class DaoImplTest {
 		long id = db.insert("Note", null, values);
 		Assert.assertTrue(id > 0);
 		
-		Note note = dao.findById((int)id);
+		Note note = dao.findById((int) id);
 		Assert.assertNotNull(note);
+	}
+
+	@Test public void findByIdAsyncTest() {
+
+		ResponseListener<Note> mockListener = Mockito.mock(ResponseListener.class);
+		dbLite.getDao(Note.class)
+			  .findByIdAsync(mockListener, 1);
+		Mockito.verify(mockListener).onComplete(null);
+
+
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		ContentValues values = new ContentValues();
+		values.put("id", 4);
+		values.put("body", "text");
+		values.put("author", "john doe");
+		values.put("date", new Date().toString());
+		values.put("sent", true);
+
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue(id > 0);
+
+		dao.findByIdAsync(new ResponseListener<Note>() {
+			@Override
+			public void onComplete(Note response) {
+				Assert.assertNotNull(response);
+				Assert.assertEquals(4,response.id);
+			}
+		},(int)id);
 	}
 	
 	@Test public void privateFieldsGetterAndSetterMethodTest (){
@@ -379,7 +484,89 @@ public class DaoImplTest {
 		int rows = dao.delete(note);
 		Assert.assertTrue(rows > 0);
 	}
-	
+
+	@Test public void deleteAllAsyncTest (){
+		Dao<Integer,Note> dao = dbLite.getDao(Note.class);
+		ResponseListener<Integer> mockListener = Mockito.mock(ResponseListener.class);
+		dao.deleteAllAsync(mockListener);
+		Mockito.verify(mockListener).onComplete(0);
+
+		//Insert data to test against
+		ContentValues values = new ContentValues();
+		values.put("id", 8);
+		values.put("body", "text");
+		values.put("author", "john doe");
+		values.put("date", new Date().toString());
+		values.put("sent", true);
+
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue(id > 0);
+
+		dao.deleteAllAsync(new ResponseListener<Integer>() {
+			@Override
+			public void onComplete(Integer response) {
+				Assert.assertNotNull(response);
+				Assert.assertTrue("No row deleted", response > 0);
+			}
+		});
+	}
+
+	@Test public void deleteAsyncMethodTest (){
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		ResponseListener<Integer> mockListener = Mockito.mock(ResponseListener.class);
+		dao.deleteAsync(mockListener,new Note());
+		Mockito.verify(mockListener).onComplete(0);
+
+		ContentValues values = new ContentValues();
+		values.put("id", 7);
+		values.put("body", "text");
+		values.put("author", "john doe");
+		values.put("date", new Date().toString());
+		values.put("sent", true);
+
+		long id = db.insert("Note", null, values);
+		Assert.assertTrue(id > 0);
+
+		final Note note = new Note ();
+		note.id = (int) id;
+
+		dao.deleteAsync(new ResponseListener<Integer>() {
+			@Override
+			public void onComplete(Integer response) {
+				Assert.assertNotNull(response);
+				Assert.assertTrue(response > 0);
+			}
+		}, note);
+	}
+
+
+	@Test public void DeleteAllWithConditionAsync() throws Exception {
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		ResponseListener<Integer> mockListener = Mockito.mock(ResponseListener.class);
+		dao.deleteAllAsync(mockListener,"id = ?",1);
+		Mockito.verify(mockListener).onComplete(0);
+
+		ContentValues values = new ContentValues();
+		values.put("id", 7);
+		values.put("body", "text");
+		values.put("author", "john doe");
+		values.put("date", new Date().toString());
+		values.put("sent", true);
+
+		final long id = db.insert("Note", null, values);
+		Assert.assertTrue(id > 0);
+
+		dao.deleteAllAsync(new ResponseListener<Integer>() {
+			@Override
+			public void onComplete(Integer response) {
+				Assert.assertNotNull(response);
+				Assert.assertEquals(1,response.intValue());
+				Cursor cursor = db.rawQuery("SELECT * FROM Note WHERE id=" + id, null);
+				Assert.assertFalse(cursor.moveToFirst());
+			}
+		},"id=?",id);
+	}
+
 	@Test public void isExistMethodTest (){
 		ContentValues values = new ContentValues();
 		values.put("id", 1);
@@ -482,8 +669,85 @@ public class DaoImplTest {
 		Assert.assertEquals(id, notes.get(0).id);
 		Assert.assertEquals(id2, notes.get(1).id);
 	}
-	
-	
+
+	@Test public void findAllAsyncTest() throws Exception {
+		ResponseListener<List<Note>> mockListener = Mockito.mock(ResponseListener.class);
+		dbLite.getDao(Note.class)
+			  .findAllAsync(mockListener);
+		Mockito.verify(mockListener).onComplete(new ArrayList<Note>());
+
+		ContentValues values = new ContentValues();
+		values.put("id", 11);
+		values.put("body", "text");
+		values.put("date", new Date().getTime());
+
+		final long id = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+
+		values.put("id", 15);
+		values.put("date", new Date().getTime());
+		final long id2 = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		dao.findAllAsync(new ResponseListener<List<Note>>() {
+			@Override
+			public void onComplete(List<Note> response) {
+				Assert.assertNotNull(response);
+				Assert.assertFalse(response.isEmpty());
+				Assert.assertEquals(id,response.get(0).id);
+				Assert.assertEquals(id2,response.get(1).id);
+			}
+		});
+	}
+
+
+	@Test public void findAllAsyncWithConditionsTest(){
+		ResponseListener<List<Note>> mockListener = Mockito.mock(ResponseListener.class);
+		dbLite.getDao(Note.class)
+			  .findAllAsync(mockListener,null,null,null,null);
+		Mockito.verify(mockListener).onComplete(new ArrayList<Note>());
+
+
+		Date date = new Date();
+		@SuppressWarnings("deprecation")
+		Date laterDate = new Date(date.getYear() + 1,2,4);
+
+		ContentValues values = new ContentValues();
+		values.put("id", 1);
+		values.put("body", "text");
+		values.put("date", date.getTime());
+
+		final long id = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+
+		values = new ContentValues();
+		values.put("id", 2);
+		values.put("body", "text");
+		values.put("date", laterDate.getTime());
+
+		final long id2 = db.insert("Note", null, values);
+		Assert.assertTrue("Note instance not created",id > 0);
+
+		Dao<Integer, Note> dao = dbLite.getDao(Note.class);
+		dao.findAllAsync(new ResponseListener<List<Note>>() {
+			@Override
+			public void onComplete(List<Note> response) {
+				Assert.assertTrue("Empty List<Note> Returned",!response.isEmpty());
+				Assert.assertEquals(id, response.get(0).id);
+			}
+		},null,null,"id=? AND body=?", "1","text");
+
+		dao.findAllAsync(new ResponseListener<List<Note>>() {
+			@Override
+			public void onComplete(List<Note> response) {
+				Assert.assertTrue("Empty List<Note> Returned",!response.isEmpty());
+				Assert.assertEquals(2, response.size());
+			}
+		},null, null, "date >= ?", date);
+	}
+
+
 	@Test public void findAllBooleanWhereValueConvertedTest (){
 		ContentValues values = new ContentValues();
 		values.put("id", 11);
@@ -518,4 +782,5 @@ public class DaoImplTest {
 		this.dbLite = null;
 		this.typeRegistry = null;
 	}
+
 }

@@ -1,6 +1,5 @@
 package com.easyliteorm;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 
 
@@ -36,34 +35,13 @@ public class ConverterUtil {
 		return  key.toString();
 	}
 	
-	/**
-	 * Converts parameter value to SQLite
-	 * column type equivalent.[Note] this 
-	 * necessary to convert boolean values.
-	 * @author Mario Dennis 
-	 * @param param value to convert
-	 * @param field that is associated with value
-	 * @return converted string value
-	 */
-	public static String convertParamValue (String param,Field field){
-		if (field == null)
-			throw new NullPointerException("Null field instance suppled");
-		
-		if (param != null){
-			Class<?> type = field.getType();
-			
-			if (type.isAssignableFrom(boolean.class) || type.isAssignableFrom(Boolean.class))
-				return (param.equalsIgnoreCase("true") || param.equalsIgnoreCase("1")) ? "1" : "0";
-		}
-		return param;
-	}
-	
 	
 	/**
 	 * Converts parameter value to SQLite
 	 * column type equivalent.[Note] this 
 	 * necessary to convert boolean values.
-	 * @author Mario Dennis 
+	 * @author Mario Dennis
+	 * @param param to convert
 	 * @return converted string value
 	 */
 	public static String convertParamValue (Object param){

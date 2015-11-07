@@ -7,7 +7,7 @@
 
 	<application>
         <meta-data android:name="DATABASE" android:value="app.db" />
-        <meta-data android:name="VERSION" android:value="2" />
+        <meta-data android:name="VERSION" android:value="1" />
         <meta-data android:name="MODEL_PACKAGE_NAME" android:value="com.easyliteorm.model" />
     </application>
 </manifest>

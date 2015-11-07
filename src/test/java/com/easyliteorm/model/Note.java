@@ -1,9 +1,10 @@
 package com.easyliteorm.model;
 
-import java.util.Date;
-
 import com.easyliteorm.annotation.Entity;
+import com.easyliteorm.annotation.Foreign;
 import com.easyliteorm.annotation.Id;
+
+import java.util.Date;
 
 @Entity(name = "Note")
 public class Note {
@@ -14,4 +15,7 @@ public class Note {
 	public boolean sent;
 	public Date date;
 	public double price;
+
+	@Foreign
+    public Book book;
 }

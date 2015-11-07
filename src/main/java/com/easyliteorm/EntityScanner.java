@@ -1,21 +1,15 @@
 package com.easyliteorm;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
-
 import com.easyliteorm.annotation.Entity;
-
 import dalvik.system.DexFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 
 public class EntityScanner {
@@ -68,8 +62,8 @@ public class EntityScanner {
 	  * @author Mario Dennis
 	  * @param context android
 	  * @return List of all classes
-	  * @throws PackageManager.NameNotFoundException
-	  * @throws IOException
+	  * @throws PackageManager.NameNotFoundException produced when package not found.
+	  * @throws IOException produced by failed or interrupted I/O operation.
 	  */
 	 protected static List<String> getAllClasses(Context context) throws PackageManager.NameNotFoundException, IOException {
 		 String path = getSourcePath(context);

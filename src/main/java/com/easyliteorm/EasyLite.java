@@ -1,40 +1,51 @@
 package com.easyliteorm;
 
+
 import android.content.Context;
 
 public final class EasyLite {
-	protected final EasyLiteOpenHelper openHelper;
-	private final SqliteTypeRegistry typeRegistry;
-	
-	public EasyLite(Context context) {
-		this.typeRegistry = new SqliteTypeRegistry();
-		this.openHelper = new EasyLiteOpenHelper(context,typeRegistry);
+	protected  final EasyLiteOpenHelper openHelper;
+	private final SQLiteTypeRegistry typeRegistry;
+	private final static EasyLite INSTANCE  = new EasyLite();
+
+	private EasyLite() {
+		this.typeRegistry = new SQLiteTypeRegistry();
+		this.openHelper = new EasyLiteOpenHelper(EasyliteContext.getEasyliteContext(),typeRegistry);
 	}
-	
-	
+
+
 	/**
-	 * This method does not return a singleton instance
-	 * and will be removed from future releases. Instead
-	 * it returns a new instance of EasyLite.
-	 * <pre>
+	 * Easylite now utilize an internal android context.
+	 * Therefore, this method no longer needs a context argument.
+	 * It is recommended that you use the following instead:
 	 * {@code
-	 * 		EasyLite easyLite = new EasyLite(context);
+	 * 		EasyLite easyLite = EasyLite.getInstance ();
 	 * }
-	 * <pre>
 	 * @author Mario Dennis
 	 * @param context android 
 	 * @return singleton instance of EasyLite
 	 */
 	@Deprecated
 	public static EasyLite getInstance(Context context) {
-		return new EasyLite(context);
+		return getInstance();
+	}
+
+	/**
+	 * Gets singleton instance of Easylite class.
+	 * @author Mario Dennis
+	 * @return singleton instance of EasyLite
+	 */
+	public final static EasyLite getInstance (){
+		return INSTANCE;
 	}
 	
 	
 	/**
 	 * Gets Dao for database entity 
 	 * @author Mario Dennis
-	 * @param  type of DAO
+	 * @param <K> primary key type
+	 * @param <E> entity type
+	 * @param type of DAO
 	 * @return Dao instance
 	 */
 	public final <K,E> Dao<K, E> getDao (Class<E> type) {
@@ -55,7 +66,8 @@ public final class EasyLite {
 
 	/**
 	 * Check if class type registered
-	 * @param clazz
+	 * @author Mario Dennis
+	 * @param clazz type to check for.
 	 * @return true if registered, otherwise false
 	 */
 	public final boolean isTypeRegistered(Class<String> clazz) {
@@ -63,12 +75,12 @@ public final class EasyLite {
 	}
 	
 	
-	protected final SqliteTypeRegistry getSqlTypeRegistry (){
+	protected final SQLiteTypeRegistry getSqlTypeRegistry (){
 		return typeRegistry;
 	}
 
 
-	public final void registerType(Class<String> clazz, SQLiteType sqliteType) {
+	protected final void registerType(Class<String> clazz, SQLiteType sqliteType) {
 		getSqlTypeRegistry().register(clazz, sqliteType);
 	}
 }

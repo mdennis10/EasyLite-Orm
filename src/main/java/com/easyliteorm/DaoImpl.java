@@ -23,7 +23,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	private final Class<E> type;
 	private Table table;
 
-	protected DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type,SqliteTypeRegistry typeRegistry){
+	protected DaoImpl (EasyLiteOpenHelper openHelper,Class<E> type,SQLiteTypeRegistry typeRegistry){
 		this.db = openHelper.getWritableDatabase();
 		this.type = type;
 		this.table = new Table(type, typeRegistry);
@@ -52,7 +52,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 	@Override
-	public void createAsync(final E entity,final ResponseListener<Long> listener) {
+	public void createAsync(final ResponseListener<Long> listener, final E entity) {
 		EasyLiteAsyncTask<Long> task = new EasyLiteAsyncTask<Long>(new Action<Long>() {
 			@Override
 			public Long execute() {
@@ -127,10 +127,24 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}finally{
-			db.endTransaction();
+			if (db.inTransaction())
+				db.endTransaction();
 		}
 	}
-	
+
+
+	@Override
+	public void batchCreateOverridableAsync(ResponseListener<Boolean>listener, final List<E> entities) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<Boolean> task = new EasyLiteAsyncTask<Boolean>(new Action<Boolean>() {
+			@Override
+			public Boolean execute() {
+				batchCreateOverridable(entities);
+				return true;
+			}
+		},listener);
+		task.execute();
+	}
+
 
 	private String[] bindArgs(E entity,Set<Column> columns) throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		Object pKeyRaw = getFieldValue(type.getDeclaredField(table.getPrimaryKeyColumn().getName()), entity);
@@ -170,6 +184,18 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 
 	@Override
+	public void deleteAllAsync(ResponseListener<Integer> listener) {
+		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
+			@Override
+			public Integer execute() {
+				return deleteAll();
+			}
+		},listener);
+		task.execute();
+	}
+
+
+	@Override
 	public int deleteAll(String whereClause, Object... whereArgs) throws EasyLiteSqlException{
 		try {
 			return db.delete(table.getName(), whereClause, formatWhereParams(whereArgs));
@@ -178,8 +204,19 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 	}
 
-	
-	
+
+	@Override
+	public void deleteAllAsync(ResponseListener<Integer> listener, final String whereClause, final Object... whereArgs) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
+			@Override
+			public Integer execute() {
+				return deleteAll(whereClause,whereArgs);
+			}
+		},listener);
+		task.execute();
+	}
+
+
 	@Override
 	public int delete(E entity) throws EasyLiteSqlException {
 		if (entity == null)
@@ -202,6 +239,18 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			Log.e("EasyLite", e.getMessage());
 		}
 		return 0;
+	}
+
+
+	@Override
+	public void deleteAsync(ResponseListener<Integer> listener,final E entity) {
+		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
+			@Override
+			public Integer execute() {
+				return delete(entity);
+			}
+		},listener);
+		task.execute();
 	}
 
 	
@@ -227,6 +276,17 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 			return 0;
 		}
 		return 0;
+	}
+
+	@Override
+	public void updateAsync(ResponseListener<Integer> listener, final E entity, final String whereClause, final Object... whereArgs) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
+			@Override
+			public Integer execute() {
+				return update(entity,whereClause,whereArgs);
+			}
+		}, listener);
+		task.execute();
 	}
 
 	@Override
@@ -260,6 +320,18 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return null;
 	}
 
+
+	@Override
+	public void findByIdAsync(ResponseListener<E> listener, final K key) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<E> task = new EasyLiteAsyncTask<E>(new Action<E>() {
+			@Override
+			public E execute() {
+				return findById(key);
+			}
+		}, listener);
+		task.execute();
+	}
+
 	@Override
 	public List<E> findAll() throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E> ();
@@ -285,7 +357,19 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 		return results;
 	}
-	
+
+
+	@Override
+	public void findAllAsync(ResponseListener<List<E>> listener) {
+		EasyLiteAsyncTask<List<E>> task = new EasyLiteAsyncTask<List<E>>(new Action<List<E>>() {
+			@Override
+			public List<E> execute() {
+				return findAll();
+			}
+		},listener);
+		task.execute();
+	}
+
 	@Override
 	public List<E> findAll(String orderBy,OrderByType orderByType,String whereClause,Object... whereArgs) throws EasyLiteSqlException {
 		List<E> results = new ArrayList<E>();
@@ -313,7 +397,19 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 		return results;
 	}
-	
+
+
+	@Override
+	public void findAllAsync(ResponseListener<List<E>> listener, final String orderBy, final OrderByType orderByType, final String whereClause, final Object... whereArgs) throws EasyLiteSqlException {
+		EasyLiteAsyncTask<List<E>> task = new EasyLiteAsyncTask<List<E>>(new Action<List<E>>() {
+			@Override
+			public List<E> execute() {
+				return findAll(orderBy,orderByType,whereClause,whereArgs);
+			}
+		}, listener);
+		task.execute();
+	}
+
 	public String[] formatWhereParams (Object... whereArgs){
 		if (whereArgs == null)
 			return null;
@@ -361,16 +457,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return db;
 	}
 	
-	
-	/**
-	 * Sets entity fields reflectively.
-	 * @author Mario Dennis
-	 * @param cursor
-	 * @param field
-	 * @param entity
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 */
+
 	private void setEntityFields (Cursor cursor,Field field,E entity) throws IllegalArgumentException, IllegalAccessException{
 		field.setAccessible(true);
 		Class<?> type = field.getType();
@@ -399,7 +486,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 	
-	/**
+	/*
 	 * Add field value to contentValue
 	 * @author Mario Dennis
 	 * @param values

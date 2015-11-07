@@ -1,19 +1,20 @@
 package com.easyliteorm;
 
+import com.easyliteorm.annotation.Entity;
+import com.easyliteorm.exception.NotEntityException;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.easyliteorm.annotation.Entity;
-import com.easyliteorm.exception.NotEntityException;
 
-public class TableRegistry {
+public final class TableRegistry {
 	private final Map<String, Table> registry;
-	private final SqliteTypeRegistry sqliteTypeRegistry;
+	private final SQLiteTypeRegistry sqliteTypeRegistry;
 	
-	public TableRegistry(SqliteTypeRegistry sqliteTypeRegistry) {
+	protected TableRegistry(SQLiteTypeRegistry sqliteTypeRegistry) {
 		this.sqliteTypeRegistry = sqliteTypeRegistry;
 		this.registry = new HashMap<String, Table>();
 	}
@@ -27,11 +28,11 @@ public class TableRegistry {
 	/**
 	 * Add Table to registry
 	 * @author Mario Dennis 
-	 * @param entity
+	 * @param entity class instance
 	 */
 	public void addTable(Class<?> entity) {
 		if (entity == null)
-			throw new NullPointerException("Null agrument supplied");
+			throw new NullPointerException("Null argument supplied");
 		
 		Table table = new Table(entity,sqliteTypeRegistry);
 		getRegistry().put(table.getName(), table);
@@ -41,10 +42,10 @@ public class TableRegistry {
 	/**
 	 * Get the table name of Entity 
 	 * @author Mario Dennis
-	 * @param entity
+	 * @param clazz instance
 	 * @return name
 	 */
-	protected static final String getTableName(Class<?> clazz) {
+	protected static String getTableName(Class<?> clazz) {
 		Entity entityAnnotation = clazz.getAnnotation(Entity.class);
 		if (entityAnnotation == null)
 			throw new NotEntityException();
@@ -57,7 +58,7 @@ public class TableRegistry {
 	/**
 	 * Get all registered tables
 	 * @author Mario Dennis
-	 * @return Set<Table<?>>
+	 * @return Set of registered tables
 	 */
 	public  Set<Table> getRegisteredTables (){
 		Set<Table> tables = new HashSet<Table>();
