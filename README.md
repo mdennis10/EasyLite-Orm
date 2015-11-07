@@ -1,4 +1,4 @@
-# EasyliteOrm  [![Build Status](https://travis-ci.org/mdennis10/EasyLite-Orm.svg?branch=master)](https://travis-ci.org/mdennis10/EasyLite-Orm)  [![Coverage Status](https://coveralls.io/repos/mdennis10/EasyLite-Orm/badge.svg)](https://coveralls.io/r/mdennis10/EasyLite-Orm)
+# EasyliteORM  [![Build Status](https://travis-ci.org/mdennis10/EasyLite-Orm.svg?branch=master)](https://travis-ci.org/mdennis10/EasyLite-Orm)  [![Coverage Status](https://coveralls.io/repos/mdennis10/EasyLite-Orm/badge.svg)](https://coveralls.io/r/mdennis10/EasyLite-Orm)
 
 Very simple Object Relationship Mapping framework (ORM) for Android. 
 
