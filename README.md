@@ -13,7 +13,7 @@ Very simple Object Relationship Mapping framework (ORM) for Android.
 ##Installation
 ####Gradle
 <pre>
-compile 'com.easyliteorm:easyliteorm:1.0.1'
+compile 'com.easyliteorm:easyliteorm:1.2.0'
 </pre>
 
 ####Maven
