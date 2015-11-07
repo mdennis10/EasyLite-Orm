@@ -55,7 +55,16 @@ public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
 
 		onCreate(db);//recreates database schema
 	}
-	
+
+	@Override
+	public void onOpen(SQLiteDatabase db) {
+		super.onOpen(db);
+		if (!db.isReadOnly()) {
+			// Enable foreign key constraints
+			db.execSQL("PRAGMA foreign_keys=ON;");
+		}
+	}
+
 	public Set<Class<?>> getEntityClasses (){
 		return entityClasses;
 	}
