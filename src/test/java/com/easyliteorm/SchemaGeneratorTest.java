@@ -48,7 +48,7 @@ public class SchemaGeneratorTest {
 	}
 	
 	@Test(expected = NoSuitablePrimaryKeySuppliedException.class)
-	public void createTableTest_throwsNoSuitabePrimaryKeySuppliedExceptionTest () throws NoPrimaryKeyFoundException{
+	public void createTableTest_throwsNoSuitablePrimaryKeySuppliedExceptionTest () throws NoPrimaryKeyFoundException{
 		Table table = new Table(NonNumeric.class, typeRegistry);
 		schemaGenerator.createTable(table);
 	}

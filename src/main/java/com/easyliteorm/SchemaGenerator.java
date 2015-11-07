@@ -17,45 +17,62 @@ public final class SchemaGenerator {
 	 * @throws NoPrimaryKeyFoundException
 	 * @throws NoSuitablePrimaryKeySuppliedException
 	 */
-	protected synchronized String createTable(Table table) throws NoPrimaryKeyFoundException, NoSuitablePrimaryKeySuppliedException{
+	protected String createTable(Table table) throws NoPrimaryKeyFoundException, NoSuitablePrimaryKeySuppliedException{
 		if (!table.containPrimaryKey())
 			throw new NoPrimaryKeyFoundException();
 		
 		Column primaryColumn = table.getPrimaryKeyColumn();
 
-		//Check that primary key constraints met
+		//Check that primary key constraints are met
 		if (primaryColumn.getSqliteType() == null || primaryColumn.getSqliteType() != SQLiteType.INTEGER)
 			throw new NoSuitablePrimaryKeySuppliedException();
 		
 		StringBuilder builder = new StringBuilder();
 		builder.append("CREATE TABLE IF NOT EXISTS ")
 		       .append(table.getName())
-		       .append("(");
-		
-		Iterator<Column> iterator = table.getColumns().iterator();
-		while(iterator.hasNext()){
-			Column column = iterator.next();
-			SQLiteType sqliteType = column.getSqliteType();
-			String value = sqliteType.getValue();
-			builder.append(column.getName())
-			       .append(" ")
-			       .append(value);
+			   .append("(")
+			   .append(primaryColumn.getName())
+			   .append(" ")
+			   .append(primaryColumn.getSqliteType().getValue())
+		       .append(" PRIMARY KEY");
 
-			//add primary key statement
-			if(column.getColumnType() == ColumnType.PRIMARY) {
-				builder.append(" PRIMARY KEY");
 
-				// add autoincrement generation stategy
-				if (column.getGenerationStrategy() == GenerationType.AUTO)
-				       builder.append(" AUTOINCREMENT");
-			}
-			
-			if (iterator.hasNext())
-				builder.append(",");
-		}
+		// add autoincrement generation stategy
+		if (primaryColumn.getGenerationStrategy() == GenerationType.AUTO)
+				builder.append(" AUTOINCREMENT");
+
+		addForeignColumns(builder,table);
+		addNoKeyColumns(builder,table);
+
 		return builder.append(")").toString();
 	}
 
+
+	private void addForeignColumns (StringBuilder builder,Table table){
+		if (!table.containForeignKey())
+			return;
+
+		Iterator<Column> iterator = table.getForeignKeyColumns().iterator();
+		while(iterator.hasNext()){
+			Column column = iterator.next();
+			builder.append(",")
+					.append(column.getName())
+					.append(" ")
+					.append(column.getSqliteType().getValue());
+		}
+	}
+
+
+	private void addNoKeyColumns (StringBuilder builder, Table table){
+		Iterator<Column> iterator = table.getColumns().iterator();
+		while(iterator.hasNext()){
+			Column column = iterator.next();
+			builder.append(",")
+					.append(column.getName())
+					.append(" ")
+					.append(column.getSqliteType().getValue());
+		}
+	}
 
 	/**
 	 * Generate a SQL DDL statement to drop Entity table.

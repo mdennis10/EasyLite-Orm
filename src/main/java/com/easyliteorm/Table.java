@@ -20,7 +20,8 @@ public final class Table {
 	private boolean CONTAIN_FOREIGN_KEY = false;
 	private final String name;
 	private final Class<?> entity;
-	private Set<Column> columns;
+	private Set<Column> columns = new HashSet<Column>();
+	private Set<Column> foreignKeyColumns = new HashSet<Column>();
 	private Column primaryKeyColumn;
 
 	protected Table(Class<?> entity,SQLiteTypeRegistry typeRegistry) {
@@ -51,7 +52,6 @@ public final class Table {
 
 
 	private final void setColumns(SQLiteTypeRegistry typeRegistry) {
-		columns = new HashSet<Column>();
 		Field[] fields = entity.getDeclaredFields();
 		for (Field field : fields) {
 			addColumn(field, typeRegistry);
@@ -73,15 +73,11 @@ public final class Table {
 		}
 
 		else if (columnType == ColumnType.PRIMARY) {
-			Column column = createColumn(field,columnType,typeRegistry);
-			columns.add(column);
-			CONTAIN_PRIMARY_KEY = true;
-			primaryKeyColumn = column;
+			primaryKeyColumn = createColumn(field, columnType, typeRegistry);
 		}
 
 		else if (columnType == ColumnType.FOREIGN) {
-			columns.add(createForeignColumn(field, typeRegistry));
-			CONTAIN_FOREIGN_KEY = true;
+			foreignKeyColumns.add(createForeignColumn(field, typeRegistry));
 		}
 	}
 
@@ -156,7 +152,7 @@ public final class Table {
 	 * @return haves primary key or not
 	 */
 	protected final boolean containPrimaryKey() {
-		return CONTAIN_PRIMARY_KEY;
+		return (primaryKeyColumn != null);
 	}
 
 
@@ -166,7 +162,7 @@ public final class Table {
 	 * @return haves primary key or not
 	 */
 	protected final boolean containForeignKey() {
-		return CONTAIN_FOREIGN_KEY;
+		return foreignKeyColumns.size() > 0;
 	}
 
 	/**
@@ -178,4 +174,12 @@ public final class Table {
 		return primaryKeyColumn;
 	}
 
+	/**
+	 * Gets Set of foreign key columns
+	 * @author Mario Dennis
+	 * @return foreign key column or empty collection if none is defined
+	 */
+	protected final Set<Column> getForeignKeyColumns(){
+		return foreignKeyColumns;
+	}
 }
