@@ -57,6 +57,16 @@ List<Note> notes = dao.findAll();
 
 ```
 
+######Asynchronous 
+```xml
+dao.findAllAsync(new ResponseListener<List<Note>>() {
+			@Override
+			public void onComplete(List<Note> result) {
+				// do something with result
+			}
+		});
+```
+
 ###License
 The MIT License (MIT)
 
