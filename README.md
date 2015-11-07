@@ -58,6 +58,7 @@ List<Note> notes = dao.findAll();
 ```
 
 ######Asynchronous 
+version 1.2.0 and greater
 ```xml
 dao.findAllAsync(new ResponseListener<List<Note>>() {
 			@Override
