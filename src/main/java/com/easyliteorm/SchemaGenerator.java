@@ -12,10 +12,10 @@ public final class SchemaGenerator {
 	/**
 	 * Generate a SQL DDL statement to create Entity table.
 	 * @author Mario Dennis
-	 * @param table
+	 * @param table instance must be created
 	 * @return SQL statement for entity table creation
-	 * @throws NoPrimaryKeyFoundException
-	 * @throws NoSuitablePrimaryKeySuppliedException
+	 * @throws NoPrimaryKeyFoundException produced when no primary key defined by annotation.
+	 * @throws NoSuitablePrimaryKeySuppliedException produced when invalid primary key type is used
 	 */
 	protected String createTable(Table table) throws NoPrimaryKeyFoundException, NoSuitablePrimaryKeySuppliedException{
 		if (!table.containPrimaryKey())
@@ -77,7 +77,7 @@ public final class SchemaGenerator {
 	/**
 	 * Generate a SQL DDL statement to drop Entity table.
 	 * @author Mario Dennis
-	 * @param table
+	 * @param table instance that must be dropped.
 	 * @return SQL statement for entity table removal
 	 */
 	public String dropTable(Table table) {

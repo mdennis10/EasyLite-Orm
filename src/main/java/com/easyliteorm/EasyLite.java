@@ -18,11 +18,9 @@ public final class EasyLite {
 	 * Easylite now utilize an internal android context.
 	 * Therefore, this method no longer needs a context argument.
 	 * It is recommended that you use the following instead:
-	 * <pre>
 	 * {@code
 	 * 		EasyLite easyLite = EasyLite.getInstance ();
 	 * }
-	 * <pre>
 	 * @author Mario Dennis
 	 * @param context android 
 	 * @return singleton instance of EasyLite
@@ -45,7 +43,9 @@ public final class EasyLite {
 	/**
 	 * Gets Dao for database entity 
 	 * @author Mario Dennis
-	 * @param  type of DAO
+	 * @param <K> primary key type
+	 * @param <E> entity type
+	 * @param type of DAO
 	 * @return Dao instance
 	 */
 	public final <K,E> Dao<K, E> getDao (Class<E> type) {
@@ -66,7 +66,8 @@ public final class EasyLite {
 
 	/**
 	 * Check if class type registered
-	 * @param clazz
+	 * @author Mario Dennis
+	 * @param clazz type to check for.
 	 * @return true if registered, otherwise false
 	 */
 	public final boolean isTypeRegistered(Class<String> clazz) {

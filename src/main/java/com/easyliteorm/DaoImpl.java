@@ -204,16 +204,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		}
 	}
 
-	/**
-	 * Delete records with give where condition.
-	 *
-	 * @param listener    to call once operation is complete
-	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
-	 * @param whereArgs   You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
-	 * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and instantiate a count pass "1" as the whereClause.
-	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @author Mario Dennis
-	 */
+
 	@Override
 	public void deleteAllAsync(ResponseListener<Integer> listener, final String whereClause, final Object... whereArgs) throws EasyLiteSqlException {
 		EasyLiteAsyncTask<Integer> task = new EasyLiteAsyncTask<Integer>(new Action<Integer>() {
@@ -329,14 +320,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 		return null;
 	}
 
-	/**
-	 * Find record by primary key
-	 * @param listener to call once operation is complete
-	 * @param key      - primary key value
-	 * @return E entity record
-	 * @throws EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @author Mario Dennis
-	 */
+
 	@Override
 	public void findByIdAsync(ResponseListener<E> listener, final K key) throws EasyLiteSqlException {
 		EasyLiteAsyncTask<E> task = new EasyLiteAsyncTask<E>(new Action<E>() {
@@ -502,7 +486,7 @@ public final class DaoImpl<K,E> implements Dao<K, E>{
 	}
 	
 	
-	/**
+	/*
 	 * Add field value to contentValue
 	 * @author Mario Dennis
 	 * @param values

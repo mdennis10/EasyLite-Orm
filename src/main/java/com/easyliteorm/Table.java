@@ -134,7 +134,7 @@ public final class Table {
 	/**
 	 * Resolve entity generation strategy
 	 * @author Mario Dennis
-	 * @param field
+	 * @param field instance to resolve
 	 * @return primary key generation strategy
 	 */
 	public final GenerationType resolveGenerationType(Field field){

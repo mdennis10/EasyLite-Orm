@@ -28,9 +28,8 @@ public interface Dao<K,E> {
 	 * Create new instance of record
 	 * @author Mario Dennis
 	 * @param entity instance to save.
-	 * @param  listener to call once operation is complete
+	 * @param  listener to call once operation is complete. Contains the row ID of the newly inserted row, or -1 if an error occurred.A value greater than 0 if primary key is of type String
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @return the row ID of the newly inserted row, or -1 if an error occurred.A value greater than 0 if primary key is of type String
 	 */
 	void createAsync(ResponseListener<Long> listener, E entity) throws EasyLiteSqlException;
 	
@@ -81,10 +80,9 @@ public interface Dao<K,E> {
 	/**
 	 * Delete a record from database
 	 * @author Mario Dennis
-	 * @param listener to call once operation is complete
+	 * @param listener to call once operation is complete. Contains the number of rows affected
 	 * @param entity to delete from database
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @return the number of rows affected
 	 */
 	void deleteAsync(ResponseListener<Integer> listener,E entity) throws EasyLiteSqlException;
 	
@@ -101,9 +99,8 @@ public interface Dao<K,E> {
 	/**
 	 * Delete all records from database
 	 * @author Mario Dennis
-	 * @param listener to call once operation is complete
+	 * @param listener to call once operation is complete. Contains the number of rows affected.
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @return the number of rows affected.
 	 */
 	void deleteAllAsync(ResponseListener<Integer> listener) throws EasyLiteSqlException;
 	
@@ -123,10 +120,9 @@ public interface Dao<K,E> {
 	 * Delete records with give where condition.
 	 * @author Mario Dennis
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @param  listener to call once operation is complete
+	 * @param listener to call once operation is complete. Contains the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and instantiate a count pass "1" as the whereClause.
 	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
 	 * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
-	 * @return the number of rows affected if a whereClause is passed in, 0 otherwise. To remove all rows and instantiate a count pass "1" as the whereClause.
 	 */
 	void deleteAllAsync(ResponseListener<Integer> listener,String whereClause, Object... whereArgs) throws EasyLiteSqlException;
 	
@@ -146,12 +142,11 @@ public interface Dao<K,E> {
 	/**
 	 * Update database record asynchronously
 	 * @author Mario Dennis
-	 * @param  listener to call once operation is complete
+	 * @param listener to call once operation is complete. Contains the number of rows affected.
 	 * @param entity entity to update. This entity should contain corresponding primary key value of record in database
 	 * @param whereClause the optional WHERE clause to apply when updating. Passing null will update all rows.
 	 * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings.
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @return the number of rows affected
 	 */
 	void updateAsync(ResponseListener<Integer> listener, E entity, String whereClause, Object... whereArgs) throws EasyLiteSqlException;
 	
@@ -168,10 +163,9 @@ public interface Dao<K,E> {
 	/**
 	 * Find record by primary key
 	 * @author Mario Dennis
-	 * @param  listener to call once operation is complete
+	 * @param listener to call once operation is complete. Contains entity record
 	 * @param key - primary key value
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @return E entity record
 	 */
 	void findByIdAsync(ResponseListener<E> listener,K key) throws EasyLiteSqlException;
 	
@@ -206,9 +200,8 @@ public interface Dao<K,E> {
 	/**
 	 * Find all records
 	 * @author Mario Dennis
-	 * @param  listener to call once operation is complete
+	 * @param  listener to call once operation is complete. Contains List of all records
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @return List of all records
 	 */
 	void findAllAsync(ResponseListener<List<E>> listener) throws EasyLiteSqlException;
 	
@@ -229,13 +222,12 @@ public interface Dao<K,E> {
 	/**
 	 * Find all records
 	 * @author Mario Dennis
-	 * @param  listener to call once operation is complete
+	 * @param listener to call once operation is complete. Contains List of all records
 	 * @param whereClause the optional WHERE clause to apply when deleting. Passing null will delete all rows
 	 * @param whereArgs You may include ?s in the where clause, which will be replaced by the values from whereArgs. The values will be bound as Strings
 	 * @param orderBy How to order the rows, formatted as an SQL ORDER BY clause (excluding the ORDER BY itself). Passing null will use the default sort order, which may be unordered.
 	 * @param orderByType specifies the order data will be returned based on orderBy column. Defaults to ASC when null.
 	 * @exception EasyLiteSqlException when error with sql parsing or execution occurs
-	 * @return List of all records
 	 */
 	void findAllAsync(ResponseListener<List<E>> listener,String orderBy, OrderByType orderByType, String whereClause, Object... whereArgs) throws EasyLiteSqlException;
 }

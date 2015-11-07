@@ -23,7 +23,7 @@ public class SQLiteTypeRegistry {
 	/**
 	 * Get instance of registry.
 	 * @author Mario Dennis
-	 * @return Map<String,RegisteredType<?>>
+	 * @return registry map
 	 */
 	protected final Map<String, RegisteredType<?>> getRegistry() {
 		return mapRegistry;
@@ -61,6 +61,7 @@ public class SQLiteTypeRegistry {
 	/**
 	 * Registers data type
 	 * @author Mario Dennis
+	 * @param <T> type to registered
 	 * @param clazz - Class to register
 	 * @param sqliteType - associated SQLite data type 
 	 */
@@ -76,7 +77,8 @@ public class SQLiteTypeRegistry {
 	/**
 	 * Gets SQLite type associated with class.
 	 * @author Mario Dennis
-	 * @param clazz 
+	 * @param <T> type to resolve
+	 * @param clazz  to resolve
 	 * @return SQLite data type when class is registered, otherwise returns null
 	 */
 	public <T> SQLiteType resolve(Class<T> clazz) {
@@ -88,8 +90,10 @@ public class SQLiteTypeRegistry {
 	
 	/**
 	 * Check if a class is registered
-	 * @param clazz
-	 * @return
+	 * @author Mario Dennis
+	 * @param  <T> type
+	 * @param clazz instance to check for
+	 * @return whether or not type is already registered
 	 */
 	public <T> boolean isRegistered(Class<T> clazz) {
 		return (getRegistry().get(clazz.getName()) != null);

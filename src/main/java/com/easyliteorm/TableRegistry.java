@@ -28,7 +28,7 @@ public final class TableRegistry {
 	/**
 	 * Add Table to registry
 	 * @author Mario Dennis 
-	 * @param entity
+	 * @param entity class instance
 	 */
 	public void addTable(Class<?> entity) {
 		if (entity == null)
@@ -42,7 +42,7 @@ public final class TableRegistry {
 	/**
 	 * Get the table name of Entity 
 	 * @author Mario Dennis
-	 * @param clazz
+	 * @param clazz instance
 	 * @return name
 	 */
 	protected static String getTableName(Class<?> clazz) {
@@ -58,7 +58,7 @@ public final class TableRegistry {
 	/**
 	 * Get all registered tables
 	 * @author Mario Dennis
-	 * @return Set<Table<?>>
+	 * @return Set of registered tables
 	 */
 	public  Set<Table> getRegisteredTables (){
 		Set<Table> tables = new HashSet<Table>();
