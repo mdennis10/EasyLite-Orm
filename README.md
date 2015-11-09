@@ -55,9 +55,9 @@ Dao<Integer, Note> dao = EasyLite.getInstance(context)
 Note note = new Note ();
 dao.create(note);
 List<Note> notes = dao.findAll();
+```
 
-
-######Asynchronous Operation
+#####Asynchronous Operation
 version 1.2.0 and greater
 ```xml
 dao.findAllAsync(new ResponseListener<List<Note>>() {
