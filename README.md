@@ -56,9 +56,8 @@ Note note = new Note ();
 dao.create(note);
 List<Note> notes = dao.findAll();
 
-```
 
-######Asynchronous 
+######Asynchronous Operation
 version 1.2.0 and greater
 ```xml
 dao.findAllAsync(new ResponseListener<List<Note>>() {
