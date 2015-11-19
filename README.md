@@ -1,4 +1,4 @@
-# EasyliteOrm  [![Build Status](https://travis-ci.org/mdennis10/EasyLite-Orm.svg?branch=master)](https://travis-ci.org/mdennis10/EasyLite-Orm)  [![Coverage Status](https://coveralls.io/repos/mdennis10/EasyLite-Orm/badge.svg)](https://coveralls.io/r/mdennis10/EasyLite-Orm)
+# EasyliteORM  [![Build Status](https://travis-ci.org/mdennis10/EasyLite-Orm.svg?branch=master)](https://travis-ci.org/mdennis10/EasyLite-Orm)  [![Coverage Status](https://coveralls.io/repos/mdennis10/EasyLite-Orm/badge.svg)](https://coveralls.io/r/mdennis10/EasyLite-Orm)
 
 Very simple Object Relationship Mapping framework (ORM) for Android. 
 
@@ -8,11 +8,12 @@ Very simple Object Relationship Mapping framework (ORM) for Android.
 - Annotation driven data modeling 
 - POJO Entity Classes that are loosely coupled
 - Use of Data Access Objects for CRUD operations 
+- Asynchronous Operations
 
 ##Installation
 ####Gradle
 <pre>
-compile 'com.easyliteorm:easyliteorm:1.0.1'
+compile 'com.easyliteorm:easyliteorm:1.2.0'
 </pre>
 
 ####Maven
@@ -54,10 +55,9 @@ Dao<Integer, Note> dao = EasyLite.getInstance(context)
 Note note = new Note ();
 dao.create(note);
 List<Note> notes = dao.findAll();
-
 ```
 
-######Asynchronous 
+#####Asynchronous Operation
 version 1.2.0 and greater
 ```xml
 dao.findAllAsync(new ResponseListener<List<Note>>() {
