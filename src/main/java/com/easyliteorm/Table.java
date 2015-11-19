@@ -16,8 +16,6 @@ import java.util.Set;
  * @author Mario Dennis
  */
 public final class Table {
-	private boolean CONTAIN_PRIMARY_KEY = false;
-	private boolean CONTAIN_FOREIGN_KEY = false;
 	private final String name;
 	private final Class<?> entity;
 	private Set<Column> columns = new HashSet<Column>();
