@@ -21,7 +21,7 @@ compile 'com.easyliteorm:easyliteorm:1.2.0'
 <dependency>
   <groupId>com.easyliteorm</groupId>
   <artifactId>easyliteorm</artifactId>
-  <version>1.0.1</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 
