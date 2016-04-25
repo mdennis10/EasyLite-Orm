@@ -44,7 +44,7 @@ public class ConverterUtil {
 	 * @param param to convert
 	 * @return converted string value
 	 */
-	public static String convertParamValue (Object param){
+	protected static String convertParamValue (Object param){
 		if (param == null)
 			throw new NullPointerException("Null field instance suppled");
 		Class<?> type = param.getClass();

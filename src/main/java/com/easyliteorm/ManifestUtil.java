@@ -5,20 +5,23 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
-public class ManifestUtil {
+public final class ManifestUtil {
 
 	public final static String METADATA_DATABASE = "DATABASE";
 	public final static String METADATA_VERSION = "VERSION";
 	public final static String METADATA_MODEL_PACKAGE_NAME = "MODEL_PACKAGE_NAME";
 	private static final String DEFAULT_DATABASE = "easylite.db";
-	
+
+
+	protected ManifestUtil() {}
+
 	/**
 	 * Get database version 
 	 * @author Mario Dennis
 	 * @param context android
 	 * @return  1 when none is defined within manifest
 	 */
-	public static int getDatabaseVersion (Context context){
+	protected static int getDatabaseVersion (Context context){
 		Integer version = getMetaDataInteger(context, METADATA_VERSION);
 		if (version == null || version == 0)
 			return 1;
@@ -32,7 +35,7 @@ public class ManifestUtil {
 	 * @param context context
 	 * @return databaseName or default when none is defined
 	 */
-	public static String getDatabaseName (Context context){
+	protected static String getDatabaseName (Context context){
 		String databaseName = getMetaDataString(context, METADATA_DATABASE);
 		if (databaseName == null)
 			return DEFAULT_DATABASE;
@@ -46,7 +49,7 @@ public class ManifestUtil {
 	 * @param context android
 	 * @return empty when not defined in manifest
 	 */
-	public static String getModelPackageName (Context context){
+	protected static String getModelPackageName (Context context){
 		String packageName = getMetaDataString(context, METADATA_MODEL_PACKAGE_NAME);
 		if (packageName == null)
 			return "";

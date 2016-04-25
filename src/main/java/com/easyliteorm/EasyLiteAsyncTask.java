@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 
-public class EasyLiteAsyncTask <T> extends AsyncTask<String,Void,T> {
+public final class EasyLiteAsyncTask <T> extends AsyncTask<String,Void,T> {
     protected final ResponseListener<T> listener;
     protected final Action<T> action;
 

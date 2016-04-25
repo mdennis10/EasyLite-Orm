@@ -5,20 +5,20 @@ public class RegisteredType <T> {
     private Class<?> clazz;
     private SQLiteType sqliteType;
 
-    public Class<?> getClazz() {
+    protected final Class<?> getClazz() {
         return clazz;
     }
 
-    public void setClazz(Class<?> clazz) {
+    protected final void setClazz(Class<?> clazz) {
         this.clazz = clazz;
     }
 
 
-    public SQLiteType getSqliteType() {
+    protected final SQLiteType getSqliteType() {
         return sqliteType;
     }
 
-    public void setSqliteType(SQLiteType sqliteType) {
+    protected final void setSqliteType(SQLiteType sqliteType) {
         this.sqliteType = sqliteType;
     }
 

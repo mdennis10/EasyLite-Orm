@@ -17,7 +17,7 @@ public final class SchemaGenerator {
 	 * @throws NoPrimaryKeyFoundException produced when no primary key defined by annotation.
 	 * @throws NoSuitablePrimaryKeySuppliedException produced when invalid primary key type is used
 	 */
-	protected String createTable(Table table) throws NoPrimaryKeyFoundException, NoSuitablePrimaryKeySuppliedException{
+	protected final String createTable(Table table) throws NoPrimaryKeyFoundException, NoSuitablePrimaryKeySuppliedException{
 		if (!table.containPrimaryKey())
 			throw new NoPrimaryKeyFoundException();
 		
@@ -80,7 +80,7 @@ public final class SchemaGenerator {
 	 * @param table instance that must be dropped.
 	 * @return SQL statement for entity table removal
 	 */
-	public String dropTable(Table table) {
+	protected final String dropTable(Table table) {
 		return String.format("DROP TABLE IF EXISTS %s", table.getName());
 	}
 

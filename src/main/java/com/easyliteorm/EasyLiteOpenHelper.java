@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public final class EasyLiteOpenHelper extends SQLiteOpenHelper {
+
 	private Set<Class<?>> entityClasses;
 	private final String msg = "No entity class was found in package %s. Please ensure correct package defined in Manifest";
 	private final SQLiteTypeRegistry sqliteTypeRegistry;

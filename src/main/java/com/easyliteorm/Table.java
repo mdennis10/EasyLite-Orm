@@ -135,7 +135,7 @@ public final class Table {
 	 * @param field instance to resolve
 	 * @return primary key generation strategy
 	 */
-	public final GenerationType resolveGenerationType(Field field){
+	protected final GenerationType resolveGenerationType(Field field){
 		Id id = field.getAnnotation(Id.class);
 		if (id != null)
 			return id.strategy();

@@ -30,7 +30,7 @@ public final class TableRegistry {
 	 * @author Mario Dennis 
 	 * @param entity class instance
 	 */
-	public void addTable(Class<?> entity) {
+	protected void addTable(Class<?> entity) {
 		if (entity == null)
 			throw new NullPointerException("Null argument supplied");
 		
@@ -60,7 +60,7 @@ public final class TableRegistry {
 	 * @author Mario Dennis
 	 * @return Set of registered tables
 	 */
-	public  Set<Table> getRegisteredTables (){
+	protected Set<Table> getRegisteredTables (){
 		Set<Table> tables = new HashSet<Table>();
 		
 		for(Entry<String, Table> entry : getRegistry().entrySet()){
